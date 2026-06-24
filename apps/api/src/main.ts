@@ -47,8 +47,8 @@ async function bootstrap() {
   // Swagger
   if (configService.get('NODE_ENV') !== 'production') {
     const config = new DocumentBuilder()
-      .setTitle('BarberCore API')
-      .setDescription('BarberCore SaaS Marketplace API Documentation')
+      .setTitle('پرنگارین API')
+      .setDescription('پرنگارین SaaS Marketplace API Documentation')
       .setVersion('1.0')
       .addBearerAuth()
       .build();
@@ -57,7 +57,7 @@ async function bootstrap() {
   }
 
   await app.listen(port, '0.0.0.0');
-  console.log(`🚀 BarberCore API running on http://0.0.0.0:${port}`);
+  console.log(`🚀 پرنگارین API running on http://0.0.0.0:${port}`);
   console.log(`📚 Swagger docs: http://0.0.0.0:${port}/api/docs`);
 }
 

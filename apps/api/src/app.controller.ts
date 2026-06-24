@@ -11,7 +11,7 @@ export class AppController {
       success: true,
       data: {
         status: 'ok',
-        service: 'barbercore-api',
+        service: 'parnegarin-api',
         timestamp: new Date().toISOString(),
       },
     };

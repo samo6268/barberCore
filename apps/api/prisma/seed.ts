@@ -56,7 +56,7 @@ async function main() {
   const templates = [
     {
       key: 'otp_login',
-      body: 'کد ورود بارِبِرکُر: {{code}}\nاین کد تا ۵ دقیقه معتبر است.',
+      body: 'کد ورود پرنگارین: {{code}}\nاین کد تا ۵ دقیقه معتبر است.',
     },
     {
       key: 'booking_confirmed',

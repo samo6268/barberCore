@@ -6,15 +6,15 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: {
-    default: 'بارِبِرکُر | رزرو آنلاین آرایشگاه',
-    template: '%s | بارِبِرکُر',
+    default: 'پرنگارین | رزرو آنلاین آرایشگاه',
+    template: '%s | پرنگارین',
   },
   description: 'پلتفرم رزرو آنلاین آرایشگاه و سالن زیبایی در ایران',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'بارِبِرکُر',
+    title: 'پرنگارین',
   },
 };
 
