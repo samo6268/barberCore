@@ -1,6 +1,7 @@
 'use client';
 import { useMyBookings } from '@/lib/api-hooks';
 import { toJalali, formatPrice } from '@/lib/utils';
+import { MOCK_MY_BOOKINGS } from '@/lib/mock-data';
 import { Calendar, CheckCircle, XCircle, Clock } from 'lucide-react';
 import Link from 'next/link';
 
@@ -15,7 +16,7 @@ const STATUS_LABELS: Record<string, { label: string; color: string; icon: React.
 
 export default function BookingsPage() {
   const { data, isLoading } = useMyBookings();
-  const bookings = data?.data || [];
+  const bookings = data?.data?.length ? data.data : MOCK_MY_BOOKINGS;
 
   return (
     <div className="min-h-screen py-8 px-4" style={{ background: 'var(--color-background)' }}>

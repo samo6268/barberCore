@@ -20,6 +20,9 @@ import { SuperAdminModule } from './modules/superadmin/superadmin.module';
 import { StorageModule } from './modules/storage/storage.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
+import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
+import { BoostModule } from './modules/boost/boost.module';
+import { FeaturedModule } from './modules/featured/featured.module';
 import { AppController } from './app.controller';
 
 @Module({
@@ -67,6 +70,9 @@ import { AppController } from './app.controller';
     StorageModule,
     PaymentsModule,
     ReviewsModule,
+    SubscriptionsModule,
+    BoostModule,
+    FeaturedModule,
   ],
   controllers: [AppController],
 })

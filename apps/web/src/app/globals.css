@@ -1,85 +1,226 @@
+/* ── Design tokens must come before Tailwind directives ── */
+@import '../../../../packages/ui/src/tokens.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ── Male Theme (default) ── */
-:root,
-[data-gender="male"] {
-  --color-primary: #1e3a5f;
-  --color-primary-foreground: #ffffff;
-  --color-secondary: #2563eb;
-  --color-accent: #0ea5e9;
-  --color-background: #f8fafc;
-  --color-surface: #ffffff;
-  --color-border: #e2e8f0;
-  --color-text: #0f172a;
-  --color-muted: #64748b;
-  --radius: 0.75rem;
+/* ── Estedad (Farsi Display) — local CDN ─────────────── */
+@font-face {
+  font-family: 'Estedad';
+  src: url('https://cdn.jsdelivr.net/gh/rastikerdar/estedad-font@v8.0.0/Estedad-FD[wght].woff2') format('woff2-variations');
+  font-weight: 200 900;
+  font-style: normal;
+  font-display: swap;
 }
 
-/* ── Female Theme ── */
-[data-gender="female"] {
-  --color-primary: #7c2d52;
-  --color-primary-foreground: #ffffff;
-  --color-secondary: #db2777;
-  --color-accent: #f472b6;
-  --color-background: #fdf2f8;
-  --color-surface: #ffffff;
-  --color-border: #fce7f3;
-  --color-text: #1a0a12;
-  --color-muted: #9d4e6e;
-  --radius: 1rem;
+/* ── Vazirmatn (Farsi Body) ──────────────────────────── */
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/fonts/webfonts/Vazirmatn[wght].woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
 }
 
-/* ── Dark Mode ── */
-.dark {
-  --color-background: #0f172a;
-  --color-surface: #1e293b;
-  --color-border: #334155;
-  --color-text: #f1f5f9;
-  --color-muted: #94a3b8;
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.7;
+    font-feature-settings: "kern" 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* RTL default for Persian UI */
+  [dir="rtl"] {
+    font-family: 'Vazirmatn', system-ui, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--color-text);
+    letter-spacing: -0.02em;
+  }
+
+  /* Scrollbar — editorial minimal */
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--ui-gray-300);
+    border-radius: 2px;
+  }
+
+  /* Focus ring */
+  :focus-visible {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* Selection */
+  ::selection {
+    background-color: var(--brand-plum-100);
+    color: var(--brand-plum-800);
+  }
+
+  /* Smooth image rendering */
+  img {
+    image-rendering: -webkit-optimize-contrast;
+  }
 }
 
-/* ── RTL & Typography ── */
-* {
-  box-sizing: border-box;
+@layer components {
+  /* ── Container editorial ────────────────────────────── */
+  .container-editorial {
+    width: 100%;
+    max-width: 1320px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .container-editorial {
+      padding-left: 3rem;
+      padding-right: 3rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .container-editorial {
+      padding-left: 5rem;
+      padding-right: 5rem;
+    }
+  }
+
+  /* ── Section rhythm ─────────────────────────────────── */
+  .section-editorial {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+  }
+
+  @media (min-width: 1024px) {
+    .section-editorial {
+      padding-top: 8rem;
+      padding-bottom: 8rem;
+    }
+  }
+
+  /* ── Eyebrow label ──────────────────────────────────── */
+  .eyebrow {
+    font-size: 0.75rem;
+    line-height: 1.5;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--color-accent);
+  }
+
+  /* ── Gold underline accent ──────────────────────────── */
+  .gold-underline {
+    position: relative;
+    display: inline-block;
+  }
+  .gold-underline::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    height: 2px;
+    width: 100%;
+    background-color: var(--brand-gold-600);
+    transform-origin: left;
+    transform: scaleX(0);
+    transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .gold-underline.animate::after,
+  .gold-underline:hover::after {
+    transform: scaleX(1);
+  }
+
+  /* ── Text gradient plum→rose ────────────────────────── */
+  .text-gradient-brand {
+    background: linear-gradient(135deg, var(--brand-plum-600) 0%, var(--brand-rose-600) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ── Opening quote glyph ────────────────────────────── */
+  .quote-glyph::before {
+    content: '\201C';
+    font-family: var(--font-display);
+    font-size: 5rem;
+    line-height: 0;
+    vertical-align: -2rem;
+    color: var(--brand-gold-600);
+    margin-left: -0.5rem;
+  }
+
+  /* ── Animate on scroll (JS adds .is-visible) ─────────── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition:
+      opacity 600ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  font-feature-settings: "kern" 1;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--color-background);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 3px;
-}
-
-/* Focus ring */
-:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-}
-
-/* Number inputs — use Persian numerals in display */
 @layer utilities {
   .persian-nums {
     font-variant-numeric: tabular-nums;
     font-feature-settings: "ss01" 1;
   }
+
+  .font-display {
+    font-family: var(--font-display);
+  }
+
+  /* Male theme tighter letterspacing */
+  [data-theme="male"] .tracking-display {
+    letter-spacing: var(--letter-spacing-display, -0.03em);
+  }
+
+  /* Hide scrollbar but keep scroll */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* Aspect ratio helpers for editorial images */
+  .aspect-portrait  { aspect-ratio: 3/4; }
+  .aspect-editorial { aspect-ratio: 5/6; }
+  .aspect-cinema    { aspect-ratio: 16/9; }
 }

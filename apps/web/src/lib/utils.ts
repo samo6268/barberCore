@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import jalaali from 'jalaali-js';
+import * as jalaali from 'jalaali-js';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

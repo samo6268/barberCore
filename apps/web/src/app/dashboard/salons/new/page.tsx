@@ -49,8 +49,8 @@ export default function NewSalonPage() {
         <div className="rounded-2xl p-6 border space-y-4" style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
           {step === 0 && (
             <>
-              <Field label="نام سالن *" value={form.name} onChange={v => set('name', v)} placeholder="مثال: آرایشگاه برادران احمدی" />
-              <Field label="توضیحات" value={form.description} onChange={v => set('description', v)} placeholder="درباره سالن خود بنویسید..." multiline />
+              <Field label="نام سالن *" value={form.name} onChange={(v: string) => set('name', v)} placeholder="مثال: آرایشگاه برادران احمدی" />
+              <Field label="توضیحات" value={form.description} onChange={(v: string) => set('description', v)} placeholder="درباره سالن خود بنویسید..." multiline />
               <div>
                 <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text)' }}>نوع سالن</label>
                 <div className="flex gap-2">
@@ -63,16 +63,16 @@ export default function NewSalonPage() {
                   ))}
                 </div>
               </div>
-              <Field label="شماره تلفن سالن" value={form.phone} onChange={v => set('phone', v)} placeholder="021-XXXXXXXX" dir="ltr" />
-              <Field label="اینستاگرام" value={form.instagramHandle} onChange={v => set('instagramHandle', v)} placeholder="@salonname" dir="ltr" />
+              <Field label="شماره تلفن سالن" value={form.phone} onChange={(v: string) => set('phone', v)} placeholder="021-XXXXXXXX" dir="ltr" />
+              <Field label="اینستاگرام" value={form.instagramHandle} onChange={(v: string) => set('instagramHandle', v)} placeholder="@salonname" dir="ltr" />
             </>
           )}
 
           {step === 1 && (
             <>
-              <Field label="شهر" value={form.city} onChange={v => set('city', v)} placeholder="مثال: تهران" />
-              <Field label="استان" value={form.province} onChange={v => set('province', v)} placeholder="مثال: تهران" />
-              <Field label="آدرس کامل" value={form.address} onChange={v => set('address', v)} placeholder="خیابان، کوچه، پلاک..." multiline />
+              <Field label="شهر" value={form.city} onChange={(v: string) => set('city', v)} placeholder="مثال: تهران" />
+              <Field label="استان" value={form.province} onChange={(v: string) => set('province', v)} placeholder="مثال: تهران" />
+              <Field label="آدرس کامل" value={form.address} onChange={(v: string) => set('address', v)} placeholder="خیابان، کوچه، پلاک..." multiline />
             </>
           )}
 

@@ -1,0 +1,126 @@
+/* ═══════════════════════════════════════════════════════════
+   BarberCore Design Tokens — Editorial Luxury System
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Primitive brand tokens ──────────────────────────────── */
+:root {
+  /* Brand Plum */
+  --brand-plum-50:  #F5EBF4;
+  --brand-plum-100: #E3CBE1;
+  --brand-plum-200: #C99BC6;
+  --brand-plum-300: #AE6BAB;
+  --brand-plum-400: #8A4C87;
+  --brand-plum-500: #6B3568;
+  --brand-plum-600: #4B244A;
+  --brand-plum-700: #3A1C39;
+  --brand-plum-800: #2D1530;
+  --brand-plum-900: #1A0B1C;
+  --brand-plum-950: #0D050E;
+
+  /* Brand Gold */
+  --brand-gold-50:  #FBF6E8;
+  --brand-gold-100: #F3E5B8;
+  --brand-gold-200: #EBD388;
+  --brand-gold-300: #E3C158;
+  --brand-gold-400: #E5C682;
+  --brand-gold-500: #DCBA6A;
+  --brand-gold-600: #D8B76A;
+  --brand-gold-700: #C4A054;
+  --brand-gold-800: #9C7E3C;
+  --brand-gold-900: #6B5428;
+  --brand-gold-950: #3A2D14;
+
+  /* Brand Rose */
+  --brand-rose-50:  #FBF1F4;
+  --brand-rose-100: #F3D8E2;
+  --brand-rose-200: #EAC5D1;
+  --brand-rose-300: #DDA8BB;
+  --brand-rose-400: #CE90A8;
+  --brand-rose-500: #C28BAB;
+  --brand-rose-600: #C98FA3;
+  --brand-rose-700: #B07A8D;
+  --brand-rose-800: #8F5E70;
+  --brand-rose-900: #6B3F50;
+  --brand-rose-950: #3A2030;
+
+  /* Brand Navy */
+  --brand-navy-50:  #ECEFF2;
+  --brand-navy-100: #D2D8DE;
+  --brand-navy-200: #B5BFC9;
+  --brand-navy-300: #8D9BA8;
+  --brand-navy-400: #4A5562;
+  --brand-navy-500: #364452;
+  --brand-navy-600: #1F2933;
+  --brand-navy-700: #18212A;
+  --brand-navy-800: #131A20;
+  --brand-navy-900: #0F141A;
+  --brand-navy-950: #080B0E;
+
+  /* Backgrounds */
+  --bg-ivory:      #FAF7F2;
+  --bg-ivory-soft: #F4EFE6;
+
+  /* UI Gray */
+  --ui-gray-50:  #F7F4F0;
+  --ui-gray-100: #F0EBE5;
+  --ui-gray-200: #E7E2DC;
+  --ui-gray-300: #D4CCBF;
+  --ui-gray-400: #B8B0A5;
+  --ui-gray-500: #9A9188;
+  --ui-gray-600: #7A7168;
+  --ui-gray-700: #5C5550;
+  --ui-gray-800: #3D3A36;
+  --ui-gray-900: #1E1C1A;
+}
+
+/* ── Female Theme (default — FEMALE & UNISEX salons) ─────── */
+:root,
+[data-theme="female"] {
+  --color-primary:            var(--brand-plum-600);
+  --color-primary-hover:      var(--brand-plum-800);
+  --color-primary-foreground: var(--bg-ivory);
+  --color-accent:             var(--brand-rose-600);
+  --color-highlight:          var(--brand-gold-600);
+  --color-background:         var(--bg-ivory);
+  --color-surface:            #FFFFFF;
+  --color-surface-raised:     var(--bg-ivory-soft);
+  --color-border:             var(--ui-gray-200);
+  --color-border-focus:       var(--brand-plum-600);
+  --color-text:               var(--brand-navy-900);
+  --color-text-muted:         var(--ui-gray-500);
+  --color-text-subtle:        var(--ui-gray-400);
+  --font-display:             'Playfair Display', 'Estedad', Georgia, serif;
+  --font-body:                'Vazirmatn', 'Inter', system-ui, sans-serif;
+  --font-mono:                'JetBrains Mono', monospace;
+  --radius-sm:                4px;
+  --radius-md:                6px;
+  --radius-lg:                12px;
+  --radius-xl:                16px;
+  --radius-2xl:               24px;
+}
+
+/* ── Male Theme ──────────────────────────────────────────── */
+[data-theme="male"] {
+  --color-primary:            var(--brand-navy-600);
+  --color-primary-hover:      var(--brand-navy-800);
+  --color-primary-foreground: var(--bg-ivory);
+  --color-accent:             var(--brand-gold-600);
+  --color-highlight:          var(--brand-plum-600);
+  --color-background:         #F7F5F1;
+  --color-surface:            #FFFFFF;
+  --color-surface-raised:     #EFECE6;
+  --color-border:             var(--ui-gray-200);
+  --color-border-focus:       var(--brand-navy-600);
+  --color-text:               var(--brand-navy-900);
+  --color-text-muted:         var(--ui-gray-500);
+  --color-text-subtle:        var(--ui-gray-400);
+  --font-display:             'Cormorant Garamond', 'Estedad', Georgia, serif;
+  --font-body:                'Vazirmatn', 'Inter', system-ui, sans-serif;
+  --font-mono:                'JetBrains Mono', monospace;
+  --letter-spacing-display:   -0.03em;
+  --radius-sm:                4px;
+  --radius-md:                6px;
+  --radius-lg:                12px;
+  --radius-xl:                16px;
+  --radius-2xl:               24px;
+}

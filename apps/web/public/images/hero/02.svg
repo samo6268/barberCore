@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1800" width="1400" height="1800">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1A1A2E"/>
+      <stop offset="50%" stop-color="#3D1A3A"/>
+      <stop offset="100%" stop-color="#C4546A"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#F9C5D0" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#C4546A" stop-opacity="0.05"/>
+    </linearGradient>
+  </defs>
+  <rect width="1400" height="1800" fill="url(#g)"/>
+  <rect width="1400" height="1800" fill="url(#shine)"/>
+  <circle cx="100" cy="1600" r="600" fill="#C4546A" fill-opacity="0.12"/>
+  <circle cx="1300" cy="200" r="450" fill="#3D1A3A" fill-opacity="0.25"/>
+  <ellipse cx="700" cy="900" rx="700" ry="500" fill="#4B244A" fill-opacity="0.08"/>
+  <line x1="560" y1="820" x2="840" y2="820" stroke="#E87F95" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="560" y1="980" x2="840" y2="980" stroke="#E87F95" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="700" y="880" text-anchor="middle" font-family="Georgia, serif" font-size="68" fill="#F9F5F0" fill-opacity="0.9" letter-spacing="6">آرایشگاه</text>
+  <text x="700" y="940" text-anchor="middle" font-family="Georgia, serif" font-size="28" fill="#E87F95" fill-opacity="0.8" letter-spacing="4">HAIR STUDIO</text>
+</svg>

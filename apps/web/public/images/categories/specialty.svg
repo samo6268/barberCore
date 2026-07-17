@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1067" width="800" height="1067">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1A1A2E"/>
+      <stop offset="100%" stop-color="#2A3D6B"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="1067" fill="url(#g)"/>
+  <circle cx="400" cy="400" r="350" fill="#2A3D6B" fill-opacity="0.15"/>
+  <circle cx="100" cy="900" r="300" fill="#1A1A2E" fill-opacity="0.2"/>
+  <circle cx="700" cy="200" r="200" fill="#C49A3C" fill-opacity="0.06"/>
+  <line x1="300" y1="490" x2="500" y2="490" stroke="#C49A3C" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="300" y1="590" x2="500" y2="590" stroke="#C49A3C" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="400" y="550" text-anchor="middle" font-family="Georgia, serif" font-size="60" fill="#F9F5F0" fill-opacity="0.92">تخصصی</text>
+  <text x="400" y="590" text-anchor="middle" font-family="Georgia, serif" font-size="20" fill="#C49A3C" fill-opacity="0.7" letter-spacing="4">CATEGORY</text>
+</svg>

@@ -1,179 +1,214 @@
-'use client';
-import { useParams, useRouter } from 'next/navigation';
-import { Star, MapPin, Phone, Clock, CheckCircle, Heart } from 'lucide-react';
-import { useSalonBySlug } from '@/lib/api-hooks';
-import { formatPrice } from '@/lib/utils';
+import { notFound } from 'next/navigation';
+import Image from 'next/image';
 import Link from 'next/link';
+import { Star, MapPin, Phone, Clock } from 'lucide-react';
+import { SALON_IMAGES, INSTRUCTOR_AVATARS } from '@/lib/images';
 
-export default function SalonPage() {
-  const { slug } = useParams<{ slug: string }>();
-  const { data: salon, isLoading } = useSalonBySlug(slug);
+const MOCK_SALONS: Record<string, any> = {
+  'luxe-beauty': {
+    name: 'لوکس بیوتی', city: 'تهران', rating: 4.9, reviewCount: 312, premium: true,
+    gallery: [SALON_IMAGES[0], SALON_IMAGES[1], SALON_IMAGES[2], SALON_IMAGES[3]],
+    services: [
+      { name: 'کوتاهی مو', duration: 60, price: 800000 },
+      { name: 'رنگ مو', duration: 120, price: 2500000 },
+      { name: 'هایلایت کامل', duration: 180, price: 4000000 },
+      { name: 'کراتینه', duration: 240, price: 6000000 },
+    ],
+    staff: [
+      { name: 'سارا کریمی', role: 'متخصص رنگ', avatar: INSTRUCTOR_AVATARS[0] },
+      { name: 'مریم رضایی', role: 'متخصص کوتاهی', avatar: INSTRUCTOR_AVATARS[1] },
+      { name: 'لیلا احمدی', role: 'متخصص آرایش', avatar: INSTRUCTOR_AVATARS[2] },
+    ],
+    description: 'سالن لوکس بیوتی با بیش از ۱۰ سال تجربه در ارائه خدمات زیبایی حرفه‌ای، فضایی آرام و لوکس برای شما فراهم کرده است.',
+    address: 'تهران، خیابان ولیعصر، پلاک ۱۲۳',
+    phone: '۰۲۱-۸۸۷۷۶۶۵۵',
+    hours: 'شنبه تا چهارشنبه ۹ تا ۲۱',
+  },
+  'barber-classics': {
+    name: 'باربر کلاسیک', city: 'تهران', rating: 4.8, reviewCount: 224, premium: false,
+    gallery: [SALON_IMAGES[1], SALON_IMAGES[5], SALON_IMAGES[6], SALON_IMAGES[7]],
+    services: [
+      { name: 'کوتاهی مردانه', duration: 45, price: 500000 },
+      { name: 'اصلاح ریش', duration: 30, price: 300000 },
+      { name: 'شیو کلاسیک', duration: 45, price: 600000 },
+    ],
+    staff: [
+      { name: 'علی محمدی', role: 'باربر ارشد', avatar: INSTRUCTOR_AVATARS[3] },
+      { name: 'رضا احمدی', role: 'باربر', avatar: INSTRUCTOR_AVATARS[4] },
+    ],
+    description: 'باربرشاپ کلاسیک با حال‌وهوای سنتی و خدمات حرفه‌ای مردانه',
+    address: 'تهران، سعادت‌آباد، خیابان علامه',
+    phone: '۰۲۱-۲۲۳۳۴۴۵۵',
+    hours: 'هر روز ۱۰ تا ۲۲',
+  },
+  'rose-salon': {
+    name: 'رز سالن', city: 'اصفهان', rating: 4.7, reviewCount: 178, premium: true,
+    gallery: [SALON_IMAGES[2], SALON_IMAGES[8], SALON_IMAGES[9], SALON_IMAGES[0]],
+    services: [
+      { name: 'مانیکور', duration: 60, price: 400000 },
+      { name: 'پدیکور', duration: 90, price: 600000 },
+      { name: 'ژل ناخن', duration: 120, price: 800000 },
+    ],
+    staff: [{ name: 'نازنین احمدی', role: 'متخصص ناخن', avatar: INSTRUCTOR_AVATARS[5] }],
+    description: 'سالن تخصصی ناخن و زیبایی در قلب اصفهان',
+    address: 'اصفهان، چهارباغ بالا',
+    phone: '۰۳۱-۳۶۶۵۵۴۴۳',
+    hours: 'شنبه تا پنجشنبه ۹ تا ۲۰',
+  },
+  'golden-hair': {
+    name: 'گلدن هیر', city: 'مشهد', rating: 4.8, reviewCount: 145, premium: false,
+    gallery: [SALON_IMAGES[3], SALON_IMAGES[4], SALON_IMAGES[5], SALON_IMAGES[6]],
+    services: [
+      { name: 'کوتاهی مو', duration: 60, price: 700000 },
+      { name: 'رنگ مو', duration: 120, price: 2200000 },
+    ],
+    staff: [{ name: 'فاطمه رضایی', role: 'استایلیست ارشد', avatar: INSTRUCTOR_AVATARS[0] }],
+    description: 'سالن گلدن هیر، تجربه‌ای متفاوت در مشهد',
+    address: 'مشهد، بلوار وکیل‌آباد',
+    phone: '۰۵۱-۳۸۸۷۷۶۶۵',
+    hours: 'هر روز ۱۰ تا ۲۱',
+  },
+  'vogue-studio': {
+    name: 'ووگ استودیو', city: 'تهران', rating: 4.9, reviewCount: 289, premium: true,
+    gallery: [SALON_IMAGES[4], SALON_IMAGES[7], SALON_IMAGES[8], SALON_IMAGES[9]],
+    services: [
+      { name: 'پکیج عروس', duration: 240, price: 8000000 },
+      { name: 'میکاپ مجلسی', duration: 90, price: 1500000 },
+      { name: 'شینیون', duration: 120, price: 1200000 },
+    ],
+    staff: [
+      { name: 'پریا کاظمی', role: 'میکاپ آرتیست', avatar: INSTRUCTOR_AVATARS[1] },
+      { name: 'یاسمن مرادی', role: 'متخصص شینیون', avatar: INSTRUCTOR_AVATARS[2] },
+    ],
+    description: 'ووگ استودیو، تخصصی‌ترین مرکز آرایش عروس و مجلسی',
+    address: 'تهران، فرشته، خیابان فیاضی',
+    phone: '۰۲۱-۲۲۶۶۵۵۴۴',
+    hours: 'شنبه تا پنجشنبه ۱۰ تا ۲۲',
+  },
+};
 
-  if (isLoading) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--color-background)' }}>
-      <div className="animate-spin w-8 h-8 border-4 rounded-full" style={{ borderColor: 'var(--color-primary)', borderTopColor: 'transparent' }} />
-    </div>
-  );
-
-  if (!salon) return (
-    <div className="min-h-screen flex items-center justify-center text-center p-8" style={{ background: 'var(--color-background)' }}>
-      <div><div className="text-5xl mb-4">😕</div><p>سالن یافت نشد</p></div>
-    </div>
-  );
-
-  const gender = salon.genderType === 'MALE' ? 'male' : salon.genderType === 'FEMALE' ? 'female' : 'male';
+export default function SalonDetailPage({ params }: { params: { slug: string } }) {
+  const salon = MOCK_SALONS[params.slug];
+  if (!salon) notFound();
 
   return (
-    <div data-gender={gender} className="min-h-screen" style={{ background: 'var(--color-background)' }}>
-      {/* Cover */}
-      <div className="relative h-64" style={{ background: 'var(--color-primary)' }}>
-        {salon.coverImageUrl && <img src={salon.coverImageUrl} alt="" className="w-full h-full object-cover" />}
-        <div className="absolute inset-0 bg-black/30" />
-        <div className="absolute bottom-4 right-6 flex items-end gap-4">
-          {salon.logoUrl && <img src={salon.logoUrl} alt="" className="w-20 h-20 rounded-2xl border-4 object-cover" style={{ borderColor: 'var(--color-surface)' }} />}
-          <div className="text-white">
-            <h1 className="text-2xl font-bold flex items-center gap-2">
-              {salon.name} {salon.isVerified && <CheckCircle className="w-5 h-5 text-blue-400" />}
-            </h1>
-            <div className="flex items-center gap-4 text-sm text-white/80 mt-1">
-              <span className="flex items-center gap-1"><Star className="w-4 h-4 fill-amber-400 text-amber-400" />{salon.rating.toFixed(1)} ({salon.reviewCount} نظر)</span>
-              {salon.city && <span className="flex items-center gap-1"><MapPin className="w-4 h-4" />{salon.city}</span>}
+    <main className="min-h-screen" style={{ background: 'var(--bg-ivory)' }}>
+      {/* Hero */}
+      <section className="relative h-[60vh] overflow-hidden">
+        <Image src={salon.gallery[0]} alt={salon.name} fill className="object-cover" priority />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+        <div className="absolute bottom-12 right-12 z-10" style={{ color: 'var(--bg-ivory)' }}>
+          {salon.premium && (
+            <span className="inline-block px-4 py-1 rounded-full text-xs font-semibold mb-4"
+              style={{ background: 'var(--brand-gold-600)', color: 'var(--brand-plum-900)' }}>
+              PREMIUM
+            </span>
+          )}
+          <h1 className="font-display font-semibold text-4xl lg:text-6xl mb-4">{salon.name}</h1>
+          <div className="flex items-center gap-6 text-lg">
+            <span className="flex items-center gap-2">
+              <Star className="w-5 h-5 fill-[var(--brand-gold-600)] text-[var(--brand-gold-600)]" />
+              {salon.rating} ({salon.reviewCount} نظر)
+            </span>
+            <span className="flex items-center gap-2"><MapPin className="w-5 h-5" />{salon.city}</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Content */}
+      <section className="container-editorial py-16 grid lg:grid-cols-3 gap-12">
+        <div className="lg:col-span-2 space-y-12">
+          {/* About */}
+          <div>
+            <p className="eyebrow mb-4">درباره سالن</p>
+            <p className="text-body-lg leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
+              {salon.description}
+            </p>
+          </div>
+
+          {/* Services */}
+          <div>
+            <p className="eyebrow mb-6">خدمات</p>
+            <div className="space-y-3">
+              {salon.services.map((s: any, i: number) => (
+                <div key={i} className="flex items-center justify-between p-5 rounded-xl border"
+                  style={{ background: 'white', borderColor: 'var(--ui-gray-200)' }}>
+                  <div>
+                    <h3 className="font-medium text-body" style={{ color: 'var(--color-text)' }}>{s.name}</h3>
+                    <p className="text-caption mt-1 flex items-center gap-1" style={{ color: 'var(--color-text-muted)' }}>
+                      <Clock className="w-3 h-3" />{s.duration} دقیقه
+                    </p>
+                  </div>
+                  <p className="font-semibold text-body" style={{ color: 'var(--color-primary)' }}>
+                    {s.price.toLocaleString('fa-IR')} تومان
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Staff */}
+          <div>
+            <p className="eyebrow mb-6">تیم ما</p>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+              {salon.staff.map((m: any, i: number) => (
+                <div key={i} className="text-center">
+                  <div className="relative w-28 h-28 mx-auto rounded-full overflow-hidden mb-4"
+                    style={{ outline: '2px solid var(--brand-gold-600)', outlineOffset: '3px' }}>
+                    <Image src={m.avatar} alt={m.name} fill className="object-cover" />
+                  </div>
+                  <h4 className="font-medium text-body" style={{ color: 'var(--color-text)' }}>{m.name}</h4>
+                  <p className="text-caption mt-1" style={{ color: 'var(--color-text-muted)' }}>{m.role}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Gallery */}
+          <div>
+            <p className="eyebrow mb-6">گالری</p>
+            <div className="grid grid-cols-3 gap-3">
+              {salon.gallery.slice(1).map((img: string, i: number) => (
+                <div key={i} className="relative aspect-square rounded-xl overflow-hidden">
+                  <Image src={img} alt={`gallery ${i + 1}`} fill className="object-cover" />
+                </div>
+              ))}
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="max-w-4xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Main content */}
-        <div className="lg:col-span-2 space-y-8">
-          {/* Description */}
-          {salon.description && (
-            <section className="rounded-2xl p-6 border" style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
-              <h2 className="font-semibold mb-3" style={{ color: 'var(--color-text)' }}>درباره سالن</h2>
-              <p className="text-sm leading-relaxed" style={{ color: 'var(--color-muted)' }}>{salon.description}</p>
-            </section>
-          )}
-
-          {/* Services */}
-          {salon.services?.length > 0 && (
-            <section className="rounded-2xl p-6 border" style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
-              <h2 className="font-semibold mb-4" style={{ color: 'var(--color-text)' }}>خدمات</h2>
-              <div className="space-y-3">
-                {salon.services.map((s: any) => (
-                  <div key={s.id} className="flex items-center justify-between py-2 border-b last:border-0" style={{ borderColor: 'var(--color-border)' }}>
-                    <div>
-                      <p className="text-sm font-medium" style={{ color: 'var(--color-text)' }}>{s.name}</p>
-                      <p className="text-xs mt-0.5" style={{ color: 'var(--color-muted)' }}>{s.durationMinutes} دقیقه</p>
-                    </div>
-                    <div className="text-left">
-                      {s.discountPrice ? (
-                        <div>
-                          <span className="text-xs line-through" style={{ color: 'var(--color-muted)' }}>{formatPrice(s.price)}</span>
-                          <p className="text-sm font-semibold" style={{ color: 'var(--color-primary)' }}>{formatPrice(s.discountPrice)}</p>
-                        </div>
-                      ) : (
-                        <p className="text-sm font-semibold" style={{ color: 'var(--color-primary)' }}>{formatPrice(s.price)}</p>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* Staff */}
-          {salon.staffProfiles?.length > 0 && (
-            <section className="rounded-2xl p-6 border" style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
-              <h2 className="font-semibold mb-4" style={{ color: 'var(--color-text)' }}>تیم متخصصین</h2>
-              <div className="flex flex-wrap gap-4">
-                {salon.staffProfiles.map((staff: any) => (
-                  <div key={staff.id} className="flex items-center gap-3 p-3 rounded-xl border" style={{ borderColor: 'var(--color-border)' }}>
-                    <div className="w-12 h-12 rounded-full overflow-hidden" style={{ background: 'var(--color-background)' }}>
-                      {staff.avatarUrl ? <img src={staff.avatarUrl} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-xl">👤</div>}
-                    </div>
-                    <div>
-                      <p className="font-medium text-sm" style={{ color: 'var(--color-text)' }}>{staff.displayName}</p>
-                      {staff.specialties?.length > 0 && <p className="text-xs" style={{ color: 'var(--color-muted)' }}>{staff.specialties.join('، ')}</p>}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* Reviews */}
-          {salon.reviews?.length > 0 && (
-            <section className="rounded-2xl p-6 border" style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
-              <h2 className="font-semibold mb-4" style={{ color: 'var(--color-text)' }}>نظرات مشتریان</h2>
-              <div className="space-y-4">
-                {salon.reviews.map((r: any) => (
-                  <div key={r.id} className="p-4 rounded-xl border" style={{ background: 'var(--color-background)', borderColor: 'var(--color-border)' }}>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium text-sm" style={{ color: 'var(--color-text)' }}>{r.customer.firstName} {r.customer.lastName}</span>
-                      <div className="flex items-center gap-1">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <Star key={i} className={`w-3 h-3 ${i < r.rating ? 'fill-amber-400 text-amber-400' : 'text-gray-300'}`} />
-                        ))}
-                      </div>
-                    </div>
-                    {r.comment && <p className="text-sm" style={{ color: 'var(--color-muted)' }}>{r.comment}</p>}
-                    {r.replyText && (
-                      <div className="mt-2 p-2 rounded-lg text-sm" style={{ background: 'var(--color-surface)', color: 'var(--color-muted)' }}>
-                        <strong>پاسخ سالن:</strong> {r.replyText}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-        </div>
-
-        {/* Sidebar — Booking CTA */}
-        <div className="lg:col-span-1">
-          <div className="sticky top-6 rounded-2xl p-6 border space-y-4" style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
-            <h3 className="font-semibold" style={{ color: 'var(--color-text)' }}>رزرو آنلاین</h3>
-
-            {salon.address && (
-              <p className="text-sm flex items-start gap-2" style={{ color: 'var(--color-muted)' }}>
-                <MapPin className="w-4 h-4 mt-0.5 shrink-0" /> {salon.address}
-              </p>
-            )}
-            {salon.phone && (
-              <p className="text-sm flex items-center gap-2" style={{ color: 'var(--color-muted)' }}>
-                <Phone className="w-4 h-4" /> {salon.phone}
-              </p>
-            )}
-
-            {/* Working hours */}
-            {salon.workingHours?.length > 0 && (
-              <div className="text-xs space-y-1">
-                <p className="font-medium flex items-center gap-1" style={{ color: 'var(--color-text)' }}><Clock className="w-3.5 h-3.5" /> ساعات کاری</p>
-                {salon.workingHours.filter((wh: any) => wh.isOpen).slice(0, 3).map((wh: any) => (
-                  <div key={wh.id} className="flex justify-between" style={{ color: 'var(--color-muted)' }}>
-                    <span>{translateDay(wh.dayOfWeek)}</span>
-                    <span dir="ltr">{wh.openTime} – {wh.closeTime}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <Link href={`/salons/${slug}/book`}
-              className="block w-full py-3 rounded-xl text-center text-white font-semibold transition-opacity hover:opacity-90"
-              style={{ background: 'var(--color-primary)' }}>
-              رزرو نوبت
+        {/* Sidebar */}
+        <aside>
+          <div className="sticky top-24 rounded-2xl border p-8"
+            style={{ background: 'white', borderColor: 'var(--ui-gray-200)' }}>
+            <p className="eyebrow mb-4">رزرو آنلاین</p>
+            <h3 className="font-display font-semibold text-h2 mb-6" style={{ color: 'var(--color-text)' }}>
+              نوبت بگیر
+            </h3>
+            <Link
+              href={`/salons/${params.slug}/book`}
+              className="block w-full py-4 text-center rounded-md font-medium transition-all hover:-translate-y-0.5"
+              style={{ background: 'var(--color-primary)', color: 'var(--color-primary-foreground)' }}
+            >
+              مشاهده زمان‌های آزاد
             </Link>
+            <div className="mt-8 space-y-4 text-body-sm" style={{ color: 'var(--color-text-muted)' }}>
+              <div className="flex items-start gap-3">
+                <MapPin className="w-5 h-5 mt-0.5 shrink-0" style={{ color: 'var(--color-primary)' }} />
+                {salon.address}
+              </div>
+              <div className="flex items-center gap-3">
+                <Phone className="w-5 h-5 shrink-0" style={{ color: 'var(--color-primary)' }} />
+                <span dir="ltr">{salon.phone}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Clock className="w-5 h-5 shrink-0" style={{ color: 'var(--color-primary)' }} />
+                {salon.hours}
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-    </div>
+        </aside>
+      </section>
+    </main>
   );
-}
-
-function translateDay(day: string) {
-  const map: Record<string, string> = {
-    SATURDAY: 'شنبه', SUNDAY: 'یکشنبه', MONDAY: 'دوشنبه',
-    TUESDAY: 'سه‌شنبه', WEDNESDAY: 'چهارشنبه', THURSDAY: 'پنج‌شنبه', FRIDAY: 'جمعه',
-  };
-  return map[day] || day;
 }

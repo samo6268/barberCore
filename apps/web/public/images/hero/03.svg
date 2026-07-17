@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1800" width="1400" height="1800">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F1B35"/>
+      <stop offset="50%" stop-color="#1A2744"/>
+      <stop offset="100%" stop-color="#2A3D6B"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C49A3C" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#D4AF60" stop-opacity="0.04"/>
+    </linearGradient>
+  </defs>
+  <rect width="1400" height="1800" fill="url(#g)"/>
+  <rect width="1400" height="1800" fill="url(#shine)"/>
+  <circle cx="700" cy="200" r="500" fill="#2A3D6B" fill-opacity="0.2"/>
+  <circle cx="200" cy="1400" r="400" fill="#1A2744" fill-opacity="0.3"/>
+  <circle cx="1200" cy="900" r="350" fill="#C49A3C" fill-opacity="0.05"/>
+  <line x1="560" y1="820" x2="840" y2="820" stroke="#C49A3C" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="560" y1="980" x2="840" y2="980" stroke="#C49A3C" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="700" y="880" text-anchor="middle" font-family="Georgia, serif" font-size="68" fill="#F9F5F0" fill-opacity="0.9" letter-spacing="6">سالن زیبایی</text>
+  <text x="700" y="940" text-anchor="middle" font-family="Georgia, serif" font-size="28" fill="#C49A3C" fill-opacity="0.8" letter-spacing="4">BEAUTY SALON</text>
+</svg>
