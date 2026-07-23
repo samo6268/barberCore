@@ -19,15 +19,21 @@ export class BookingController {
   @ApiOperation({ summary: 'زمان‌های آزاد رزرو' })
   @ApiQuery({ name: 'salonId', required: true })
   @ApiQuery({ name: 'date', required: true })
-  @ApiQuery({ name: 'serviceId', required: true })
+  @ApiQuery({ name: 'serviceIds', required: true, description: 'شناسه خدمات، جداشده با ویرگول' })
+  @ApiQuery({ name: 'serviceId', required: false, deprecated: true })
   @ApiQuery({ name: 'staffId', required: false })
   getAvailability(
     @Query('salonId') salonId: string,
     @Query('date') date: string,
-    @Query('serviceId') serviceId: string,
+    @Query('serviceIds') serviceIdsParam?: string,
+    @Query('serviceId') legacyServiceId?: string,
     @Query('staffId') staffId?: string,
   ) {
-    return this.availabilityService.getAvailableSlots(salonId, date, serviceId, staffId);
+    const serviceIds = (serviceIdsParam ?? legacyServiceId ?? '')
+      .split(',')
+      .map((id) => id.trim())
+      .filter(Boolean);
+    return this.availabilityService.getAvailableSlots(salonId, date, serviceIds, staffId);
   }
 
   @Post()
@@ -51,7 +57,11 @@ export class BookingController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'رزروهای سالن (برای مالک)' })
   @ApiQuery({ name: 'date', required: false })
-  findSalon(@Param('salonId') salonId: string, @CurrentUser() u: JwtPayload, @Query('date') date?: string) {
+  findSalon(
+    @Param('salonId') salonId: string,
+    @CurrentUser() u: JwtPayload,
+    @Query('date') date?: string,
+  ) {
     return this.bookingService.findSalonBookings(salonId, u.sub, date);
   }
 
@@ -67,7 +77,11 @@ export class BookingController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'تغییر وضعیت رزرو (مالک سالن)' })
-  updateStatus(@Param('id') id: string, @CurrentUser() u: JwtPayload, @Body() body: { status: BookingStatus }) {
+  updateStatus(
+    @Param('id') id: string,
+    @CurrentUser() u: JwtPayload,
+    @Body() body: { status: BookingStatus },
+  ) {
     return this.bookingService.updateStatus(id, u.sub, body.status);
   }
 }
