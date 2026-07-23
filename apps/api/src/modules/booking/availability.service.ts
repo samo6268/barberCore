@@ -17,28 +17,30 @@ export class AvailabilityService {
     serviceId: string,
     staffId?: string,
   ): Promise<TimeSlot[]> {
-    const service = await this.prisma.service.findUnique({ where: { id: serviceId } });
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return [];
+    const dayDate = new Date(`${date}T00:00:00Z`);
+    if (Number.isNaN(dayDate.getTime()) || dayDate.toISOString().slice(0, 10) !== date) return [];
+    const service = await this.prisma.service.findFirst({ where: { id: serviceId, salonId, isActive: true } });
     if (!service) return [];
-
-    const dayDate = new Date(date);
     const dayOfWeek = this.getDayOfWeek(dayDate);
 
     // Get working hours
     const wh = await this.prisma.workingHour.findFirst({
-      where: { salonId, staffId: staffId ?? undefined, dayOfWeek: dayOfWeek as import("@prisma/client").DayOfWeek, isOpen: true },
+      where: { salonId, staffId: staffId ?? null, dayOfWeek: dayOfWeek as import("@prisma/client").DayOfWeek, isOpen: true },
     });
     if (!wh) return [];
 
     // Get existing bookings for this day
     const dayStart = new Date(`${date}T00:00:00Z`);
-    const dayEnd = new Date(`${date}T23:59:59Z`);
+    const dayEnd = new Date(dayStart);
+    dayEnd.setUTCDate(dayEnd.getUTCDate() + 1);
 
     const existingBookings = await this.prisma.booking.findMany({
       where: {
         salonId,
         staffId: staffId || undefined,
         status: { in: ['PENDING', 'CONFIRMED', 'IN_PROGRESS'] },
-        startsAt: { gte: dayStart, lte: dayEnd },
+        startsAt: { gte: dayStart, lt: dayEnd },
       },
     });
 
@@ -66,7 +68,7 @@ export class AvailabilityService {
         const [beH, beM] = wh.breakEnd.split(':').map(Number);
         const breakStart = bsH * 60 + bsM;
         const breakEnd = beH * 60 + beM;
-        if (m >= breakStart && m < breakEnd) continue;
+        if (m < breakEnd && m + duration > breakStart) continue;
       }
 
       // Check conflicts

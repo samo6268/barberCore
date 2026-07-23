@@ -1,32 +1,10 @@
 import type { Metadata, Viewport } from 'next';
-import { Playfair_Display, Cormorant_Garamond, Inter } from 'next/font/google';
 import { Toaster } from 'sonner';
 import { ThemeProvider } from '@/components/shared/theme-provider';
 import { QueryProvider } from '@/components/shared/query-provider';
 import { ConditionalNav } from '@/components/layout/conditional-nav';
 import { ConditionalFooter } from '@/components/layout/conditional-footer';
 import './globals.css';
-
-const playfair = Playfair_Display({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-playfair',
-  display: 'swap',
-});
-
-const cormorant = Cormorant_Garamond({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-cormorant',
-  display: 'swap',
-});
-
-const inter = Inter({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600'],
-  variable: '--font-inter',
-  display: 'swap',
-});
 
 export const metadata: Metadata = {
   title: {
@@ -56,7 +34,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       dir="rtl"
       data-theme="female"
       suppressHydrationWarning
-      className={`${playfair.variable} ${cormorant.variable} ${inter.variable}`}
     >
       <head>
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
@@ -84,4 +61,3 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
-
