@@ -11,14 +11,7 @@ export function Navbar() {
   const { data: user } = useMe();
   const logout = useLogout();
   const router = useRouter();
-  const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handler, { passive: true });
-    return () => window.removeEventListener('scroll', handler);
-  }, []);
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? 'hidden' : '';
@@ -28,12 +21,7 @@ export function Navbar() {
   return (
     <>
       <header
-        className={[
-          'fixed top-0 inset-x-0 z-50 transition-all duration-300',
-          scrolled
-            ? 'bg-[var(--bg-ivory)] border-b border-[var(--ui-gray-200)]'
-            : 'bg-transparent',
-        ].join(' ')}
+        className="fixed inset-x-0 top-0 z-50 border-b border-black/[0.06] bg-[#fffdf9]/90 backdrop-blur-xl"
       >
         <div className="container-editorial h-20 flex items-center justify-between">
 

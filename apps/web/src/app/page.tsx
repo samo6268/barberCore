@@ -1,482 +1,319 @@
 'use client';
 
-import Link from 'next/link';
 import Image from 'next/image';
-import { useEffect, useRef, useState } from 'react';
-import { HERO_IMAGE, CATEGORY_IMAGES, SALON_IMAGES, INSTRUCTOR_AVATARS } from '@/lib/images';
-import { ArrowLeft, ArrowRight, Star, MapPin, Play } from 'lucide-react';
-import { ScissorsIcon, CombIcon, BrushIcon, HairDryerIcon, RazorIcon } from '@ui/icons/custom';
+import Link from 'next/link';
+import { FormEvent, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import {
+  ArrowLeft,
+  BadgeCheck,
+  CalendarDays,
+  CheckCircle2,
+  Clock3,
+  GraduationCap,
+  Heart,
+  MapPin,
+  Palette,
+  Search,
+  ShieldCheck,
+  Sparkles,
+  Star,
+  Store,
+  UserRound,
+} from 'lucide-react';
+import { useFeaturedSalons } from '@/lib/api-hooks';
+import { SALON_IMAGES } from '@/lib/images';
 
-/* ── Scroll reveal hook ──────────────────────────────────── */
-function useReveal() {
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { el.classList.add('is-visible'); obs.disconnect(); } },
-      { threshold: 0.12 }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
-  return ref;
-}
+type FeaturedSalon = {
+  id: string;
+  slug: string;
+  name: string;
+  city: string;
+  rating: number;
+  genderType?: 'FEMALE' | 'MALE' | 'UNISEX';
+  coverImageUrl?: string | null;
+};
 
-/* ── Mock data ───────────────────────────────────────────── */
-const STATS = [
-  { value: '۲٬۵۰۰+', label: 'آرایشگاه فعال' },
-  { value: '۸۰٬۰۰۰+', label: 'رزرو موفق' },
-  { value: '۵۰+', label: 'شهر در ایران' },
+const SERVICES = [
+  { name: 'کوتاهی و استایل مو', query: 'کوتاهی', icon: '✂' },
+  { name: 'رنگ و لایت', query: 'رنگ مو', icon: '◐' },
+  { name: 'میکاپ', query: 'میکاپ', icon: '✦' },
+  { name: 'ناخن', query: 'ناخن', icon: '⌁' },
+  { name: 'پوست و زیبایی', query: 'پوست', icon: '○' },
+  { name: 'اصلاح و گریم', query: 'اصلاح', icon: '◇' },
 ];
 
-const CATEGORIES = [
-  { id: 1, name: 'مو', desc: 'کوتاهی، رنگ، کراتین', icon: <ScissorsIcon size={32} />, image: CATEGORY_IMAGES.hair, large: true },
-  { id: 2, name: 'رنگ', desc: 'هایلایت، بالیاژ، اومبره', icon: <CombIcon size={32} />, image: CATEGORY_IMAGES.color },
-  { id: 3, name: 'ناخن', desc: 'مانیکور، پدیکور، ژل', icon: <BrushIcon size={32} />, image: CATEGORY_IMAGES.nails },
-  { id: 4, name: 'آرایش', desc: 'میکاپ، خط چشم', icon: <HairDryerIcon size={32} />, image: CATEGORY_IMAGES.makeup, large: true },
-  { id: 5, name: 'صورت', desc: 'ابرو، بند، پاکسازی', icon: <RazorIcon size={32} />, image: CATEGORY_IMAGES.face },
-  { id: 6, name: 'عروس', desc: 'آرایش و شینیون عروس', icon: <BrushIcon size={32} />, image: CATEGORY_IMAGES.bridal },
-  { id: 7, name: 'تخصصی', desc: 'کراتین، بوتاکس مو', icon: <HairDryerIcon size={32} />, image: CATEGORY_IMAGES.specialty, large: true },
+const FALLBACK_SALONS: FeaturedSalon[] = [
+  {
+    id: 'luxe-beauty',
+    slug: 'luxe-beauty',
+    name: 'لوکس بیوتی',
+    city: 'تهران',
+    rating: 4.9,
+    genderType: 'FEMALE',
+    coverImageUrl: SALON_IMAGES[0],
+  },
+  {
+    id: 'barber-classics',
+    slug: 'barber-classics',
+    name: 'باربر کلاسیک',
+    city: 'تهران',
+    rating: 4.8,
+    genderType: 'MALE',
+    coverImageUrl: SALON_IMAGES[1],
+  },
+  {
+    id: 'rose-salon',
+    slug: 'rose-salon',
+    name: 'رز سالن',
+    city: 'اصفهان',
+    rating: 4.7,
+    genderType: 'FEMALE',
+    coverImageUrl: SALON_IMAGES[2],
+  },
+  {
+    id: 'vogue-studio',
+    slug: 'vogue-studio',
+    name: 'ووگ استودیو',
+    city: 'مشهد',
+    rating: 4.9,
+    genderType: 'UNISEX',
+    coverImageUrl: SALON_IMAGES[4],
+  },
 ];
 
-const FEATURED_SALONS = [
-  { id: '1', slug: 'luxe-beauty', name: 'لوکس بیوتی', city: 'تهران', rating: 4.9, reviewCount: 312, image: SALON_IMAGES[0], premium: true },
-  { id: '2', slug: 'barber-classics', name: 'باربر کلاسیک', city: 'تهران', rating: 4.8, reviewCount: 224, image: SALON_IMAGES[1], premium: false },
-  { id: '3', slug: 'rose-salon', name: 'رز سالن', city: 'اصفهان', rating: 4.7, reviewCount: 178, image: SALON_IMAGES[2], premium: true },
-  { id: '4', slug: 'golden-hair', name: 'گلدن هیر', city: 'مشهد', rating: 4.8, reviewCount: 145, image: SALON_IMAGES[3], premium: false },
-  { id: '5', slug: 'vogue-studio', name: 'ووگ استودیو', city: 'تهران', rating: 4.9, reviewCount: 289, image: SALON_IMAGES[4], premium: true },
+const TREND_CARDS = [
+  {
+    title: 'رنگ‌های گرم و طبیعی',
+    subtitle: 'ترند این فصل',
+    image: SALON_IMAGES[5],
+    href: '/salons?service=رنگ مو',
+    tone: '#6b3f50',
+  },
+  {
+    title: 'استایل تازه برای آقایان',
+    subtitle: 'انتخاب حرفه‌ای',
+    image: SALON_IMAGES[1],
+    href: '/salons?gender=MALE',
+    tone: '#253342',
+  },
+  {
+    title: 'مراقبت، فراتر از زیبایی',
+    subtitle: 'وقت رسیدگی به خودت',
+    image: SALON_IMAGES[6],
+    href: '/salons?service=پوست',
+    tone: '#765f50',
+  },
 ];
-
-const INSTRUCTORS = [
-  { id: '1', name: 'نازنین احمدی', specialty: 'رنگ و هایلایت', courses: 12, image: INSTRUCTOR_AVATARS[0] },
-  { id: '2', name: 'سارا کریمی', specialty: 'آرایش و میکاپ', courses: 8, image: INSTRUCTOR_AVATARS[1] },
-  { id: '3', name: 'مریم رضایی', specialty: 'ناخن و اکریلیک', courses: 15, image: INSTRUCTOR_AVATARS[2] },
-];
-
-/* ══════════════════════════════════════════════════════════ */
 
 export default function HomePage() {
   return (
-    <main style={{ background: 'var(--bg-ivory)' }} className="overflow-x-hidden">
-
-      {/* ① EDITORIAL HERO */}
-      <HeroSection />
-
-      {/* ② SOCIAL PROOF STRIP */}
-      <StatsStrip />
-
-      {/* ③ SERVICE CATEGORY SHOWCASE */}
-      <CategorySection />
-
-      {/* ④ FEATURED SALONS CAROUSEL */}
+    <main className="overflow-hidden bg-[#fffdf9]">
+      <Hero />
+      <TrustBar />
+      <ServiceDiscovery />
       <FeaturedSalons />
-
-      {/* ⑤ EDITORIAL QUOTE */}
-      <EditorialQuote />
-
-      {/* ⑥ ACADEMY PREVIEW */}
-      <AcademyPreview />
-
-      {/* ⑦ HOW IT WORKS */}
-      <HowItWorks />
-
-      {/* ⑧ FINAL CTA */}
-      <FinalCTA />
-
-
+      <TrendSection />
+      <ValueSection />
+      <EcosystemSection />
+      <FinalCallout />
     </main>
   );
 }
 
-/* ── ① Hero ─────────────────────────────────────────────── */
-function HeroSection() {
-  return (
-    <section
-      className="relative min-h-screen flex items-center"
-      style={{ background: 'var(--bg-ivory)' }}
-    >
-      {/* Geometric pattern overlay */}
-      <div className="absolute inset-0 bg-plum-pattern opacity-40 pointer-events-none" />
+function Hero() {
+  const router = useRouter();
+  const [service, setService] = useState('');
+  const [city, setCity] = useState('');
 
-      <div className="container-editorial w-full relative z-10">
-        <div className="grid lg:grid-cols-[55%_45%] min-h-screen items-center gap-0">
-
-          {/* Left — headline */}
-          <div className="py-32 lg:py-0 flex flex-col justify-center">
-            <p className="eyebrow mb-6">MOMENT 01</p>
-
-            <h1
-              className="font-display font-semibold text-display-xl lg:text-display-2xl leading-none mb-8"
-              style={{ color: 'var(--color-text)', letterSpacing: '-0.04em' }}
-            >
-              زیبایی،
-              <br />
-              <span style={{ color: 'var(--color-primary)' }}>حالا یک</span>
-              <br />
-              تجربه است.
-            </h1>
-
-            <p className="text-body-lg mb-12 max-w-md" style={{ color: 'var(--color-text-muted)' }}>
-              بهترین سالن‌های زیبایی ایران را کشف کنید. نوبت آنلاین بگیرید. تجربه‌ای فراموش‌نشدنی داشته باشید.
-            </p>
-
-            <div className="flex flex-wrap gap-4">
-              <Link
-                href="/salons"
-                className="inline-flex items-center gap-2 px-10 py-5 rounded-md font-medium text-lg transition-all duration-[250ms] ease-out hover:-translate-y-1"
-                style={{ background: 'var(--color-primary)', color: 'var(--color-primary-foreground)' }}
-              >
-                رزرو نوبت
-                <ArrowLeft size={18} strokeWidth={1.5} />
-              </Link>
-              <Link
-                href="/salons"
-                className="inline-flex items-center gap-2 px-10 py-5 rounded-md font-medium text-lg border-2 transition-all duration-[250ms] ease-out hover:-translate-y-1"
-                style={{ borderColor: 'var(--brand-gold-600)', color: 'var(--color-primary)' }}
-              >
-                مشاهده آرایشگاه‌ها
-              </Link>
-            </div>
-          </div>
-
-          {/* Right — hero photo */}
-          <div className="hidden lg:block relative h-screen overflow-hidden">
-            <Image
-              src={HERO_IMAGE}
-              alt="سالن زیبایی"
-              fill
-              className="object-cover object-center"
-              priority
-            />
-            {/* Subtle color grade overlay — warm plum tint */}
-            <div className="absolute inset-0 mix-blend-multiply bg-gradient-to-tr from-[#2D1530] to-transparent" />
-            {/* Bottom caption */}
-            <div className="absolute bottom-10 left-10">
-              <p className="text-caption uppercase tracking-[0.3em]" style={{ color: 'rgba(255,255,255,0.5)' }}>BARBERCORE EDITORIAL</p>
-            </div>
-            {/* Overlap left edge for editorial feel */}
-            <div className="absolute inset-y-0 right-full w-16" style={{ background: 'var(--bg-ivory)' }} />
-            {/* Subtle gradient on left edge */}
-            <div className="absolute inset-y-0 left-0 w-32 pointer-events-none bg-gradient-to-r from-[#F9F5F0] to-transparent" />
-          </div>
-        </div>
-      </div>
-
-      {/* Scroll indicator */}
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40">
-        <div className="w-px h-16" style={{ background: 'var(--color-text)' }} />
-        <span className="text-caption uppercase tracking-widest" style={{ color: 'var(--color-text)' }}>اسکرول</span>
-      </div>
-    </section>
-  );
-}
-
-/* ── ② Stats Strip ───────────────────────────────────────── */
-function StatsStrip() {
-  const ref = useReveal();
-  return (
-    <section className="py-16 border-y" style={{ borderColor: 'var(--ui-gray-200)', background: 'var(--bg-ivory-soft)' }}>
-      <div className="container-editorial">
-        <div ref={ref} className="reveal grid grid-cols-3 gap-8 text-center">
-          {STATS.map((s, i) => (
-            <div key={i}>
-              <p
-                className="font-display font-semibold text-display-lg mb-2 relative inline-block gold-underline animate"
-                style={{ color: 'var(--color-primary)' }}
-              >
-                {s.value}
-              </p>
-              <p className="text-body-sm" style={{ color: 'var(--color-text-muted)' }}>{s.label}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ── ③ Category Showcase ─────────────────────────────────── */
-function CategorySection() {
-  const ref = useReveal();
-  const featured = CATEGORIES.filter(c => c.large);
-  const small = CATEGORIES.filter(c => !c.large);
-
-  return (
-    <section className="section-editorial">
-      <div className="container-editorial">
-        <div ref={ref} className="reveal mb-16 text-center">
-          <p className="eyebrow mb-4">خدمات</p>
-          <h2 className="font-display font-semibold text-display-lg" style={{ color: 'var(--color-text)' }}>
-            هر خدمتی که نیاز داری
-          </h2>
-        </div>
-
-        {/* Row 1: large + small + small */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          <CategoryCard cat={featured[0]} tall />
-          <CategoryCard cat={small[0]} />
-          <CategoryCard cat={small[1]} />
-        </div>
-
-        {/* Row 2: small + small + large */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <CategoryCard cat={small[2]} />
-          <CategoryCard cat={small[3]} />
-          <CategoryCard cat={featured[1]} tall />
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function CategoryCard({ cat, tall }: { cat: typeof CATEGORIES[0]; tall?: boolean }) {
-  return (
-    <Link href={`/salons?category=${cat.name}`} className="group block">
-      <div className={`relative overflow-hidden rounded-2xl ${tall ? 'aspect-[3/4]' : 'aspect-square'}`}>
-        <Image
-          src={cat.image}
-          alt={cat.name}
-          fill
-          className="object-cover transition-transform duration-[800ms] ease-out group-hover:scale-105"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-        <div className="absolute bottom-0 inset-x-0 p-6">
-          <div className="flex items-end justify-between">
-            <div>
-              <h3 className="font-display font-semibold text-display-md text-white leading-tight">{cat.name}</h3>
-              <p className="text-body-sm text-white/70 mt-1">{cat.desc}</p>
-            </div>
-            <div
-              className="w-10 h-10 rounded-full flex items-center justify-center transition-transform duration-300 group-hover:translate-x-1"
-              style={{ background: 'var(--brand-gold-600)' }}
-            >
-              <ArrowLeft size={16} style={{ color: 'var(--brand-plum-900)' }} />
-            </div>
-          </div>
-        </div>
-      </div>
-    </Link>
-  );
-}
-
-/* ── ④ Featured Salons Carousel ──────────────────────────── */
-function FeaturedSalons() {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const ref = useReveal();
-
-  const scroll = (dir: 'left' | 'right') => {
-    scrollRef.current?.scrollBy({ left: dir === 'left' ? -340 : 340, behavior: 'smooth' });
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    const params = new URLSearchParams();
+    if (service.trim()) params.set('service', service.trim());
+    if (city.trim()) params.set('city', city.trim());
+    router.push(`/salons${params.size ? `?${params.toString()}` : ''}`);
   };
 
   return (
-    <section className="section-editorial" style={{ background: 'var(--bg-ivory-soft)' }}>
-      <div className="container-editorial">
-        <div ref={ref} className="reveal flex items-end justify-between mb-12">
-          <div>
-            <p className="eyebrow mb-3">آرایشگاه‌های برتر</p>
-            <h2 className="font-display font-semibold text-display-lg" style={{ color: 'var(--color-text)' }}>
-              انتخاب‌های ویژه
-            </h2>
+    <section className="relative min-h-[760px] pt-20 lg:min-h-[820px]">
+      <Image
+        src="/images/hero/parnegarin-home-v2.webp"
+        alt="تجربه خدمات زیبایی و آرایشگری در پرنگارین"
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover object-[42%_center]"
+      />
+      <div className="absolute inset-0 bg-gradient-to-l from-[#1c101c]/95 via-[#291829]/70 to-[#1b1516]/5" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#160d16]/55 via-transparent to-[#160d16]/10" />
+
+      <div className="container-editorial relative z-10 flex min-h-[680px] items-center py-16 lg:min-h-[740px]">
+        <div className="w-full max-w-[710px] text-white">
+          <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs backdrop-blur-md">
+            <Sparkles size={14} className="text-[#e9c98a]" />
+            ساده‌ترین راه برای پیدا کردن یک تجربه خوب
           </div>
-          <div className="flex gap-3">
-            <button
-              onClick={() => scroll('right')}
-              className="w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all hover:-translate-y-0.5"
-              style={{ borderColor: 'var(--ui-gray-200)', color: 'var(--color-text)' }}
-              aria-label="قبلی"
-            >
-              <ArrowRight size={18} strokeWidth={1.5} />
-            </button>
-            <button
-              onClick={() => scroll('left')}
-              className="w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all hover:-translate-y-0.5"
-              style={{ borderColor: 'var(--ui-gray-200)', color: 'var(--color-text)' }}
-              aria-label="بعدی"
-            >
-              <ArrowLeft size={18} strokeWidth={1.5} />
-            </button>
-          </div>
-        </div>
 
-        <div
-          ref={scrollRef}
-          className="flex gap-5 overflow-x-auto no-scrollbar pb-4 snap-x snap-mandatory"
-        >
-          {FEATURED_SALONS.map(salon => (
-            <Link
-              key={salon.id}
-              href={`/salons/${salon.slug}`}
-              className="group flex-none w-[300px] snap-start"
-            >
-              <div className="rounded-2xl overflow-hidden bg-white border border-[var(--ui-gray-200)] transition-transform duration-300 group-hover:scale-[1.02]">
-                <div className="relative aspect-[4/5] overflow-hidden">
-                  <Image
-                    src={salon.image}
-                    alt={salon.name}
-                    fill
-                    className="object-cover transition-transform duration-[600ms] group-hover:scale-105"
-                  />
-                  {salon.premium && (
-                    <div className="absolute top-3 right-3">
-                      <span className="px-3 py-1 rounded-full text-caption font-medium uppercase tracking-wide"
-                        style={{ background: 'var(--brand-gold-600)', color: 'var(--brand-plum-900)' }}>
-                        Premium
-                      </span>
-                    </div>
-                  )}
-                </div>
-                <div className="p-6">
-                  <h3 className="font-display font-semibold text-display-md" style={{ color: 'var(--color-text)' }}>
-                    {salon.name}
-                  </h3>
-                  <div className="flex items-center justify-between mt-2">
-                    <div className="flex items-center gap-1 text-caption" style={{ color: 'var(--color-text-muted)' }}>
-                      <MapPin size={12} strokeWidth={1.5} /> {salon.city}
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Star size={12} className="fill-[var(--brand-gold-600)] text-[var(--brand-gold-600)]" />
-                      <span className="text-body-sm font-medium" style={{ color: 'var(--color-text)' }}>{salon.rating}</span>
-                      <span className="text-caption" style={{ color: 'var(--color-text-muted)' }}>({salon.reviewCount})</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+          <h1 className="mb-6 max-w-[680px] font-display text-[3rem] font-semibold leading-[1.22] text-white sm:text-[4rem] lg:text-[5.25rem]">
+            زیبایی را
+            <span className="block text-[#efd5a1]">با اطمینان انتخاب کن.</span>
+          </h1>
 
-        <div className="mt-8 text-center">
-          <Link href="/salons"
-            className="inline-flex items-center gap-2 text-body-sm font-medium border-b-2 pb-0.5 transition-colors"
-            style={{ borderColor: 'var(--brand-gold-600)', color: 'var(--color-primary)' }}>
-            مشاهده همه آرایشگاه‌ها <ArrowLeft size={14} />
-          </Link>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ── ⑤ Editorial Quote ───────────────────────────────────── */
-function EditorialQuote() {
-  const ref = useReveal();
-  return (
-    <section className="py-32 relative overflow-hidden" style={{ background: 'var(--brand-plum-600)' }}>
-      {/* Faint geometric */}
-      <div className="absolute inset-0 bg-plum-pattern opacity-10 pointer-events-none" />
-
-      <div className="container-editorial relative z-10 text-center max-w-content mx-auto">
-        <div ref={ref} className="reveal">
-          <div
-            className="font-display leading-none mb-4 select-none"
-            style={{ fontSize: '8rem', color: 'var(--brand-gold-600)', lineHeight: 0.8 }}
-          >
-            "
-          </div>
-          <blockquote
-            className="font-display font-medium text-display-xl italic"
-            style={{ color: 'var(--brand-gold-100)', letterSpacing: '-0.03em' }}
-          >
-            زیبایی، یک خدمت نیست.
-            <br />
-            یک تجربه است.
-          </blockquote>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ── ⑥ Academy Preview ───────────────────────────────────── */
-function AcademyPreview() {
-  const ref = useReveal();
-  return (
-    <section className="section-editorial">
-      <div className="container-editorial">
-        <div ref={ref} className="reveal mb-16 text-center">
-          <p className="eyebrow mb-3">Academy</p>
-          <h2 className="font-display font-semibold text-display-lg" style={{ color: 'var(--color-text)' }}>
-            از حرفه‌ای‌ها بیاموز
-          </h2>
-          <p className="text-body-lg mt-4 max-w-md mx-auto" style={{ color: 'var(--color-text-muted)' }}>
-            دوره‌های آموزشی با بهترین اساتید ایران
+          <p className="mb-9 max-w-xl text-base leading-8 text-white/75 sm:text-lg">
+            سالن‌ها و متخصصان برتر را مقایسه کن، زمان‌های خالی را ببین و نوبتت را همان لحظه رزرو کن.
           </p>
-        </div>
 
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
-          {INSTRUCTORS.map(inst => (
-            <Link key={inst.id} href="/academy" className="group block">
-              <div className="rounded-2xl overflow-hidden border border-[var(--ui-gray-200)] bg-white transition-transform duration-300 group-hover:scale-[1.02]">
-                <div className="relative aspect-[3/4] overflow-hidden">
-                  <Image
-                    src={inst.image}
-                    alt={inst.name}
-                    fill
-                    className="object-cover transition-transform duration-[600ms] group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                  <div className="absolute bottom-0 inset-x-0 p-6">
-                    <h3 className="font-display font-semibold text-h2 text-white">{inst.name}</h3>
-                    <p className="text-body-sm text-white/70 mt-1">{inst.specialty}</p>
-                    <p className="text-caption text-white/50 mt-2">{inst.courses} دوره</p>
-                  </div>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-
-        <div className="text-center">
-          <Link
-            href="/academy"
-            className="inline-flex items-center gap-2 px-10 py-5 rounded-md font-medium text-lg transition-all duration-[250ms] hover:-translate-y-1"
-            style={{ background: 'var(--color-primary)', color: 'var(--color-primary-foreground)' }}
+          <form
+            onSubmit={submit}
+            className="grid gap-2 rounded-[1.4rem] bg-white p-2.5 shadow-[0_24px_80px_rgba(10,5,10,0.28)] sm:grid-cols-[1fr_0.8fr_auto]"
           >
-            <Play size={18} strokeWidth={1.5} />
-            ورود به آکادمی
-          </Link>
+            <label className="flex min-w-0 items-center gap-3 rounded-xl px-4 py-3.5 sm:border-l sm:border-[#ece6df]">
+              <Search size={20} className="shrink-0 text-[#7a6676]" />
+              <span className="min-w-0 flex-1">
+                <span className="block text-[11px] font-medium text-[#9a8c96]">چه خدمتی؟</span>
+                <input
+                  value={service}
+                  onChange={(event) => setService(event.target.value)}
+                  className="mt-0.5 w-full bg-transparent text-sm font-medium text-[#251d24] outline-none placeholder:text-[#695e66]"
+                  placeholder="مثلاً کوتاهی یا رنگ مو"
+                />
+              </span>
+            </label>
+
+            <label className="flex min-w-0 items-center gap-3 rounded-xl border-t border-[#ece6df] px-4 py-3.5 sm:border-0">
+              <MapPin size={20} className="shrink-0 text-[#7a6676]" />
+              <span className="min-w-0 flex-1">
+                <span className="block text-[11px] font-medium text-[#9a8c96]">کجا؟</span>
+                <input
+                  value={city}
+                  onChange={(event) => setCity(event.target.value)}
+                  className="mt-0.5 w-full bg-transparent text-sm font-medium text-[#251d24] outline-none placeholder:text-[#695e66]"
+                  placeholder="شهر یا محله"
+                />
+              </span>
+            </label>
+
+            <button
+              type="submit"
+              className="flex min-h-14 items-center justify-center gap-2 rounded-xl bg-[#4b244a] px-7 text-sm font-semibold text-white transition hover:bg-[#351934]"
+            >
+              جست‌وجو
+              <ArrowLeft size={17} />
+            </button>
+          </form>
+
+          <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3 text-xs text-white/70">
+            <span className="text-white/45">جست‌وجوی محبوب:</span>
+            {[
+              ['کوتاهی مو', 'کوتاهی'],
+              ['رنگ و لایت', 'رنگ مو'],
+              ['میکاپ', 'میکاپ'],
+              ['اصلاح آقایان', 'اصلاح'],
+            ].map(([label, query]) => (
+              <Link
+                key={label}
+                href={`/salons?service=${encodeURIComponent(query)}`}
+                className="border-b border-white/25 pb-0.5 transition hover:border-[#efd5a1] hover:text-[#efd5a1]"
+              >
+                {label}
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
-/* ── ⑦ How It Works ─────────────────────────────────────── */
-function HowItWorks() {
-  const ref = useReveal();
-  const steps = [
-    { num: '۰۱', title: 'کشف', desc: 'بهترین سالن‌های شهرت را با فیلتر دقیق پیدا کن' },
-    { num: '۰۲', title: 'رزرو', desc: 'با چند کلیک نوبت بگیر — بدون تلفن، بدون انتظار' },
-    { num: '۰۳', title: 'تجربه', desc: 'از خدمات حرفه‌ای لذت ببر و نظرت را به اشتراک بگذار' },
+function TrustBar() {
+  const items = [
+    { icon: BadgeCheck, title: 'متخصصان تأییدشده', text: 'انتخاب با اطلاعات شفاف' },
+    { icon: CalendarDays, title: 'رزرو آنلاین و فوری', text: 'بدون تماس و انتظار' },
+    { icon: ShieldCheck, title: 'انتخاب مطمئن', text: 'امتیاز و تجربه کاربران' },
   ];
 
   return (
-    <section className="section-editorial" style={{ background: 'var(--bg-ivory-soft)' }}>
-      <div className="container-editorial">
-        <div ref={ref} className="reveal mb-20 text-center">
-          <p className="eyebrow mb-3">چطور کار می‌کند</p>
-          <h2 className="font-display font-semibold text-display-lg" style={{ color: 'var(--color-text)' }}>
-            سه قدم تا تجربه
-          </h2>
-        </div>
+    <section className="border-b border-[#ebe5df] bg-white">
+      <div className="container-editorial grid divide-y divide-[#ebe5df] md:grid-cols-3 md:divide-x md:divide-x-reverse md:divide-y-0">
+        {items.map(({ icon: Icon, title, text }) => (
+          <div key={title} className="flex items-center gap-4 px-3 py-7 md:justify-center">
+            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#f5ebf4] text-[#4b244a]">
+              <Icon size={21} strokeWidth={1.7} />
+            </span>
+            <span>
+              <strong className="block text-sm text-[#1f1920]">{title}</strong>
+              <span className="mt-1 block text-xs text-[#81767d]">{text}</span>
+            </span>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
 
-        <div className="grid md:grid-cols-3 gap-12">
-          {steps.map((step, i) => (
-            <div key={i} className="text-center">
-              <p
-                className="font-display font-semibold text-display-2xl mb-6 leading-none"
-                style={{ color: 'var(--brand-plum-100)' }}
+function SectionHeading({
+  eyebrow,
+  title,
+  description,
+  action,
+}: {
+  eyebrow: string;
+  title: string;
+  description?: string;
+  action?: { href: string; label: string };
+}) {
+  return (
+    <div className="mb-10 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <p className="mb-3 text-xs font-semibold tracking-[0.08em] text-[#9a6d80]">{eyebrow}</p>
+        <h2 className="font-display text-3xl font-semibold leading-tight text-[#1e171d] sm:text-4xl">{title}</h2>
+        {description && <p className="mt-3 max-w-xl text-sm leading-7 text-[#7a7076]">{description}</p>}
+      </div>
+      {action && (
+        <Link
+          href={action.href}
+          className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-[#4b244a] transition hover:gap-3"
+        >
+          {action.label}
+          <ArrowLeft size={16} />
+        </Link>
+      )}
+    </div>
+  );
+}
+
+function ServiceDiscovery() {
+  return (
+    <section className="py-20 lg:py-28">
+      <div className="container-editorial">
+        <SectionHeading
+          eyebrow="از چه خدمتی شروع کنیم؟"
+          title="هر چیزی که برای خودت می‌خواهی"
+          description="خدمت دلخواهت را انتخاب کن و بهترین گزینه‌های نزدیک به خودت را ببین."
+        />
+
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+          {SERVICES.map((service, index) => (
+            <Link
+              key={service.name}
+              href={`/salons?service=${encodeURIComponent(service.query)}`}
+              className="group flex min-h-44 flex-col justify-between rounded-[1.25rem] border border-[#e9e3dd] bg-white p-5 transition duration-300 hover:-translate-y-1 hover:border-[#d8bfcf] hover:shadow-[0_16px_40px_rgba(54,35,48,0.08)]"
+            >
+              <span
+                className={`flex h-11 w-11 items-center justify-center rounded-full text-xl ${
+                  index % 2 ? 'bg-[#f6efe6] text-[#765f50]' : 'bg-[#f5ebf4] text-[#4b244a]'
+                }`}
               >
-                {step.num}
-              </p>
-              <h3 className="font-display font-semibold text-display-md mb-4" style={{ color: 'var(--color-text)' }}>
-                {step.title}
-              </h3>
-              <p className="text-body" style={{ color: 'var(--color-text-muted)' }}>
-                {step.desc}
-              </p>
-            </div>
+                {service.icon}
+              </span>
+              <span className="mt-8 flex items-end justify-between gap-2">
+                <strong className="text-sm leading-6 text-[#2b2329]">{service.name}</strong>
+                <ArrowLeft
+                  size={15}
+                  className="shrink-0 text-[#a499a0] transition group-hover:-translate-x-1 group-hover:text-[#4b244a]"
+                />
+              </span>
+            </Link>
           ))}
         </div>
       </div>
@@ -484,32 +321,242 @@ function HowItWorks() {
   );
 }
 
-/* ── ⑧ Final CTA ─────────────────────────────────────────── */
-function FinalCTA() {
-  const ref = useReveal();
+function FeaturedSalons() {
+  const { data, isLoading } = useFeaturedSalons();
+  const salons = useMemo(() => {
+    const live = ((data ?? []) as FeaturedSalon[]).map((salon) => ({
+      ...salon,
+      rating: Number(salon.rating),
+    }));
+    const keys = new Set(live.map((salon) => salon.slug));
+    return [...live, ...FALLBACK_SALONS.filter((salon) => !keys.has(salon.slug))].slice(0, 4);
+  }, [data]);
+
   return (
-    <section className="py-32 relative overflow-hidden" style={{ background: 'var(--brand-rose-600)' }}>
-      <div className="container-editorial text-center relative z-10">
-        <div ref={ref} className="reveal">
-          <h2
-            className="font-display font-semibold text-display-xl text-white mb-10"
-            style={{ letterSpacing: '-0.03em' }}
-          >
-            آماده‌ای؟
-            <br />
-            نوبتت را رزرو کن.
-          </h2>
-          <Link
-            href="/salons"
-            className="inline-flex items-center gap-2 px-12 py-5 rounded-md font-medium text-lg transition-all duration-[250ms] hover:-translate-y-1"
-            style={{ background: 'var(--brand-plum-600)', color: 'var(--bg-ivory)' }}
-          >
-            شروع کن
-            <ArrowLeft size={18} strokeWidth={1.5} />
-          </Link>
+    <section className="bg-[#f5f1eb] py-20 lg:py-28">
+      <div className="container-editorial">
+        <SectionHeading
+          eyebrow="منتخب پرنگارین"
+          title="سالن‌هایی که ارزش امتحان دارند"
+          description="گزینه‌های محبوب را با امتیاز، موقعیت و فضای کاری‌شان مقایسه کن."
+          action={{ href: '/salons', label: 'مشاهده همه سالن‌ها' }}
+        />
+
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {(isLoading ? FALLBACK_SALONS : salons).map((salon, index) => (
+            <Link
+              href={`/salons/${salon.slug}`}
+              key={salon.id}
+              className="group overflow-hidden rounded-[1.4rem] bg-white shadow-[0_1px_0_rgba(30,20,27,0.05)]"
+            >
+              <div className="relative aspect-[4/3] overflow-hidden">
+                <Image
+                  src={salon.coverImageUrl || SALON_IMAGES[index % SALON_IMAGES.length]}
+                  alt={salon.name}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  className="object-cover transition duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent" />
+                <span className="absolute right-4 top-4 inline-flex items-center gap-1 rounded-full bg-white/90 px-3 py-1.5 text-[11px] font-semibold text-[#392e35] backdrop-blur">
+                  <CheckCircle2 size={13} className="text-[#4b244a]" />
+                  تأییدشده
+                </span>
+                <span
+                  aria-hidden="true"
+                  className="absolute left-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-[#4b244a] backdrop-blur transition hover:bg-white"
+                >
+                  <Heart size={17} />
+                </span>
+              </div>
+
+              <div className="p-5">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h3 className="font-display text-xl font-semibold text-[#211a20]">{salon.name}</h3>
+                    <p className="mt-1.5 flex items-center gap-1 text-xs text-[#847980]">
+                      <MapPin size={13} />
+                      {salon.city}
+                    </p>
+                  </div>
+                  <span className="flex items-center gap-1 rounded-lg bg-[#fff7e7] px-2 py-1 text-xs font-bold text-[#6c5528]">
+                    <Star size={13} className="fill-[#d8b76a] text-[#d8b76a]" />
+                    {salon.rating.toLocaleString('fa-IR', { maximumFractionDigits: 1 })}
+                  </span>
+                </div>
+
+                <div className="mt-5 flex items-center justify-between border-t border-[#eee9e4] pt-4">
+                  <span className="text-xs text-[#8b8086]">
+                    {salon.genderType === 'MALE' ? 'ویژه آقایان' : salon.genderType === 'UNISEX' ? 'بانوان و آقایان' : 'ویژه بانوان'}
+                  </span>
+                  <span className="text-xs font-semibold text-[#4b244a]">مشاهده و رزرو</span>
+                </div>
+              </div>
+            </Link>
+          ))}
         </div>
       </div>
     </section>
   );
 }
 
+function TrendSection() {
+  return (
+    <section className="py-20 lg:py-28">
+      <div className="container-editorial">
+        <SectionHeading
+          eyebrow="الان چه چیزی محبوب است؟"
+          title="برای انتخاب بعدی الهام بگیر"
+          description="ترندهای روز را ببین و متخصص مناسب همان سبک را پیدا کن."
+        />
+
+        <div className="grid gap-5 lg:grid-cols-[1.2fr_0.9fr_0.9fr]">
+          {TREND_CARDS.map((card, index) => (
+            <Link
+              key={card.title}
+              href={card.href}
+              className={`group relative overflow-hidden rounded-[1.6rem] ${index === 0 ? 'min-h-[500px]' : 'min-h-[360px] lg:min-h-[500px]'}`}
+              style={{ background: card.tone }}
+            >
+              <Image
+                src={card.image}
+                alt={card.title}
+                fill
+                sizes="(max-width: 1024px) 100vw, 40vw"
+                className="object-cover opacity-75 transition duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-7 text-white">
+                <p className="mb-2 text-xs text-white/65">{card.subtitle}</p>
+                <div className="flex items-end justify-between gap-4">
+                  <h3 className="font-display text-2xl font-semibold text-white lg:text-3xl">{card.title}</h3>
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-[#34212f] transition group-hover:-translate-x-1">
+                    <ArrowLeft size={18} />
+                  </span>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ValueSection() {
+  const values = [
+    { icon: Search, title: 'پیدا کن', text: 'با فیلتر خدمت، موقعیت و نوع سالن، انتخاب‌ها را دقیق‌تر کن.' },
+    { icon: UserRound, title: 'مقایسه کن', text: 'پروفایل، نمونه‌کار، متخصصان و امتیاز هر سالن را یک‌جا ببین.' },
+    { icon: Clock3, title: 'رزرو کن', text: 'زمان خالی را انتخاب کن و بدون تماس تلفنی نوبت قطعی بگیر.' },
+  ];
+
+  return (
+    <section className="bg-[#241522] py-20 text-white lg:py-28">
+      <div className="container-editorial">
+        <div className="grid gap-14 lg:grid-cols-[0.85fr_1.4fr] lg:items-start">
+          <div>
+            <p className="mb-4 text-xs font-semibold text-[#d8b76a]">رزرو، آن‌طور که باید باشد</p>
+            <h2 className="font-display text-4xl font-semibold leading-[1.35] text-white sm:text-5xl">
+              انتخاب خوب،
+              <br />
+              از اطلاعات خوب شروع می‌شود.
+            </h2>
+            <p className="mt-5 max-w-md text-sm leading-8 text-white/60">
+              پرنگارین فاصله میان پیدا کردن سالن مناسب و گرفتن نوبت را کوتاه می‌کند.
+            </p>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-3">
+            {values.map(({ icon: Icon, title, text }, index) => (
+              <div key={title} className="rounded-[1.35rem] border border-white/10 bg-white/[0.055] p-6">
+                <div className="mb-10 flex items-center justify-between">
+                  <Icon size={23} className="text-[#efd5a1]" strokeWidth={1.6} />
+                  <span className="text-xs text-white/30">۰{index + 1}</span>
+                </div>
+                <h3 className="font-display text-2xl font-semibold text-white">{title}</h3>
+                <p className="mt-3 text-sm leading-7 text-white/55">{text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function EcosystemSection() {
+  return (
+    <section className="py-20 lg:py-28">
+      <div className="container-editorial">
+        <div className="grid gap-5 lg:grid-cols-2">
+          <div className="relative overflow-hidden rounded-[1.75rem] bg-[#f2e4e9] p-8 sm:p-11">
+            <div className="relative z-10 max-w-md">
+              <span className="mb-12 flex h-12 w-12 items-center justify-center rounded-full bg-white text-[#4b244a]">
+                <GraduationCap size={23} />
+              </span>
+              <p className="mb-3 text-xs font-semibold text-[#9b647c]">آکادمی پرنگارین</p>
+              <h2 className="font-display text-3xl font-semibold leading-snug text-[#281d25]">
+                مهارت بعدی‌ات را از حرفه‌ای‌ها یاد بگیر
+              </h2>
+              <p className="mt-4 text-sm leading-7 text-[#76666e]">
+                دوره‌های تخصصی آرایش و زیبایی را ببین و مسیر حرفه‌ای خودت را توسعه بده.
+              </p>
+              <Link href="/academy" className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-[#4b244a]">
+                ورود به آکادمی <ArrowLeft size={16} />
+              </Link>
+            </div>
+            <Palette className="absolute -bottom-10 -left-8 h-56 w-56 text-white/45" strokeWidth={0.7} />
+          </div>
+
+          <div className="relative overflow-hidden rounded-[1.75rem] bg-[#e9ecee] p-8 sm:p-11">
+            <div className="relative z-10 max-w-md">
+              <span className="mb-12 flex h-12 w-12 items-center justify-center rounded-full bg-white text-[#253342]">
+                <Store size={23} />
+              </span>
+              <p className="mb-3 text-xs font-semibold text-[#607181]">برای صاحبان سالن</p>
+              <h2 className="font-display text-3xl font-semibold leading-snug text-[#1d2832]">
+                سالن خودت را هوشمندتر مدیریت کن
+              </h2>
+              <p className="mt-4 text-sm leading-7 text-[#65727d]">
+                رزرو، خدمات، کارکنان و ارتباط با مشتریان را از یک پنل یکپارچه مدیریت کن.
+              </p>
+              <Link href="/salons/new" className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-[#253342]">
+                ثبت سالن در پرنگارین <ArrowLeft size={16} />
+              </Link>
+            </div>
+            <Store className="absolute -bottom-11 -left-8 h-56 w-56 text-white/45" strokeWidth={0.7} />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FinalCallout() {
+  return (
+    <section className="pb-20">
+      <div className="container-editorial">
+        <div className="relative overflow-hidden rounded-[2rem] bg-[#4b244a] px-7 py-16 text-center sm:px-12 lg:py-20">
+          <div className="absolute -right-20 -top-24 h-72 w-72 rounded-full border border-white/10" />
+          <div className="absolute -bottom-36 -left-20 h-80 w-80 rounded-full border border-[#d8b76a]/20" />
+          <div className="relative z-10 mx-auto max-w-2xl">
+            <Sparkles className="mx-auto mb-5 text-[#d8b76a]" size={27} />
+            <h2 className="font-display text-4xl font-semibold leading-tight text-white sm:text-5xl">
+              نوبت بعدی‌ات همین نزدیکی است
+            </h2>
+            <p className="mt-5 text-sm leading-7 text-white/65">
+              چند دقیقه برای خودت وقت بگذار؛ پرنگارین بقیه مسیر را ساده می‌کند.
+            </p>
+            <Link
+              href="/salons"
+              className="mt-9 inline-flex items-center gap-2 rounded-xl bg-[#efd5a1] px-8 py-4 text-sm font-bold text-[#351934] transition hover:-translate-y-0.5"
+            >
+              پیدا کردن سالن
+              <ArrowLeft size={17} />
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
