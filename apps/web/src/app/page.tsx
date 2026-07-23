@@ -144,8 +144,8 @@ function Hero() {
         sizes="100vw"
         className="object-cover object-[42%_center]"
       />
-      <div className="absolute inset-0 bg-gradient-to-l from-[#1c101c]/95 via-[#291829]/70 to-[#1b1516]/5" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#160d16]/55 via-transparent to-[#160d16]/10" />
+      <div className="absolute inset-0 bg-gradient-to-l from-[#211c19]/95 via-[#352b26]/70 to-[#1b1715]/5" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#1c1816]/55 via-transparent to-[#1c1816]/10" />
 
       <div className="container-editorial relative z-10 flex min-h-[680px] items-center py-16 lg:min-h-[740px]">
         <div className="w-full max-w-[710px] text-white">
@@ -156,7 +156,7 @@ function Hero() {
 
           <h1 className="mb-6 max-w-[680px] font-display text-[3rem] font-semibold leading-[1.22] text-white sm:text-[4rem] lg:text-[5.25rem]">
             زیبایی را
-            <span className="block text-[#efd5a1]">با اطمینان انتخاب کن.</span>
+            <span className="block text-[#ead3a6]">با اطمینان انتخاب کن.</span>
           </h1>
 
           <p className="mb-9 max-w-xl text-base leading-8 text-white/75 sm:text-lg">
@@ -168,26 +168,26 @@ function Hero() {
             className="grid gap-2 rounded-[1.4rem] bg-white p-2.5 shadow-[0_24px_80px_rgba(10,5,10,0.28)] sm:grid-cols-[1fr_0.8fr_auto]"
           >
             <label className="flex min-w-0 items-center gap-3 rounded-xl px-4 py-3.5 sm:border-l sm:border-[#ece6df]">
-              <Search size={20} className="shrink-0 text-[#7a6676]" />
+              <Search size={20} className="shrink-0 text-[#8a756d]" />
               <span className="min-w-0 flex-1">
                 <span className="block text-[11px] font-medium text-[#9a8c96]">چه خدمتی؟</span>
                 <input
                   value={service}
                   onChange={(event) => setService(event.target.value)}
-                  className="mt-0.5 w-full bg-transparent text-sm font-medium text-[#251d24] outline-none placeholder:text-[#695e66]"
+                  className="mt-0.5 w-full bg-transparent text-sm font-medium text-[#29231f] outline-none placeholder:text-[#756b66]"
                   placeholder="مثلاً کوتاهی یا رنگ مو"
                 />
               </span>
             </label>
 
             <label className="flex min-w-0 items-center gap-3 rounded-xl border-t border-[#ece6df] px-4 py-3.5 sm:border-0">
-              <MapPin size={20} className="shrink-0 text-[#7a6676]" />
+              <MapPin size={20} className="shrink-0 text-[#8a756d]" />
               <span className="min-w-0 flex-1">
                 <span className="block text-[11px] font-medium text-[#9a8c96]">کجا؟</span>
                 <input
                   value={city}
                   onChange={(event) => setCity(event.target.value)}
-                  className="mt-0.5 w-full bg-transparent text-sm font-medium text-[#251d24] outline-none placeholder:text-[#695e66]"
+                  className="mt-0.5 w-full bg-transparent text-sm font-medium text-[#29231f] outline-none placeholder:text-[#756b66]"
                   placeholder="شهر یا محله"
                 />
               </span>
@@ -195,7 +195,7 @@ function Hero() {
 
             <button
               type="submit"
-              className="flex min-h-14 items-center justify-center gap-2 rounded-xl bg-[#4b244a] px-7 text-sm font-semibold text-white transition hover:bg-[#351934]"
+              className="flex min-h-14 items-center justify-center gap-2 rounded-xl bg-[#8b5e50] px-7 text-sm font-semibold text-white transition hover:bg-[#6f473c]"
             >
               جست‌وجو
               <ArrowLeft size={17} />
@@ -213,7 +213,7 @@ function Hero() {
               <Link
                 key={label}
                 href={`/salons?service=${encodeURIComponent(query)}`}
-                className="border-b border-white/25 pb-0.5 transition hover:border-[#efd5a1] hover:text-[#efd5a1]"
+                className="border-b border-white/25 pb-0.5 transition hover:border-[#ead3a6] hover:text-[#ead3a6]"
               >
                 {label}
               </Link>
@@ -237,7 +237,7 @@ function TrustBar() {
       <div className="container-editorial grid divide-y divide-[#ebe5df] md:grid-cols-3 md:divide-x md:divide-x-reverse md:divide-y-0">
         {items.map(({ icon: Icon, title, text }) => (
           <div key={title} className="flex items-center gap-4 px-3 py-7 md:justify-center">
-            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#f5ebf4] text-[#4b244a]">
+            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#f3e9e2] text-[#8b5e50]">
               <Icon size={21} strokeWidth={1.7} />
             </span>
             <span>
@@ -265,14 +265,14 @@ function SectionHeading({
   return (
     <div className="mb-10 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
       <div>
-        <p className="mb-3 text-xs font-semibold tracking-[0.08em] text-[#9a6d80]">{eyebrow}</p>
+        <p className="mb-3 text-xs font-semibold tracking-[0.08em] text-[#a16e5d]">{eyebrow}</p>
         <h2 className="font-display text-3xl font-semibold leading-tight text-[#1e171d] sm:text-4xl">{title}</h2>
         {description && <p className="mt-3 max-w-xl text-sm leading-7 text-[#7a7076]">{description}</p>}
       </div>
       {action && (
         <Link
           href={action.href}
-          className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-[#4b244a] transition hover:gap-3"
+          className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-[#7b5145] transition hover:gap-3"
         >
           {action.label}
           <ArrowLeft size={16} />
@@ -301,7 +301,7 @@ function ServiceDiscovery() {
             >
               <span
                 className={`flex h-11 w-11 items-center justify-center rounded-full text-xl ${
-                  index % 2 ? 'bg-[#f6efe6] text-[#765f50]' : 'bg-[#f5ebf4] text-[#4b244a]'
+                  index % 2 ? 'bg-[#f3eee7] text-[#756052]' : 'bg-[#f3e9e2] text-[#8b5e50]'
                 }`}
               >
                 {service.icon}
@@ -310,7 +310,7 @@ function ServiceDiscovery() {
                 <strong className="text-sm leading-6 text-[#2b2329]">{service.name}</strong>
                 <ArrowLeft
                   size={15}
-                  className="shrink-0 text-[#a499a0] transition group-hover:-translate-x-1 group-hover:text-[#4b244a]"
+                  className="shrink-0 text-[#a69c96] transition group-hover:-translate-x-1 group-hover:text-[#8b5e50]"
                 />
               </span>
             </Link>
@@ -359,12 +359,12 @@ function FeaturedSalons() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent" />
                 <span className="absolute right-4 top-4 inline-flex items-center gap-1 rounded-full bg-white/90 px-3 py-1.5 text-[11px] font-semibold text-[#392e35] backdrop-blur">
-                  <CheckCircle2 size={13} className="text-[#4b244a]" />
+                  <CheckCircle2 size={13} className="text-[#8b5e50]" />
                   تأییدشده
                 </span>
                 <span
                   aria-hidden="true"
-                  className="absolute left-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-[#4b244a] backdrop-blur transition hover:bg-white"
+                  className="absolute left-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-[#8b5e50] backdrop-blur transition hover:bg-white"
                 >
                   <Heart size={17} />
                 </span>
@@ -380,7 +380,7 @@ function FeaturedSalons() {
                     </p>
                   </div>
                   <span className="flex items-center gap-1 rounded-lg bg-[#fff7e7] px-2 py-1 text-xs font-bold text-[#6c5528]">
-                    <Star size={13} className="fill-[#d8b76a] text-[#d8b76a]" />
+                    <Star size={13} className="fill-[#c8a66a] text-[#c8a66a]" />
                     {salon.rating.toLocaleString('fa-IR', { maximumFractionDigits: 1 })}
                   </span>
                 </div>
@@ -389,7 +389,7 @@ function FeaturedSalons() {
                   <span className="text-xs text-[#8b8086]">
                     {salon.genderType === 'MALE' ? 'ویژه آقایان' : salon.genderType === 'UNISEX' ? 'بانوان و آقایان' : 'ویژه بانوان'}
                   </span>
-                  <span className="text-xs font-semibold text-[#4b244a]">مشاهده و رزرو</span>
+                  <span className="text-xs font-semibold text-[#7b5145]">مشاهده و رزرو</span>
                 </div>
               </div>
             </Link>
@@ -430,7 +430,7 @@ function TrendSection() {
                 <p className="mb-2 text-xs text-white/65">{card.subtitle}</p>
                 <div className="flex items-end justify-between gap-4">
                   <h3 className="font-display text-2xl font-semibold text-white lg:text-3xl">{card.title}</h3>
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-[#34212f] transition group-hover:-translate-x-1">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-[#342b27] transition group-hover:-translate-x-1">
                     <ArrowLeft size={18} />
                   </span>
                 </div>
@@ -451,11 +451,11 @@ function ValueSection() {
   ];
 
   return (
-    <section className="bg-[#241522] py-20 text-white lg:py-28">
+    <section className="bg-[#30393d] py-20 text-white lg:py-28">
       <div className="container-editorial">
         <div className="grid gap-14 lg:grid-cols-[0.85fr_1.4fr] lg:items-start">
           <div>
-            <p className="mb-4 text-xs font-semibold text-[#d8b76a]">رزرو، آن‌طور که باید باشد</p>
+            <p className="mb-4 text-xs font-semibold text-[#c8a66a]">رزرو، آن‌طور که باید باشد</p>
             <h2 className="font-display text-4xl font-semibold leading-[1.35] text-white sm:text-5xl">
               انتخاب خوب،
               <br />
@@ -470,7 +470,7 @@ function ValueSection() {
             {values.map(({ icon: Icon, title, text }, index) => (
               <div key={title} className="rounded-[1.35rem] border border-white/10 bg-white/[0.055] p-6">
                 <div className="mb-10 flex items-center justify-between">
-                  <Icon size={23} className="text-[#efd5a1]" strokeWidth={1.6} />
+                  <Icon size={23} className="text-[#ead3a6]" strokeWidth={1.6} />
                   <span className="text-xs text-white/30">۰{index + 1}</span>
                 </div>
                 <h3 className="font-display text-2xl font-semibold text-white">{title}</h3>
@@ -489,19 +489,19 @@ function EcosystemSection() {
     <section className="py-20 lg:py-28">
       <div className="container-editorial">
         <div className="grid gap-5 lg:grid-cols-2">
-          <div className="relative overflow-hidden rounded-[1.75rem] bg-[#f2e4e9] p-8 sm:p-11">
+          <div className="relative overflow-hidden rounded-[1.75rem] bg-[#f1e7e0] p-8 sm:p-11">
             <div className="relative z-10 max-w-md">
-              <span className="mb-12 flex h-12 w-12 items-center justify-center rounded-full bg-white text-[#4b244a]">
+              <span className="mb-12 flex h-12 w-12 items-center justify-center rounded-full bg-white text-[#8b5e50]">
                 <GraduationCap size={23} />
               </span>
-              <p className="mb-3 text-xs font-semibold text-[#9b647c]">آکادمی پرنگارین</p>
-              <h2 className="font-display text-3xl font-semibold leading-snug text-[#281d25]">
+              <p className="mb-3 text-xs font-semibold text-[#a16e5d]">آکادمی پرنگارین</p>
+              <h2 className="font-display text-3xl font-semibold leading-snug text-[#2d2622]">
                 مهارت بعدی‌ات را از حرفه‌ای‌ها یاد بگیر
               </h2>
-              <p className="mt-4 text-sm leading-7 text-[#76666e]">
+              <p className="mt-4 text-sm leading-7 text-[#756a64]">
                 دوره‌های تخصصی آرایش و زیبایی را ببین و مسیر حرفه‌ای خودت را توسعه بده.
               </p>
-              <Link href="/academy" className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-[#4b244a]">
+              <Link href="/academy" className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-[#7b5145]">
                 ورود به آکادمی <ArrowLeft size={16} />
               </Link>
             </div>
@@ -536,11 +536,11 @@ function FinalCallout() {
   return (
     <section className="pb-20">
       <div className="container-editorial">
-        <div className="relative overflow-hidden rounded-[2rem] bg-[#4b244a] px-7 py-16 text-center sm:px-12 lg:py-20">
+        <div className="relative overflow-hidden rounded-[2rem] bg-[#795145] px-7 py-16 text-center sm:px-12 lg:py-20">
           <div className="absolute -right-20 -top-24 h-72 w-72 rounded-full border border-white/10" />
-          <div className="absolute -bottom-36 -left-20 h-80 w-80 rounded-full border border-[#d8b76a]/20" />
+          <div className="absolute -bottom-36 -left-20 h-80 w-80 rounded-full border border-[#c8a66a]/20" />
           <div className="relative z-10 mx-auto max-w-2xl">
-            <Sparkles className="mx-auto mb-5 text-[#d8b76a]" size={27} />
+            <Sparkles className="mx-auto mb-5 text-[#e3c98f]" size={27} />
             <h2 className="font-display text-4xl font-semibold leading-tight text-white sm:text-5xl">
               نوبت بعدی‌ات همین نزدیکی است
             </h2>
@@ -549,7 +549,7 @@ function FinalCallout() {
             </p>
             <Link
               href="/salons"
-              className="mt-9 inline-flex items-center gap-2 rounded-xl bg-[#efd5a1] px-8 py-4 text-sm font-bold text-[#351934] transition hover:-translate-y-0.5"
+              className="mt-9 inline-flex items-center gap-2 rounded-xl bg-[#ead3a6] px-8 py-4 text-sm font-bold text-[#3d2b25] transition hover:-translate-y-0.5"
             >
               پیدا کردن سالن
               <ArrowLeft size={17} />
