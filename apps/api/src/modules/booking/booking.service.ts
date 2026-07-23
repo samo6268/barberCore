@@ -1,23 +1,43 @@
-import { Injectable, BadRequestException, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { BookingStatus } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { PaginationDto, paginate } from '../../common/dto/pagination.dto';
+import { AvailabilityService } from './availability.service';
 
 export class CreateBookingDto {
   salonId: string;
   serviceIds: string[];
   staffId?: string;
-  date: string;   // YYYY-MM-DD
-  time: string;   // HH:mm
+  date: string; // YYYY-MM-DD
+  time: string; // HH:mm
   notes?: string;
 }
 
 @Injectable()
 export class BookingService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private availabilityService: AvailabilityService,
+  ) {}
 
   async create(customerId: string, dto: CreateBookingDto) {
-    const serviceIds = [...new Set(dto.serviceIds)];
+    if (
+      !dto ||
+      typeof dto.salonId !== 'string' ||
+      !Array.isArray(dto.serviceIds) ||
+      dto.serviceIds.some((id) => typeof id !== 'string' || !id.trim()) ||
+      typeof dto.date !== 'string' ||
+      typeof dto.time !== 'string'
+    ) {
+      throw new BadRequestException('اطلاعات رزرو کامل یا معتبر نیست');
+    }
+
+    const serviceIds = [...new Set(dto.serviceIds.map((id) => id.trim()))];
     if (!serviceIds.length || serviceIds.length !== dto.serviceIds.length) {
       throw new BadRequestException('خدمات انتخاب‌شده معتبر نیستند');
     }
@@ -25,12 +45,28 @@ export class BookingService {
     const services = await this.prisma.service.findMany({
       where: { id: { in: serviceIds }, salonId: dto.salonId, isActive: true },
     });
-    if (services.length !== serviceIds.length) throw new BadRequestException('خدمت انتخاب‌شده معتبر نیست');
+    if (services.length !== serviceIds.length)
+      throw new BadRequestException('خدمت انتخاب‌شده معتبر نیست');
 
-    if (dto.staffId) {
+    const startsAt = this.parseStartsAt(dto.date, dto.time);
+    if (startsAt <= new Date()) throw new BadRequestException('زمان رزرو باید در آینده باشد');
+
+    const availableSlots = await this.availabilityService.getAvailableSlots(
+      dto.salonId,
+      dto.date,
+      serviceIds,
+      dto.staffId,
+    );
+    const selectedSlot = availableSlots.find((slot) => slot.time === dto.time && slot.available);
+    if (!selectedSlot) throw new BadRequestException('زمان انتخاب‌شده در دسترس نیست');
+
+    const resolvedStaffId = dto.staffId ?? selectedSlot.staffId;
+    if (resolvedStaffId) {
       const staff = await this.prisma.staffProfile.findFirst({
-        where: { id: dto.staffId, salonId: dto.salonId, status: 'ACTIVE' },
-        select: { services: { where: { serviceId: { in: serviceIds } }, select: { serviceId: true } } },
+        where: { id: resolvedStaffId, salonId: dto.salonId, status: 'ACTIVE' },
+        select: {
+          services: { where: { serviceId: { in: serviceIds } }, select: { serviceId: true } },
+        },
       });
       if (!staff || staff.services.length !== serviceIds.length) {
         throw new BadRequestException('آرایشگر انتخاب‌شده برای این خدمات معتبر نیست');
@@ -39,16 +75,13 @@ export class BookingService {
 
     const totalDuration = services.reduce((s, svc) => s + svc.durationMinutes, 0);
     const totalPrice = services.reduce((s, svc) => s + (svc.discountPrice ?? svc.price), 0);
-
-    const startsAt = this.parseStartsAt(dto.date, dto.time);
-    if (startsAt <= new Date()) throw new BadRequestException('زمان رزرو باید در آینده باشد');
     const endsAt = new Date(startsAt.getTime() + totalDuration * 60000);
 
     // Conflict check
     const conflict = await this.prisma.booking.findFirst({
       where: {
         salonId: dto.salonId,
-        staffId: dto.staffId || undefined,
+        staffId: resolvedStaffId ?? null,
         status: { in: ['PENDING', 'CONFIRMED', 'IN_PROGRESS'] },
         OR: [{ startsAt: { lt: endsAt }, endsAt: { gt: startsAt } }],
       },
@@ -59,13 +92,19 @@ export class BookingService {
       data: {
         salonId: dto.salonId,
         customerId,
-        staffId: dto.staffId,
+        staffId: resolvedStaffId,
         status: BookingStatus.CONFIRMED,
         startsAt,
         endsAt,
         totalPrice,
         notes: dto.notes,
-        items: { create: services.map(s => ({ serviceId: s.id, price: s.discountPrice ?? s.price, duration: s.durationMinutes })) },
+        items: {
+          create: services.map((s) => ({
+            serviceId: s.id,
+            price: s.discountPrice ?? s.price,
+            duration: s.durationMinutes,
+          })),
+        },
       },
       include: {
         items: { include: { service: true } },
@@ -82,9 +121,14 @@ export class BookingService {
     const [data, total] = await Promise.all([
       this.prisma.booking.findMany({
         where: { customerId },
-        include: { items: { include: { service: true } }, salon: { select: { name: true, logoUrl: true, address: true } }, staff: { select: { displayName: true, avatarUrl: true } } },
+        include: {
+          items: { include: { service: true } },
+          salon: { select: { name: true, logoUrl: true, address: true } },
+          staff: { select: { displayName: true, avatarUrl: true } },
+        },
         orderBy: { startsAt: 'desc' },
-        skip, take: limit,
+        skip,
+        take: limit,
       }),
       this.prisma.booking.count({ where: { customerId } }),
     ]);
@@ -98,7 +142,8 @@ export class BookingService {
     const where: Record<string, unknown> = { salonId };
     if (date) {
       const d = new Date(date);
-      const next = new Date(d); next.setDate(next.getDate() + 1);
+      const next = new Date(d);
+      next.setDate(next.getDate() + 1);
       where['startsAt'] = { gte: d, lt: next };
     }
 
@@ -119,12 +164,19 @@ export class BookingService {
 
     // Allow customer or salon owner to cancel
     const salon = await this.prisma.salon.findUnique({ where: { id: booking.salonId } });
-    if (booking.customerId !== userId && salon?.ownerId !== userId) throw new ForbiddenException('دسترسی غیرمجاز');
-    if (['COMPLETED', 'CANCELLED'].includes(booking.status)) throw new BadRequestException('این رزرو قابل لغو نیست');
+    if (booking.customerId !== userId && salon?.ownerId !== userId)
+      throw new ForbiddenException('دسترسی غیرمجاز');
+    if (['COMPLETED', 'CANCELLED'].includes(booking.status))
+      throw new BadRequestException('این رزرو قابل لغو نیست');
 
     return this.prisma.booking.update({
       where: { id },
-      data: { status: BookingStatus.CANCELLED, cancellationReason: reason, cancelledAt: new Date(), cancelledBy: userId },
+      data: {
+        status: BookingStatus.CANCELLED,
+        cancellationReason: reason,
+        cancelledAt: new Date(),
+        cancelledBy: userId,
+      },
     });
   }
 
@@ -144,10 +196,13 @@ export class BookingService {
     const [hour, minute] = time.split(':').map(Number);
     const startsAt = new Date(Date.UTC(year, month - 1, day, hour, minute));
     if (
-      startsAt.getUTCFullYear() !== year || startsAt.getUTCMonth() !== month - 1 ||
-      startsAt.getUTCDate() !== day || startsAt.getUTCHours() !== hour ||
+      startsAt.getUTCFullYear() !== year ||
+      startsAt.getUTCMonth() !== month - 1 ||
+      startsAt.getUTCDate() !== day ||
+      startsAt.getUTCHours() !== hour ||
       startsAt.getUTCMinutes() !== minute
-    ) throw new BadRequestException('تاریخ یا ساعت رزرو معتبر نیست');
+    )
+      throw new BadRequestException('تاریخ یا ساعت رزرو معتبر نیست');
     return startsAt;
   }
 }

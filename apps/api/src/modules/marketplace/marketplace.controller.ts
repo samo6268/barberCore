@@ -12,7 +12,18 @@ export class MarketplaceController {
 
   @Get('search')
   @ApiOperation({ summary: 'جستجوی سالن‌ها' })
-  search(@Query() query: { q?: string; city?: string; gender?: GenderType; page?: number; limit?: number }) {
+  search(
+    @Query()
+    query: {
+      q?: string;
+      city?: string;
+      gender?: GenderType;
+      service?: string;
+      sort?: 'rating' | 'reviews';
+      page?: number;
+      limit?: number;
+    },
+  ) {
     return this.service.searchSalons(query);
   }
 

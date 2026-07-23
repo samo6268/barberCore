@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import { DayOfWeek } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 
 export interface TimeSlot {
-  time: string;    // HH:mm
+  time: string;
   available: boolean;
   staffId?: string;
 }
@@ -13,78 +14,135 @@ export class AvailabilityService {
 
   async getAvailableSlots(
     salonId: string,
-    date: string,          // YYYY-MM-DD
-    serviceId: string,
+    date: string,
+    serviceIds: string[],
     staffId?: string,
   ): Promise<TimeSlot[]> {
+    const uniqueServiceIds = [...new Set(serviceIds)];
+    if (!uniqueServiceIds.length || uniqueServiceIds.length !== serviceIds.length) return [];
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return [];
+
     const dayDate = new Date(`${date}T00:00:00Z`);
     if (Number.isNaN(dayDate.getTime()) || dayDate.toISOString().slice(0, 10) !== date) return [];
-    const service = await this.prisma.service.findFirst({ where: { id: serviceId, salonId, isActive: true } });
-    if (!service) return [];
+
+    const services = await this.prisma.service.findMany({
+      where: { id: { in: uniqueServiceIds }, salonId, isActive: true, isOnlineBookable: true },
+      select: { id: true, durationMinutes: true },
+    });
+    if (services.length !== uniqueServiceIds.length) return [];
+
+    const holiday = await this.prisma.salonHoliday.findFirst({
+      where: { salonId, date: dayDate },
+    });
+    if (holiday) return [];
+
+    const duration = services.reduce((total, item) => total + item.durationMinutes, 0);
     const dayOfWeek = this.getDayOfWeek(dayDate);
 
-    // Get working hours
-    const wh = await this.prisma.workingHour.findFirst({
-      where: { salonId, staffId: staffId ?? null, dayOfWeek: dayOfWeek as import("@prisma/client").DayOfWeek, isOpen: true },
-    });
-    if (!wh) return [];
+    if (staffId) {
+      const staff = await this.findQualifiedStaff(salonId, uniqueServiceIds, staffId);
+      if (!staff.length) return [];
+      return this.getResourceSlots(salonId, date, dayOfWeek, duration, staffId);
+    }
 
-    // Get existing bookings for this day
+    const qualifiedStaff = await this.findQualifiedStaff(salonId, uniqueServiceIds);
+    if (!qualifiedStaff.length) {
+      return this.getResourceSlots(salonId, date, dayOfWeek, duration);
+    }
+
+    const staffSlots = await Promise.all(
+      qualifiedStaff.map((staff) =>
+        this.getResourceSlots(salonId, date, dayOfWeek, duration, staff.id),
+      ),
+    );
+
+    return this.mergeStaffSlots(staffSlots);
+  }
+
+  private async findQualifiedStaff(salonId: string, serviceIds: string[], staffId?: string) {
+    const staff = await this.prisma.staffProfile.findMany({
+      where: {
+        salonId,
+        status: 'ACTIVE',
+        ...(staffId ? { id: staffId } : {}),
+      },
+      select: {
+        id: true,
+        services: {
+          where: { serviceId: { in: serviceIds } },
+          select: { serviceId: true },
+        },
+      },
+      orderBy: { sortOrder: 'asc' },
+    });
+
+    return staff.filter((item) => item.services.length === serviceIds.length);
+  }
+
+  private async getResourceSlots(
+    salonId: string,
+    date: string,
+    dayOfWeek: DayOfWeek,
+    duration: number,
+    staffId?: string,
+  ): Promise<TimeSlot[]> {
+    let workingHour = await this.prisma.workingHour.findFirst({
+      where: { salonId, staffId: staffId ?? null, dayOfWeek },
+    });
+
+    if (!workingHour && staffId) {
+      workingHour = await this.prisma.workingHour.findFirst({
+        where: { salonId, staffId: null, dayOfWeek },
+      });
+    }
+    if (!workingHour?.isOpen) return [];
+
     const dayStart = new Date(`${date}T00:00:00Z`);
     const dayEnd = new Date(dayStart);
     dayEnd.setUTCDate(dayEnd.getUTCDate() + 1);
 
-    const existingBookings = await this.prisma.booking.findMany({
-      where: {
-        salonId,
-        staffId: staffId || undefined,
-        status: { in: ['PENDING', 'CONFIRMED', 'IN_PROGRESS'] },
-        startsAt: { gte: dayStart, lt: dayEnd },
-      },
-    });
+    const [existingBookings, timeOffs] = await Promise.all([
+      this.prisma.booking.findMany({
+        where: {
+          salonId,
+          staffId: staffId ?? null,
+          status: { in: ['PENDING', 'CONFIRMED', 'IN_PROGRESS'] },
+          startsAt: { gte: dayStart, lt: dayEnd },
+        },
+        select: { startsAt: true, endsAt: true },
+      }),
+      staffId
+        ? this.prisma.timeOff.findMany({
+            where: {
+              staffId,
+              startsAt: { lt: dayEnd },
+              endsAt: { gt: dayStart },
+            },
+            select: { startsAt: true, endsAt: true },
+          })
+        : Promise.resolve([]),
+    ]);
 
-    // Get holidays
-    const holiday = await this.prisma.salonHoliday.findFirst({
-      where: { salonId, date: dayStart },
-    });
-    if (holiday) return [];
-
-    // Generate slots every 30 min within working hours
+    const [openHour, openMinute] = workingHour.openTime.split(':').map(Number);
+    const [closeHour, closeMinute] = workingHour.closeTime.split(':').map(Number);
+    const openMinutes = openHour * 60 + openMinute;
+    const closeMinutes = closeHour * 60 + closeMinute;
     const slots: TimeSlot[] = [];
-    const [openH, openM] = wh.openTime.split(':').map(Number);
-    const [closeH, closeM] = wh.closeTime.split(':').map(Number);
-    const openMinutes = openH * 60 + openM;
-    const closeMinutes = closeH * 60 + closeM;
-    const duration = service.durationMinutes;
 
-    for (let m = openMinutes; m + duration <= closeMinutes; m += 30) {
-      const slotStart = new Date(`${date}T${this.minutesToTime(m)}:00Z`);
-      const slotEnd = new Date(slotStart.getTime() + duration * 60000);
-
-      // Check break time
-      if (wh.breakStart && wh.breakEnd) {
-        const [bsH, bsM] = wh.breakStart.split(':').map(Number);
-        const [beH, beM] = wh.breakEnd.split(':').map(Number);
-        const breakStart = bsH * 60 + bsM;
-        const breakEnd = beH * 60 + beM;
-        if (m < breakEnd && m + duration > breakStart) continue;
+    for (let minute = openMinutes; minute + duration <= closeMinutes; minute += 30) {
+      if (this.overlapsBreak(minute, duration, workingHour.breakStart, workingHour.breakEnd)) {
+        continue;
       }
 
-      // Check conflicts
-      const conflict = existingBookings.some(b => {
-        const bStart = new Date(b.startsAt).getTime();
-        const bEnd = new Date(b.endsAt).getTime();
-        return slotStart.getTime() < bEnd && slotEnd.getTime() > bStart;
-      });
-
-      // Don't show past slots for today
-      const now = new Date();
-      const isPast = slotStart <= now;
+      const slotStart = new Date(`${date}T${this.minutesToTime(minute)}:00Z`);
+      const slotEnd = new Date(slotStart.getTime() + duration * 60_000);
+      const conflict = [...existingBookings, ...timeOffs].some(
+        (item) => slotStart < item.endsAt && slotEnd > item.startsAt,
+      );
 
       slots.push({
-        time: this.minutesToTime(m),
-        available: !conflict && !isPast,
+        time: this.minutesToTime(minute),
+        available: !conflict && slotStart > new Date(),
         staffId,
       });
     }
@@ -92,14 +150,53 @@ export class AvailabilityService {
     return slots;
   }
 
-  private getDayOfWeek(date: Date): string {
-    const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+  private mergeStaffSlots(staffSlots: TimeSlot[][]): TimeSlot[] {
+    const merged = new Map<string, TimeSlot>();
+
+    for (const slots of staffSlots) {
+      for (const slot of slots) {
+        const current = merged.get(slot.time);
+        if (!current || (!current.available && slot.available)) {
+          merged.set(slot.time, slot);
+        }
+      }
+    }
+
+    return [...merged.values()].sort((a, b) => a.time.localeCompare(b.time));
+  }
+
+  private overlapsBreak(
+    startMinute: number,
+    duration: number,
+    breakStart?: string | null,
+    breakEnd?: string | null,
+  ) {
+    if (!breakStart || !breakEnd) return false;
+    const [startHour, startPart] = breakStart.split(':').map(Number);
+    const [endHour, endPart] = breakEnd.split(':').map(Number);
+    const breakStartMinute = startHour * 60 + startPart;
+    const breakEndMinute = endHour * 60 + endPart;
+    return startMinute < breakEndMinute && startMinute + duration > breakStartMinute;
+  }
+
+  private getDayOfWeek(date: Date): DayOfWeek {
+    const days: DayOfWeek[] = [
+      DayOfWeek.SUNDAY,
+      DayOfWeek.MONDAY,
+      DayOfWeek.TUESDAY,
+      DayOfWeek.WEDNESDAY,
+      DayOfWeek.THURSDAY,
+      DayOfWeek.FRIDAY,
+      DayOfWeek.SATURDAY,
+    ];
     return days[date.getUTCDay()];
   }
 
   private minutesToTime(minutes: number): string {
-    const h = Math.floor(minutes / 60).toString().padStart(2, '0');
-    const m = (minutes % 60).toString().padStart(2, '0');
-    return `${h}:${m}`;
+    const hour = Math.floor(minutes / 60)
+      .toString()
+      .padStart(2, '0');
+    const minute = (minutes % 60).toString().padStart(2, '0');
+    return `${hour}:${minute}`;
   }
 }
