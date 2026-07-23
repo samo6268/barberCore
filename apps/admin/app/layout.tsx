@@ -1,20 +1,5 @@
 import type { Metadata } from 'next';
-import { Cormorant_Garamond, Inter } from 'next/font/google';
 import './globals.css';
-
-const cormorant = Cormorant_Garamond({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-display',
-  display: 'swap',
-});
-
-const inter = Inter({
-  subsets: ['latin'],
-  weight: ['400', '500', '600'],
-  variable: '--font-body',
-  display: 'swap',
-});
 
 export const metadata: Metadata = {
   title: { default: 'BarberCore Admin', template: '%s | Admin' },
@@ -23,7 +8,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fa" dir="rtl" className={`${cormorant.variable} ${inter.variable}`}>
+    <html
+      lang="fa"
+      dir="rtl"
+      style={{
+        '--font-display': '"Cormorant Garamond", Estedad, Georgia, serif',
+        '--font-body': 'Vazirmatn, Inter, system-ui, sans-serif',
+      } as React.CSSProperties}
+    >
       <head>
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
         <style>{`

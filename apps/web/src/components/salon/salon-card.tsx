@@ -72,8 +72,8 @@ export function SalonCard({ salon }: SalonCardProps) {
           {/* Logo avatar */}
           {salon.logoUrl && (
             <div
-              className="absolute bottom-0 right-4 translate-y-1/2 w-12 h-12 rounded-full overflow-hidden ring-2"
-              style={{ background: 'var(--bg-ivory)', ringColor: 'var(--bg-ivory)' }}
+              className="absolute bottom-0 right-4 translate-y-1/2 w-12 h-12 rounded-full overflow-hidden border-2"
+              style={{ background: 'var(--bg-ivory)', borderColor: 'var(--bg-ivory)' }}
             >
               <img src={salon.logoUrl} alt="" className="w-full h-full object-cover" />
             </div>

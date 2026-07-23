@@ -17,15 +17,31 @@ export class BookingService {
   constructor(private prisma: PrismaService) {}
 
   async create(customerId: string, dto: CreateBookingDto) {
+    const serviceIds = [...new Set(dto.serviceIds)];
+    if (!serviceIds.length || serviceIds.length !== dto.serviceIds.length) {
+      throw new BadRequestException('خدمات انتخاب‌شده معتبر نیستند');
+    }
+
     const services = await this.prisma.service.findMany({
-      where: { id: { in: dto.serviceIds }, salonId: dto.salonId, isActive: true },
+      where: { id: { in: serviceIds }, salonId: dto.salonId, isActive: true },
     });
-    if (services.length !== dto.serviceIds.length) throw new BadRequestException('خدمت انتخاب‌شده معتبر نیست');
+    if (services.length !== serviceIds.length) throw new BadRequestException('خدمت انتخاب‌شده معتبر نیست');
+
+    if (dto.staffId) {
+      const staff = await this.prisma.staffProfile.findFirst({
+        where: { id: dto.staffId, salonId: dto.salonId, status: 'ACTIVE' },
+        select: { services: { where: { serviceId: { in: serviceIds } }, select: { serviceId: true } } },
+      });
+      if (!staff || staff.services.length !== serviceIds.length) {
+        throw new BadRequestException('آرایشگر انتخاب‌شده برای این خدمات معتبر نیست');
+      }
+    }
 
     const totalDuration = services.reduce((s, svc) => s + svc.durationMinutes, 0);
     const totalPrice = services.reduce((s, svc) => s + (svc.discountPrice ?? svc.price), 0);
 
-    const startsAt = new Date(`${dto.date}T${dto.time}:00Z`);
+    const startsAt = this.parseStartsAt(dto.date, dto.time);
+    if (startsAt <= new Date()) throw new BadRequestException('زمان رزرو باید در آینده باشد');
     const endsAt = new Date(startsAt.getTime() + totalDuration * 60000);
 
     // Conflict check
@@ -118,5 +134,20 @@ export class BookingService {
     const salon = await this.prisma.salon.findUnique({ where: { id: booking.salonId } });
     if (salon?.ownerId !== ownerId) throw new ForbiddenException('دسترسی غیرمجاز');
     return this.prisma.booking.update({ where: { id }, data: { status } });
+  }
+
+  private parseStartsAt(date: string, time: string): Date {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !/^\d{2}:\d{2}$/.test(time)) {
+      throw new BadRequestException('تاریخ یا ساعت رزرو معتبر نیست');
+    }
+    const [year, month, day] = date.split('-').map(Number);
+    const [hour, minute] = time.split(':').map(Number);
+    const startsAt = new Date(Date.UTC(year, month - 1, day, hour, minute));
+    if (
+      startsAt.getUTCFullYear() !== year || startsAt.getUTCMonth() !== month - 1 ||
+      startsAt.getUTCDate() !== day || startsAt.getUTCHours() !== hour ||
+      startsAt.getUTCMinutes() !== minute
+    ) throw new BadRequestException('تاریخ یا ساعت رزرو معتبر نیست');
+    return startsAt;
   }
 }

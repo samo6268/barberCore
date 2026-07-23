@@ -243,6 +243,9 @@ model Salon {
   commissionType  CommissionType @default(PERCENTAGE)
   onboardingStep  Int         @default(1) // wizard step
   settingsJson    Json        @default("{}") // flexible per-salon settings
+  plan            String      @default("FREE")
+  planStartedAt   DateTime?
+  planExpiresAt   DateTime?
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
   deletedAt       DateTime?
@@ -262,6 +265,8 @@ model Salon {
   smsTemplates    SmsTemplate[]
   smsCampaigns    SmsCampaign[]
   transactions    Transaction[]
+  featuredSlots   FeaturedSlot[]
+  boostAttributions BoostAttribution[]
 
   @@index([slug])
   @@index([ownerId])
@@ -500,6 +505,7 @@ model Booking {
   payment     Payment?
   review      Review?
   notifications Notification[]
+  boostAttribution BoostAttribution?
 
   @@index([salonId, startsAt])
   @@index([customerId])
@@ -716,6 +722,42 @@ model BoostEvent {
 
   @@index([advertisementId])
   @@map("boost_events")
+}
+
+model FeaturedSlot {
+  id           String   @id @default(uuid())
+  salonId      String
+  zone         String
+  startsAt     DateTime
+  endsAt       DateTime
+  totalPaidIRR Float
+  status       String   @default("PENDING_PAYMENT")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  salon Salon @relation(fields: [salonId], references: [id], onDelete: Cascade)
+
+  @@index([zone, status, endsAt])
+  @@index([salonId])
+  @@map("featured_slots")
+}
+
+model BoostAttribution {
+  id                String   @id @default(uuid())
+  salonId           String
+  bookingId         String   @unique
+  grossRevenueIRR   Float
+  commissionIRR     Float
+  netToSalonIRR     Float
+  commissionRatePct Float
+  plan              String
+  createdAt         DateTime @default(now())
+
+  salon   Salon   @relation(fields: [salonId], references: [id], onDelete: Cascade)
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([salonId, createdAt])
+  @@map("boost_attributions")
 }
 
 // ─────────────────────────────────────────────
