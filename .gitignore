@@ -31,5 +31,9 @@ Thumbs.db
 .vscode
 .idea
 
-# Prisma
-apps/api/prisma/migrations/*.sql
+# Local AI settings
+.claude/
+**/.claude/
+
+# TypeScript build cache
+*.tsbuildinfo
