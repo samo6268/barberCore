@@ -53,7 +53,8 @@ export const useVerifyOtp = () => {
         qc.setQueryData(['me'], user);
         return { success: true, user };
       }
-      const data = await api.post('/auth/otp/verify', { phone, code }).then((r) => r.data);
+      const response = await api.post('/auth/otp/verify', { phone, code }).then((r) => r.data);
+      const data = response.data;
       localStorage.setItem('access_token', data.accessToken);
       localStorage.setItem('refresh_token', data.refreshToken);
       qc.invalidateQueries({ queryKey: ['me'] });
