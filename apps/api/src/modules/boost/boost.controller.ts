@@ -10,7 +10,7 @@ import { Roles } from '../../common/decorators/roles.decorator';
 @ApiTags('boost')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Controller('v1/boost')
+@Controller('boost')
 export class BoostController {
   constructor(private readonly boostService: BoostService) {}
 

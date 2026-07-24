@@ -9,7 +9,15 @@ export function cn(...inputs: ClassValue[]) {
 /** Format a Date/string as Jalali (Farsi) date */
 export function toJalali(date: Date | string, format = 'YYYY/MM/DD'): string {
   const d = typeof date === 'string' ? new Date(date) : date;
-  const { jy, jm, jd } = jalaali.toJalaali(d.getFullYear(), d.getMonth() + 1, d.getDate());
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Tehran',
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+  }).formatToParts(d);
+  const value = (type: Intl.DateTimeFormatPartTypes) =>
+    Number(parts.find((part) => part.type === type)?.value);
+  const { jy, jm, jd } = jalaali.toJalaali(value('year'), value('month'), value('day'));
   const pad = (n: number) => String(n).padStart(2, '0');
   return format
     .replace('YYYY', String(jy))
@@ -26,7 +34,11 @@ export function formatPrice(amountInRials: number): string {
 /** Format time as HH:mm in Farsi */
 export function formatTime(date: Date | string): string {
   const d = typeof date === 'string' ? new Date(date) : date;
-  return d.toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleTimeString('fa-IR', {
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'Asia/Tehran',
+  });
 }
 
 export function getInitials(firstName: string, lastName: string): string {

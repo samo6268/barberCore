@@ -11,14 +11,7 @@ export function Navbar() {
   const { data: user } = useMe();
   const logout = useLogout();
   const router = useRouter();
-  const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handler, { passive: true });
-    return () => window.removeEventListener('scroll', handler);
-  }, []);
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? 'hidden' : '';
@@ -28,12 +21,7 @@ export function Navbar() {
   return (
     <>
       <header
-        className={[
-          'fixed top-0 inset-x-0 z-50 transition-all duration-300',
-          scrolled
-            ? 'bg-[var(--bg-ivory)] border-b border-[var(--ui-gray-200)]'
-            : 'bg-transparent',
-        ].join(' ')}
+        className="fixed inset-x-0 top-0 z-50 border-b border-black/[0.06] bg-[#fffdf9]/90 backdrop-blur-xl"
       >
         <div className="container-editorial h-20 flex items-center justify-between">
 
@@ -41,7 +29,7 @@ export function Navbar() {
           <Link
             href="/"
             className="flex items-center gap-2 font-display font-semibold text-h3"
-            style={{ color: 'var(--color-primary)' }}
+            style={{ color: '#795145' }}
           >
             <ScissorsIcon size={22} />
             پرنگارین
@@ -50,9 +38,9 @@ export function Navbar() {
           {/* Center nav — desktop */}
           <nav className="hidden md:flex items-center gap-8 text-body-sm font-medium"
             style={{ color: 'var(--color-text)' }}>
-            <Link href="/salons" className="hover:text-[var(--color-primary)] transition-colors">آرایشگاه‌ها</Link>
-            <Link href="/academy" className="hover:text-[var(--color-primary)] transition-colors">آکادمی</Link>
-            <Link href="/salons/new" className="hover:text-[var(--color-primary)] transition-colors">ثبت سالن</Link>
+            <Link href="/salons" className="transition-colors hover:text-[#8b5e50]">آرایشگاه‌ها</Link>
+            <Link href="/academy" className="transition-colors hover:text-[#8b5e50]">آکادمی</Link>
+            <Link href="/salon-owner/login?returnTo=/dashboard/salons/new" className="transition-colors hover:text-[#8b5e50]">ثبت سالن</Link>
           </nav>
 
           {/* Right CTA — desktop */}
@@ -101,8 +89,7 @@ export function Navbar() {
                   ورود
                 </Link>
                 <Link href="/salons"
-                  className="px-5 py-2.5 text-body-sm font-medium rounded-md transition-all duration-250 hover:-translate-y-0.5 hover:bg-[var(--color-primary-hover)]"
-                  style={{ background: 'var(--color-primary)', color: 'var(--color-primary-foreground)' }}>
+                  className="rounded-md bg-[#8b5e50] px-5 py-2.5 text-body-sm font-medium text-white transition-all duration-250 hover:-translate-y-0.5 hover:bg-[#6f473c]">
                   رزرو نوبت
                 </Link>
               </>
@@ -125,7 +112,7 @@ export function Navbar() {
       {mobileOpen && (
         <div
           className="fixed inset-0 z-[60] flex flex-col px-8 py-10"
-          style={{ background: 'var(--brand-plum-600)', color: 'var(--bg-ivory)' }}
+          style={{ background: '#30393d', color: 'var(--bg-ivory)' }}
         >
           <div className="flex justify-between items-center mb-12">
             <span className="font-display font-semibold text-h3" style={{ color: 'var(--bg-ivory)' }}>
@@ -140,7 +127,7 @@ export function Navbar() {
             {[
               { href: '/salons',   label: 'آرایشگاه‌ها' },
               { href: '/academy',  label: 'آکادمی' },
-              { href: '/salons/new', label: 'ثبت سالن' },
+              { href: '/salon-owner/login?returnTo=/dashboard/salons/new', label: 'ثبت سالن' },
               { href: '/role-selector', label: 'ورود / ثبت‌نام' },
             ].map((item) => (
               <Link
@@ -160,7 +147,7 @@ export function Navbar() {
               href="/login"
               onClick={() => setMobileOpen(false)}
               className="block w-full text-center px-8 py-4 rounded-md font-medium text-body transition-all"
-              style={{ background: 'var(--brand-gold-600)', color: 'var(--brand-plum-900)' }}
+              style={{ background: '#ead3a6', color: '#302520' }}
             >
               رزرو نوبت
             </Link>

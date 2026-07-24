@@ -1,6 +1,6 @@
 'use client';
 
-import { useDeferredValue, useMemo, useState } from 'react';
+import { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { CheckCircle, MapPin, Search, SlidersHorizontal, Star, X } from 'lucide-react';
 import { useSearchSalons } from '@/lib/api-hooks';
@@ -29,8 +29,18 @@ type SalonSummary = {
   }>;
 };
 
-const CITIES = ['همه شهرها', 'تهران', 'اصفهان', 'مشهد', 'شیراز', 'تبریز', 'کرج'];
-const SERVICES = ['همه خدمات', 'رنگ مو', 'کراتین', 'میکاپ', 'ناخن', 'اصلاح', 'عروس'];
+const CITIES = ['همه شهرها', 'تهران', 'سمنان', 'اصفهان', 'مشهد', 'شیراز', 'تبریز', 'کرج'];
+const SERVICES = [
+  'همه خدمات',
+  'کوتاهی',
+  'رنگ مو',
+  'کراتین',
+  'میکاپ',
+  'ناخن',
+  'پوست',
+  'اصلاح',
+  'عروس',
+];
 const SORT_OPTIONS = [
   { value: 'rating', label: 'بهترین امتیاز' },
   { value: 'reviews', label: 'بیشترین نظر' },
@@ -45,6 +55,22 @@ export default function SalonsPage() {
   const [page, setPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
   const deferredSearch = useDeferredValue(search);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const initialSearch = params.get('q');
+    const initialCity = params.get('city');
+    const initialService = params.get('service');
+    const initialGender = params.get('gender');
+
+    if (initialSearch) setSearch(initialSearch);
+    if (initialCity) {
+      if (CITIES.includes(initialCity)) setCity(initialCity);
+      else if (!initialSearch) setSearch(initialCity);
+    }
+    if (initialService && SERVICES.includes(initialService)) setService(initialService);
+    if (initialGender === 'FEMALE' || initialGender === 'MALE') setGender(initialGender);
+  }, []);
 
   const queryParams = useMemo(() => {
     const params: Record<string, string> = {

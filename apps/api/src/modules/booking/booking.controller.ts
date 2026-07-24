@@ -1,11 +1,18 @@
 import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { BookingStatus } from '@prisma/client';
+import { IsEnum } from 'class-validator';
 import { BookingService, CreateBookingDto } from './booking.service';
 import { AvailabilityService } from './availability.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser, JwtPayload } from '../../common/decorators/current-user.decorator';
 import { PaginationDto } from '../../common/dto/pagination.dto';
+
+class UpdateBookingStatusDto {
+  @ApiProperty({ enum: BookingStatus })
+  @IsEnum(BookingStatus)
+  status: BookingStatus;
+}
 
 @ApiTags('Booking')
 @Controller('bookings')
@@ -80,7 +87,7 @@ export class BookingController {
   updateStatus(
     @Param('id') id: string,
     @CurrentUser() u: JwtPayload,
-    @Body() body: { status: BookingStatus },
+    @Body() body: UpdateBookingStatusDto,
   ) {
     return this.bookingService.updateStatus(id, u.sub, body.status);
   }

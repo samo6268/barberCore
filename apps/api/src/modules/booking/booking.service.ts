@@ -5,16 +5,51 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { BookingStatus } from '@prisma/client';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  ArrayMinSize,
+  ArrayUnique,
+  IsArray,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Matches,
+  MaxLength,
+} from 'class-validator';
 import { PrismaService } from '../../prisma/prisma.service';
 import { PaginationDto, paginate } from '../../common/dto/pagination.dto';
 import { AvailabilityService } from './availability.service';
+import { getIranDayBounds, parseIranDateTime } from '../../common/time/iran-time';
 
 export class CreateBookingDto {
+  @ApiProperty()
+  @IsUUID()
   salonId: string;
+
+  @ApiProperty({ type: [String] })
+  @IsArray()
+  @ArrayMinSize(1)
+  @ArrayUnique()
+  @IsUUID('4', { each: true })
   serviceIds: string[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsUUID()
   staffId?: string;
+
+  @ApiProperty({ example: '2030-01-10' })
+  @Matches(/^\d{4}-\d{2}-\d{2}$/)
   date: string; // YYYY-MM-DD
+
+  @ApiProperty({ example: '10:00' })
+  @Matches(/^\d{2}:\d{2}$/)
   time: string; // HH:mm
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(1000)
   notes?: string;
 }
 
@@ -125,6 +160,7 @@ export class BookingService {
           items: { include: { service: true } },
           salon: { select: { name: true, logoUrl: true, address: true } },
           staff: { select: { displayName: true, avatarUrl: true } },
+          review: { select: { id: true } },
         },
         orderBy: { startsAt: 'desc' },
         skip,
@@ -141,10 +177,12 @@ export class BookingService {
 
     const where: Record<string, unknown> = { salonId };
     if (date) {
-      const d = new Date(date);
-      const next = new Date(d);
-      next.setDate(next.getDate() + 1);
-      where['startsAt'] = { gte: d, lt: next };
+      try {
+        const { start, end } = getIranDayBounds(date);
+        where['startsAt'] = { gte: start, lt: end };
+      } catch {
+        throw new BadRequestException('تاریخ معتبر نیست');
+      }
     }
 
     return this.prisma.booking.findMany({
@@ -185,24 +223,44 @@ export class BookingService {
     if (!booking) throw new NotFoundException('رزرو یافت نشد');
     const salon = await this.prisma.salon.findUnique({ where: { id: booking.salonId } });
     if (salon?.ownerId !== ownerId) throw new ForbiddenException('دسترسی غیرمجاز');
-    return this.prisma.booking.update({ where: { id }, data: { status } });
+    if (booking.status === status) return booking;
+
+    const allowedTransitions: Partial<Record<BookingStatus, BookingStatus[]>> = {
+      PENDING: [BookingStatus.CONFIRMED, BookingStatus.CANCELLED],
+      CONFIRMED: [
+        BookingStatus.IN_PROGRESS,
+        BookingStatus.COMPLETED,
+        BookingStatus.CANCELLED,
+        BookingStatus.NO_SHOW,
+      ],
+      IN_PROGRESS: [BookingStatus.COMPLETED, BookingStatus.CANCELLED],
+    };
+    if (!allowedTransitions[booking.status]?.includes(status)) {
+      throw new BadRequestException('تغییر وضعیت رزرو مجاز نیست');
+    }
+
+    return this.prisma.booking.update({
+      where: { id },
+      data: {
+        status,
+        ...(status === BookingStatus.CONFIRMED ? { confirmedAt: new Date() } : {}),
+        ...(status === BookingStatus.COMPLETED ? { completedAt: new Date() } : {}),
+        ...(status === BookingStatus.CANCELLED
+          ? {
+              cancelledAt: new Date(),
+              cancelledBy: ownerId,
+              cancellationReason: 'لغو توسط سالن',
+            }
+          : {}),
+      },
+    });
   }
 
   private parseStartsAt(date: string, time: string): Date {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !/^\d{2}:\d{2}$/.test(time)) {
+    try {
+      return parseIranDateTime(date, time);
+    } catch {
       throw new BadRequestException('تاریخ یا ساعت رزرو معتبر نیست');
     }
-    const [year, month, day] = date.split('-').map(Number);
-    const [hour, minute] = time.split(':').map(Number);
-    const startsAt = new Date(Date.UTC(year, month - 1, day, hour, minute));
-    if (
-      startsAt.getUTCFullYear() !== year ||
-      startsAt.getUTCMonth() !== month - 1 ||
-      startsAt.getUTCDate() !== day ||
-      startsAt.getUTCHours() !== hour ||
-      startsAt.getUTCMinutes() !== minute
-    )
-      throw new BadRequestException('تاریخ یا ساعت رزرو معتبر نیست');
-    return startsAt;
   }
 }

@@ -48,16 +48,6 @@ export default function CustomerLoginPage() {
     }
   };
 
-  const demoLogin = async () => {
-    try {
-      await verifyOtp.mutateAsync({ phone: '09100000001', code: '123456', demo: true });
-      toast.success('ورود نمونه موفق');
-      router.replace(returnTo);
-    } catch {
-      toast.error('خطا');
-    }
-  };
-
   return (
     <AuthLayout
       heroImage={HERO_IMAGES[0]}
@@ -120,26 +110,6 @@ export default function CustomerLoginPage() {
             {sendOtp.isPending ? 'در حال ارسال...' : 'دریافت کد تأیید'}
           </button>
 
-          <div className="relative flex items-center gap-3 my-2">
-            <div className="flex-1 h-px" style={{ background: 'var(--ui-gray-200)' }} />
-            <span className="text-xs" style={{ color: 'var(--ui-gray-400)' }}>
-              یا
-            </span>
-            <div className="flex-1 h-px" style={{ background: 'var(--ui-gray-200)' }} />
-          </div>
-
-          <button
-            onClick={demoLogin}
-            disabled={verifyOtp.isPending}
-            className="w-full py-3 rounded-xl text-sm font-medium border-2 transition-all hover:-translate-y-0.5 disabled:opacity-50"
-            style={{
-              borderColor: 'var(--ui-gray-200)',
-              color: 'var(--brand-navy-600)',
-              background: 'white',
-            }}
-          >
-            ورود نمونه (بدون API)
-          </button>
         </div>
       ) : (
         <div className="space-y-4">
@@ -152,6 +122,9 @@ export default function CustomerLoginPage() {
               {phone}
             </span>{' '}
             ارسال شد
+          </p>
+          <p className="text-center text-xs" style={{ color: 'var(--ui-gray-400)' }}>
+            کد ورود در محیط توسعه: ۱۲۳۴۵۶
           </p>
 
           <div>

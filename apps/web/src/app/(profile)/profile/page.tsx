@@ -1,198 +1,128 @@
 'use client';
 
-import { useState } from 'react';
-import { User, Calendar, Award, Edit2, Camera, Star, Clock, CheckCircle } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { Calendar, Edit2, Mail, Phone, Save, User, X } from 'lucide-react';
+import { toast } from 'sonner';
+import { useMe, useUpdateProfile } from '@/lib/api-hooks';
 
-const MOCK_PROFILE = {
-  firstName: 'سارا', lastName: 'محمدی',
-  phone: '09121234567', email: 'sara@example.com',
-  city: 'تهران', birthday: '۱۳۷۵/۰۴/۱۵',
-  avatarInitial: 'س',
+const ROLE_LABELS: Record<string, string> = {
+  CUSTOMER: 'مشتری',
+  SALON_OWNER: 'مالک سالن',
+  STAFF: 'متخصص',
+  SUPER_ADMIN: 'مدیر سیستم',
 };
-
-const MOCK_BOOKINGS = [
-  { id: 'b1', salon: 'لوکس بیوتی', service: 'رنگ مو', date: '۱۴۰۳/۱۰/۱۲', time: '۱۴:۰۰', price: 850_000, status: 'COMPLETED' },
-  { id: 'b2', salon: 'رز سالن',    service: 'کراتین',  date: '۱۴۰۳/۰۹/۲۵', time: '۱۰:۳۰', price: 1_200_000, status: 'COMPLETED' },
-  { id: 'b3', salon: 'لوکس بیوتی', service: 'مانیکور', date: '۱۴۰۳/۱۰/۲۰', time: '۱۶:۰۰', price: 320_000, status: 'CONFIRMED' },
-];
-
-const MOCK_CERTS = [
-  { id: 'cert1', course: 'رنگ‌آمیزی حرفه‌ای مو', issuedAt: '۱۴۰۳/۰۸/۱۵', instructor: 'سارا کریمی' },
-];
-
-const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
-  CONFIRMED: { label: 'تأیید شده', color: '#27AE60' },
-  COMPLETED: { label: 'انجام شده', color: 'var(--brand-navy-400)' },
-  CANCELLED: { label: 'لغو شده',  color: '#C0392B' },
-  PENDING:   { label: 'در انتظار', color: '#E67E22' },
-};
-
-type Tab = 'profile' | 'bookings' | 'certificates';
 
 export default function ProfilePage() {
-  const [tab, setTab] = useState<Tab>('profile');
+  const { data: user, isLoading, isError, refetch } = useMe();
+  const updateProfile = useUpdateProfile();
   const [editMode, setEditMode] = useState(false);
-  const [form, setForm] = useState(MOCK_PROFILE);
+  const [form, setForm] = useState({ firstName: '', lastName: '', email: '' });
+
+  useEffect(() => {
+    if (!user) return;
+    setForm({
+      firstName: user.firstName ?? '',
+      lastName: user.lastName ?? '',
+      email: user.email ?? '',
+    });
+  }, [user]);
+
+  const save = async () => {
+    if (!form.firstName.trim() || !form.lastName.trim()) {
+      return toast.error('نام و نام خانوادگی را وارد کنید');
+    }
+    try {
+      await updateProfile.mutateAsync({
+        firstName: form.firstName.trim(),
+        lastName: form.lastName.trim(),
+        email: form.email.trim() || undefined,
+      });
+      setEditMode(false);
+      toast.success('پروفایل با موفقیت به‌روزرسانی شد');
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || 'ذخیره تغییرات انجام نشد');
+    }
+  };
+
+  if (isLoading) {
+    return <div className="min-h-screen bg-[#fffdf9] px-4 py-28"><div className="mx-auto h-80 max-w-2xl animate-pulse rounded-3xl bg-white" /></div>;
+  }
+
+  if (isError || !user) {
+    return (
+      <div className="min-h-screen bg-[#fffdf9] px-4 py-28 text-center">
+        <h1 className="text-xl font-semibold text-[#2d2927]">دریافت پروفایل انجام نشد</h1>
+        <div className="mt-5 flex justify-center gap-3">
+          <button onClick={() => refetch()} className="rounded-xl border border-[#ded7d1] bg-white px-5 py-2.5 text-sm">تلاش دوباره</button>
+          <Link href="/login?returnTo=/profile" className="rounded-xl bg-[#30393d] px-5 py-2.5 text-sm text-white">ورود</Link>
+        </div>
+      </div>
+    );
+  }
+
+  const initial = (user.firstName || user.lastName || 'پ').trim().charAt(0);
 
   return (
-    <div className="min-h-screen py-8 px-4" style={{ background: 'var(--bg-ivory)' }}>
-      <div className="max-w-2xl mx-auto">
-
-        {/* Header card */}
-        <div className="rounded-2xl border overflow-hidden mb-6"
-          style={{ background: 'white', borderColor: 'var(--ui-gray-200)' }}>
-          {/* Cover */}
-          <div className="h-24 relative" style={{ background: 'linear-gradient(135deg, var(--brand-plum-600), var(--brand-rose-600, #C0392B))' }}>
-            <button className="absolute top-3 left-3 p-1.5 rounded-lg"
-              style={{ background: 'rgba(255,255,255,0.2)', color: 'white' }}>
-              <Camera size={16} />
-            </button>
-          </div>
-
-          {/* Avatar + name */}
-          <div className="px-6 pb-6">
-            <div className="flex items-end justify-between -mt-8 mb-4">
-              <div className="relative">
-                <div className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold ring-4 ring-white"
-                  style={{ background: 'var(--brand-rose-200, #EAC5D1)', color: 'var(--brand-plum-600)' }}>
-                  {MOCK_PROFILE.avatarInitial}
-                </div>
-                <button className="absolute -bottom-1 -left-1 w-6 h-6 rounded-full flex items-center justify-center"
-                  style={{ background: 'var(--brand-gold-600)', color: 'var(--brand-plum-900)' }}>
-                  <Camera size={11} />
-                </button>
-              </div>
-              <button onClick={() => setEditMode(e => !e)}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium border"
-                style={{ borderColor: 'var(--ui-gray-200)', color: 'var(--brand-navy-600)' }}>
-                <Edit2 size={14} /> {editMode ? 'انصراف' : 'ویرایش'}
+    <main className="min-h-screen bg-[#fffdf9] px-4 pb-20 pt-28">
+      <div className="mx-auto max-w-2xl">
+        <section className="overflow-hidden rounded-3xl border border-[#e7e0da] bg-white">
+          <div className="h-28 bg-gradient-to-l from-[#30393d] to-[#536066]" />
+          <div className="px-6 pb-7 sm:px-8">
+            <div className="-mt-10 flex items-end justify-between gap-4">
+              <div className="flex h-20 w-20 items-center justify-center rounded-full border-4 border-white bg-[#ead3a6] text-3xl font-bold text-[#3d2b25]">{initial}</div>
+              <button onClick={() => setEditMode((current) => !current)} className="flex items-center gap-2 rounded-xl border border-[#ded7d1] px-4 py-2 text-sm font-medium text-[#30393d]">
+                {editMode ? <X size={15} /> : <Edit2 size={15} />}
+                {editMode ? 'انصراف' : 'ویرایش پروفایل'}
               </button>
             </div>
-            <h1 className="text-xl font-bold" style={{ color: 'var(--brand-navy-600)', fontFamily: 'var(--font-display)' }}>
-              {MOCK_PROFILE.firstName} {MOCK_PROFILE.lastName}
-            </h1>
-            <p className="text-sm" style={{ color: 'var(--ui-gray-500)' }}>{MOCK_PROFILE.city}</p>
+            <h1 className="mt-5 font-display text-2xl font-semibold text-[#292421]">{user.firstName} {user.lastName}</h1>
+            <p className="mt-1 text-sm text-[#817872]">{ROLE_LABELS[user.role] ?? user.role}</p>
           </div>
-        </div>
+        </section>
 
-        {/* Tabs */}
-        <div className="flex gap-1 p-1 rounded-xl mb-6" style={{ background: 'var(--ui-gray-100)' }}>
-          {([['profile', 'پروفایل', <User size={16} />], ['bookings', 'رزروها', <Calendar size={16} />], ['certificates', 'گواهینامه‌ها', <Award size={16} />]] as [Tab, string, React.ReactNode][]).map(([t, l, icon]) => (
-            <button key={t} onClick={() => setTab(t)}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all"
-              style={{
-                background: tab === t ? 'white' : 'transparent',
-                color: tab === t ? 'var(--brand-navy-600)' : 'var(--ui-gray-500)',
-                boxShadow: tab === t ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
-              }}>
-              {icon}{l}
+        <section className="mt-5 rounded-3xl border border-[#e7e0da] bg-white p-6 sm:p-8">
+          <div className="mb-7 flex items-center justify-between">
+            <div><p className="text-xs font-semibold text-[#a16e5d]">اطلاعات حساب</p><h2 className="mt-2 text-lg font-semibold text-[#292421]">مشخصات فردی</h2></div>
+            <User size={22} className="text-[#8b5e50]" />
+          </div>
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Field label="نام" value={form.firstName} editable={editMode} onChange={(value) => setForm((current) => ({ ...current, firstName: value }))} />
+            <Field label="نام خانوادگی" value={form.lastName} editable={editMode} onChange={(value) => setForm((current) => ({ ...current, lastName: value }))} />
+            <Field label="ایمیل" value={form.email} editable={editMode} icon={<Mail size={15} />} dir="ltr" onChange={(value) => setForm((current) => ({ ...current, email: value }))} />
+            <Field label="شماره موبایل" value={user.phone ?? 'ثبت نشده'} editable={false} icon={<Phone size={15} />} dir="ltr" onChange={() => undefined} />
+          </div>
+          {editMode && (
+            <button onClick={save} disabled={updateProfile.isPending} className="mt-7 flex w-full items-center justify-center gap-2 rounded-xl bg-[#8b5e50] py-3 text-sm font-semibold text-white disabled:opacity-50">
+              <Save size={16} /> {updateProfile.isPending ? 'در حال ذخیره...' : 'ذخیره تغییرات'}
             </button>
-          ))}
-        </div>
+          )}
+        </section>
 
-        {/* Tab content */}
-        {tab === 'profile' && (
-          <div className="rounded-2xl border p-6 space-y-5" style={{ background: 'white', borderColor: 'var(--ui-gray-200)' }}>
-            {[
-              { label: 'نام', key: 'firstName' }, { label: 'نام خانوادگی', key: 'lastName' },
-              { label: 'شماره موبایل', key: 'phone' }, { label: 'ایمیل', key: 'email' },
-              { label: 'شهر', key: 'city' }, { label: 'تاریخ تولد', key: 'birthday' },
-            ].map(({ label, key }) => (
-              <div key={key}>
-                <label className="block text-xs font-medium mb-1.5" style={{ color: 'var(--ui-gray-500)' }}>{label}</label>
-                {editMode ? (
-                  <input value={(form as any)[key]}
-                    onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
-                    className="w-full border-b-2 pb-2 bg-transparent outline-none text-sm"
-                    style={{ borderColor: 'var(--brand-plum-600)', color: 'var(--brand-navy-600)' }} />
-                ) : (
-                  <p className="text-sm" style={{ color: 'var(--brand-navy-600)' }}>{(form as any)[key]}</p>
-                )}
-              </div>
-            ))}
-            {editMode && (
-              <button className="w-full py-3 rounded-xl font-semibold text-sm mt-4"
-                style={{ background: 'var(--brand-plum-600)', color: 'white' }}
-                onClick={() => setEditMode(false)}>
-                ذخیره تغییرات
-              </button>
-            )}
-          </div>
-        )}
-
-        {tab === 'bookings' && (
-          <div className="space-y-4">
-            {MOCK_BOOKINGS.map(b => {
-              const st = STATUS_CONFIG[b.status];
-              return (
-                <div key={b.id} className="rounded-2xl border p-5" style={{ background: 'white', borderColor: 'var(--ui-gray-200)' }}>
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <h3 className="font-semibold text-base" style={{ color: 'var(--brand-navy-600)', fontFamily: 'var(--font-display)' }}>{b.salon}</h3>
-                      <p className="text-sm" style={{ color: 'var(--ui-gray-500)' }}>{b.service}</p>
-                    </div>
-                    <span className="text-xs font-medium px-2.5 py-1 rounded-full"
-                      style={{ background: `${st.color}18`, color: st.color }}>
-                      {st.label}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-3" style={{ color: 'var(--ui-gray-500)' }}>
-                      <span className="flex items-center gap-1"><Calendar size={13} />{b.date}</span>
-                      <span className="flex items-center gap-1"><Clock size={13} />{b.time}</span>
-                    </div>
-                    <span className="font-semibold" style={{ color: 'var(--brand-plum-600)' }}>
-                      {b.price.toLocaleString('fa-IR')} تومان
-                    </span>
-                  </div>
-                  {b.status === 'COMPLETED' && (
-                    <div className="mt-3 pt-3 border-t flex justify-end" style={{ borderColor: 'var(--ui-gray-100)' }}>
-                      <Link href={`/reviews/new?booking=${b.id}`}
-                        className="flex items-center gap-1.5 text-xs font-medium"
-                        style={{ color: 'var(--brand-gold-600)' }}>
-                        <Star size={13} fill="var(--brand-gold-600)" /> ثبت نظر
-                      </Link>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {tab === 'certificates' && (
-          <div className="space-y-4">
-            {MOCK_CERTS.map(cert => (
-              <div key={cert.id} className="rounded-2xl border p-6 flex items-center gap-4"
-                style={{ background: 'white', borderColor: 'var(--ui-gray-200)' }}>
-                <div className="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0"
-                  style={{ background: 'rgba(216,183,106,0.12)' }}>
-                  <Award size={28} strokeWidth={1.5} style={{ color: 'var(--brand-gold-600)' }} />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-base" style={{ color: 'var(--brand-navy-600)', fontFamily: 'var(--font-display)' }}>{cert.course}</h3>
-                  <p className="text-xs mt-0.5" style={{ color: 'var(--ui-gray-500)' }}>مدرس: {cert.instructor}</p>
-                  <p className="text-xs mt-0.5" style={{ color: 'var(--ui-gray-500)' }}>صدور: {cert.issuedAt}</p>
-                </div>
-                <button className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-lg"
-                  style={{ background: 'rgba(216,183,106,0.12)', color: 'var(--brand-gold-600)' }}>
-                  دانلود
-                </button>
-              </div>
-            ))}
-            {MOCK_CERTS.length === 0 && (
-              <div className="text-center py-16" style={{ color: 'var(--ui-gray-400)' }}>
-                <Award size={48} strokeWidth={1} className="mx-auto mb-3" />
-                <p>هنوز گواهینامه‌ای ندارید</p>
-                <Link href="/academy" className="text-sm mt-2 inline-block" style={{ color: 'var(--brand-plum-600)' }}>
-                  مشاهده دوره‌های آموزشی
-                </Link>
-              </div>
-            )}
-          </div>
-        )}
+        <Link href="/profile/bookings" className="mt-5 flex items-center justify-between rounded-3xl border border-[#e7e0da] bg-white p-6 transition hover:border-[#cdbdb2]">
+          <span><strong className="block text-sm text-[#292421]">رزروهای من</strong><span className="mt-1 block text-xs text-[#817872]">مشاهده، پیگیری یا لغو نوبت‌ها</span></span>
+          <Calendar size={22} className="text-[#8b5e50]" />
+        </Link>
       </div>
-    </div>
+    </main>
+  );
+}
+
+function Field({ label, value, editable, onChange, icon, dir }: {
+  label: string;
+  value: string;
+  editable: boolean;
+  onChange: (value: string) => void;
+  icon?: React.ReactNode;
+  dir?: 'ltr' | 'rtl';
+}) {
+  return (
+    <label>
+      <span className="mb-2 block text-xs font-medium text-[#817872]">{label}</span>
+      <span className="flex items-center gap-2 rounded-xl border border-[#e7e0da] bg-[#faf7f3] px-4 py-3">
+        {icon && <span className="text-[#9a8e87]">{icon}</span>}
+        <input value={value} readOnly={!editable} onChange={(event) => onChange(event.target.value)} dir={dir} className="w-full bg-transparent text-sm text-[#292421] outline-none read-only:cursor-default" />
+      </span>
+    </label>
   );
 }

@@ -115,14 +115,14 @@ describe('AvailabilityService', () => {
     ]);
     prisma.booking.findMany.mockResolvedValueOnce([
       {
-        startsAt: new Date('2030-01-10T09:30:00.000Z'),
-        endsAt: new Date('2030-01-10T10:30:00.000Z'),
+        startsAt: new Date('2030-01-10T06:00:00.000Z'),
+        endsAt: new Date('2030-01-10T07:00:00.000Z'),
       },
     ]);
     prisma.timeOff.findMany.mockResolvedValueOnce([
       {
-        startsAt: new Date('2030-01-10T11:30:00.000Z'),
-        endsAt: new Date('2030-01-10T12:00:00.000Z'),
+        startsAt: new Date('2030-01-10T08:00:00.000Z'),
+        endsAt: new Date('2030-01-10T08:30:00.000Z'),
       },
     ]);
 

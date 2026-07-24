@@ -1,11 +1,33 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import {
+  IsBoolean,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Length,
+  Max,
+  MaxLength,
+  Min,
+} from 'class-validator';
 import { PrismaService } from '../../prisma/prisma.service';
 
 export class CreateServiceDto {
-  name: string; description?: string; categoryId?: string;
-  durationMinutes: number; price: number; discountPrice?: number;
-  isOnlineBookable?: boolean; maxParallelBookings?: number; sortOrder?: number;
+  @ApiProperty() @IsString() @Length(2, 100) name: string;
+  @ApiPropertyOptional() @IsOptional() @IsString() @MaxLength(1000) description?: string;
+  @ApiPropertyOptional() @IsOptional() @IsUUID() categoryId?: string;
+  @ApiProperty() @Type(() => Number) @IsInt() @Min(5) @Max(1440) durationMinutes: number;
+  @ApiProperty() @Type(() => Number) @IsNumber() @Min(0) price: number;
+  @ApiPropertyOptional() @IsOptional() @Type(() => Number) @IsNumber() @Min(0) discountPrice?: number;
+  @ApiPropertyOptional() @IsOptional() @IsBoolean() isOnlineBookable?: boolean;
+  @ApiPropertyOptional() @IsOptional() @Type(() => Number) @IsInt() @Min(1) maxParallelBookings?: number;
+  @ApiPropertyOptional() @IsOptional() @Type(() => Number) @IsInt() @Min(0) sortOrder?: number;
 }
+
+export class UpdateServiceDto extends PartialType(CreateServiceDto) {}
 
 @Injectable()
 export class ServicesService {

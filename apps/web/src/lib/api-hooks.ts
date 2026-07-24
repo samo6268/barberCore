@@ -1,32 +1,12 @@
 'use client';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from './api';
-import type { ApiResponse } from './api';
-import {
-  getMockUser,
-  mockLogout,
-  isMockSession,
-  saveMockReview,
-  hasMockReview,
-} from './mock-session';
-import {
-  MOCK_OWNER_SALONS,
-  MOCK_SALON_BOOKINGS,
-  MOCK_SALON_SERVICES,
-  MOCK_SALON_STAFF,
-  MOCK_SERVICE_CATEGORIES,
-  MOCK_MY_BOOKINGS,
-} from './mock-data';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { api, type ApiResponse } from './api';
 
 // ── Auth ──────────────────────────────────────────────
 export const useMe = () =>
   useQuery({
     queryKey: ['me'],
-    queryFn: async () => {
-      const mock = getMockUser();
-      if (mock) return mock;
-      return api.get<ApiResponse<any>>('/auth/me').then((r) => r.data.data);
-    },
+    queryFn: () => api.get<ApiResponse<any>>('/auth/me').then((r) => r.data.data),
     retry: false,
   });
 
@@ -35,41 +15,56 @@ export const useSendOtp = () =>
     mutationFn: (phone: string) => api.post('/auth/otp/send', { phone }).then((r) => r.data),
   });
 
+const persistTokens = (data: { accessToken: string; refreshToken: string }) => {
+  localStorage.setItem('access_token', data.accessToken);
+  localStorage.setItem('refresh_token', data.refreshToken);
+};
+
 export const useVerifyOtp = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({
-      phone,
-      code,
-      demo = false,
-    }: {
-      phone: string;
-      code: string;
-      demo?: boolean;
-    }) => {
-      if (demo) {
-        const { mockLogin } = await import('./mock-session');
-        const user = mockLogin(phone);
-        qc.setQueryData(['me'], user);
-        return { success: true, user };
-      }
-      const data = await api.post('/auth/otp/verify', { phone, code }).then((r) => r.data);
-      localStorage.setItem('access_token', data.accessToken);
-      localStorage.setItem('refresh_token', data.refreshToken);
+    mutationFn: async ({ phone, code }: { phone: string; code: string }) => {
+      const response = await api.post('/auth/otp/verify', { phone, code }).then((r) => r.data);
+      const data = response.data;
+      persistTokens(data);
       qc.invalidateQueries({ queryKey: ['me'] });
       return data;
     },
   });
 };
 
+export const useLoginWithEmail = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ email, password }: { email: string; password: string }) => {
+      const response = await api.post('/auth/login', { email, password }).then((r) => r.data);
+      const data = response.data;
+      persistTokens(data);
+      await qc.invalidateQueries({ queryKey: ['me'] });
+      return data;
+    },
+  });
+};
+
+export const useUpdateProfile = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (dto: { firstName?: string; lastName?: string; email?: string }) =>
+      api.patch('/users/me', dto).then((r) => r.data.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['me'] }),
+  });
+};
+
+export const useApplyAsInstructor = () =>
+  useMutation({
+    mutationFn: (dto: { bio: string; expertise: string[] }) =>
+      api.post('/education/instructor/apply', dto).then((r) => r.data.data),
+  });
+
 export const useLogout = () => {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async () => {
-      if (isMockSession()) {
-        mockLogout();
-        return;
-      }
       await api
         .post('/auth/logout', { refreshToken: localStorage.getItem('refresh_token') })
         .catch(() => {});
@@ -114,11 +109,7 @@ export const useAvailability = (params: {
 }) =>
   useQuery({
     queryKey: ['availability', params],
-    queryFn: async () => {
-      if (isMockSession()) {
-        const { MOCK_AVAILABLE_SLOTS } = await import('./mock-data');
-        return MOCK_AVAILABLE_SLOTS;
-      }
+    queryFn: () => {
       const { serviceIds, ...rest } = params;
       return api
         .get('/bookings/availability', {
@@ -147,118 +138,70 @@ type CreateBookingInput = {
 export const useCreateBooking = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ preview, ...dto }: CreateBookingInput) => {
-      if (isMockSession()) {
-        return {
-          success: true,
-          data: {
-            id: `mock_booking_${Date.now()}`,
-            ...dto,
-            startsAt: `${dto.date}T${dto.time}:00.000Z`,
-            status: 'CONFIRMED',
-            totalPrice: preview?.totalPrice ?? 0,
-            salon: { name: preview?.salonName ?? 'سالن نمونه', logoUrl: null },
-            items: (preview?.services ?? []).map((service) => ({
-              id: `mock_item_${service.id}`,
-              service,
-            })),
-          },
-        };
-      }
-      return api.post('/bookings', dto).then((r) => r.data);
-    },
-    onSuccess: (result) => {
-      if (!isMockSession()) {
-        qc.invalidateQueries({ queryKey: ['my-bookings'] });
-        return;
-      }
-      qc.setQueryData(['my-bookings'], (current: any) => {
-        const previous = current?.data ?? MOCK_MY_BOOKINGS;
-        return {
-          data: [result.data, ...previous],
-          meta: { total: previous.length + 1 },
-        };
-      });
-    },
+    mutationFn: ({ preview: _preview, ...dto }: CreateBookingInput) =>
+      api.post('/bookings', dto).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['my-bookings'] }),
   });
 };
 
 export const useMyBookings = () =>
   useQuery({
     queryKey: ['my-bookings'],
-    queryFn: () =>
-      isMockSession()
-        ? Promise.resolve({ data: MOCK_MY_BOOKINGS, meta: { total: MOCK_MY_BOOKINGS.length } })
-        : api.get('/bookings/mine').then((r) => r.data),
+    queryFn: () => api.get('/bookings/mine').then((r) => r.data),
   });
 
 export const useCancelBooking = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, reason }: { id: string; reason?: string }) => {
-      if (isMockSession()) return { id, status: 'CANCELLED', cancellationReason: reason };
-      return api.patch(`/bookings/${id}/cancel`, { reason }).then((r) => r.data.data);
-    },
-    onSuccess: (cancelled) => {
-      if (!isMockSession()) {
-        qc.invalidateQueries({ queryKey: ['my-bookings'] });
-        return;
-      }
-      qc.setQueryData(['my-bookings'], (current: any) => ({
-        ...current,
-        data: (current?.data ?? []).map((booking: any) =>
-          booking.id === cancelled.id ? { ...booking, ...cancelled } : booking,
-        ),
-      }));
-    },
+    mutationFn: ({ id, reason }: { id: string; reason?: string }) =>
+      api.patch(`/bookings/${id}/cancel`, { reason }).then((r) => r.data.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['my-bookings'] }),
   });
 };
 
 export const useSalonBookings = (salonId: string, date?: string) =>
   useQuery({
     queryKey: ['salon-bookings', salonId, date],
-    queryFn: async () => {
-      try {
-        return await api
-          .get(`/bookings/salon/${salonId}`, { params: date ? { date } : {} })
-          .then((r) => r.data.data);
-      } catch {
-        return MOCK_SALON_BOOKINGS;
-      }
-    },
+    queryFn: () =>
+      api
+        .get(`/bookings/salon/${salonId}`, { params: date ? { date } : {} })
+        .then((r) => r.data.data),
     enabled: !!salonId,
+    retry: false,
   });
+
+export const useUpdateBookingStatus = (salonId: string, date?: string) => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ bookingId, status }: { bookingId: string; status: string }) =>
+      api.patch(`/bookings/${bookingId}/status`, { status }).then((r) => r.data.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['salon-bookings', salonId, date] });
+      qc.invalidateQueries({ queryKey: ['my-bookings'] });
+    },
+  });
+};
 
 // ── Salons (owner) ──────────────────────────────────
 export const useMySalons = () =>
   useQuery({
     queryKey: ['my-salons'],
-    queryFn: async () => {
-      const mock = getMockUser();
-      if (mock || isMockSession()) return MOCK_OWNER_SALONS;
-      try {
-        return await api.get('/salons/mine').then((r) => r.data.data);
-      } catch {
-        return MOCK_OWNER_SALONS;
-      }
-    },
+    queryFn: () => api.get('/salons/mine').then((r) => r.data.data),
+    retry: false,
+  });
+
+export const useSalonSubscription = (salonId: string) =>
+  useQuery({
+    queryKey: ['salon-subscription', salonId],
+    queryFn: () => api.get(`/subscriptions/salon/${salonId}`).then((r) => r.data.data),
+    enabled: !!salonId,
+    retry: false,
   });
 
 export const useCreateSalon = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (dto: any) => {
-      try {
-        return await api.post('/salons', dto).then((r) => r.data.data);
-      } catch {
-        return {
-          id: 'mock_salon_' + Date.now(),
-          ...dto,
-          status: 'PENDING_REVIEW',
-          _count: { bookings: 0, reviews: 0 },
-        };
-      }
-    },
+    mutationFn: (dto: any) => api.post('/salons', dto).then((r) => r.data.data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['my-salons'] }),
   });
 };
@@ -266,36 +209,18 @@ export const useCreateSalon = () => {
 export const useSalonServices = (salonId: string) =>
   useQuery({
     queryKey: ['services', salonId],
-    queryFn: async () => {
-      try {
-        return await api.get(`/salons/${salonId}/services`).then((r) => r.data.data);
-      } catch {
-        return MOCK_SALON_SERVICES;
-      }
-    },
+    queryFn: () => api.get(`/salons/${salonId}/services`).then((r) => r.data.data),
     enabled: !!salonId,
+    retry: false,
   });
 
 export const useCreateService = (salonId: string) => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (dto: any) => {
-      try {
-        return await api.post(`/salons/${salonId}/services`, dto).then((r) => r.data.data);
-      } catch {
-        return {
-          id: 'mock_svc_' + Date.now(),
-          ...dto,
-          isActive: true,
-          category: { name: dto.categoryName || 'عمومی' },
-        };
-      }
-    },
+    mutationFn: (dto: any) =>
+      api.post(`/salons/${salonId}/services`, dto).then((r) => r.data.data),
     onSuccess: (newSvc) => {
-      qc.setQueryData(['services', salonId], (old: any[]) => [
-        ...(old || MOCK_SALON_SERVICES),
-        newSvc,
-      ]);
+      qc.setQueryData(['services', salonId], (old: any[]) => [...(old || []), newSvc]);
     },
   });
 };
@@ -303,34 +228,18 @@ export const useCreateService = (salonId: string) => {
 export const useSalonStaff = (salonId: string) =>
   useQuery({
     queryKey: ['staff', salonId],
-    queryFn: async () => {
-      try {
-        return await api.get(`/salons/${salonId}/staff`).then((r) => r.data.data);
-      } catch {
-        return MOCK_SALON_STAFF;
-      }
-    },
+    queryFn: () => api.get(`/salons/${salonId}/staff`).then((r) => r.data.data),
     enabled: !!salonId,
+    retry: false,
   });
 
 export const useCreateStaff = (salonId: string) => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (dto: any) => {
-      try {
-        return await api.post(`/salons/${salonId}/staff`, dto).then((r) => r.data.data);
-      } catch {
-        return {
-          id: 'mock_staff_' + Date.now(),
-          ...dto,
-          isActive: true,
-          services: [],
-          avatarUrl: null,
-        };
-      }
-    },
+    mutationFn: (dto: any) =>
+      api.post(`/salons/${salonId}/staff`, dto).then((r) => r.data.data),
     onSuccess: (newStaff) => {
-      qc.setQueryData(['staff', salonId], (old: any[]) => [...(old || MOCK_SALON_STAFF), newStaff]);
+      qc.setQueryData(['staff', salonId], (old: any[]) => [...(old || []), newStaff]);
     },
   });
 };
@@ -338,13 +247,8 @@ export const useCreateStaff = (salonId: string) => {
 export const useServiceCategories = () =>
   useQuery({
     queryKey: ['service-categories'],
-    queryFn: async () => {
-      try {
-        return await api.get('/service-categories').then((r) => r.data.data);
-      } catch {
-        return MOCK_SERVICE_CATEGORIES;
-      }
-    },
+    queryFn: () => api.get('/service-categories').then((r) => r.data.data),
+    retry: false,
   });
 
 // ── Reviews ─────────────────────────────────────────
@@ -358,26 +262,15 @@ export const useSalonReviews = (salonId: string) =>
 export const useSubmitReview = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (dto: {
+    mutationFn: (dto: {
       bookingId: string;
       salonId?: string;
       rating: number;
       comment?: string;
     }) => {
-      try {
-        return await api.post('/reviews', dto).then((r) => r.data);
-      } catch {
-        const saved = saveMockReview({
-          bookingId: dto.bookingId,
-          salonId: dto.salonId || '',
-          rating: dto.rating,
-          comment: dto.comment || '',
-        });
-        return { success: true, data: saved };
-      }
+      const { bookingId, rating, comment } = dto;
+      return api.post('/reviews', { bookingId, rating, comment }).then((r) => r.data);
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['my-bookings'] }),
   });
 };
-
-export const useHasReview = (bookingId: string) => hasMockReview(bookingId);

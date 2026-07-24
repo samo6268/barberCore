@@ -3,24 +3,36 @@ import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { Plus } from 'lucide-react';
-import { useSalonStaff, useCreateStaff } from '@/lib/api-hooks';
+import { useSalonStaff, useCreateStaff, useSalonServices } from '@/lib/api-hooks';
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
 
 export default function StaffPage() {
   const { id } = useParams<{ id: string }>();
   const { data: staff, isLoading } = useSalonStaff(id);
+  const { data: services = [] } = useSalonServices(id);
   const createStaff = useCreateStaff(id);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ displayName: '', bio: '', specialties: '' });
+  const [form, setForm] = useState({
+    displayName: '',
+    phone: '',
+    bio: '',
+    specialties: '',
+    serviceIds: [] as string[],
+  });
 
   const handleCreate = async () => {
-    if (!form.displayName) return toast.error('نام متخصص الزامی است');
+    if (!form.displayName || !form.phone) {
+      return toast.error('نام و شماره موبایل متخصص الزامی است');
+    }
+    if (!form.serviceIds.length) return toast.error('حداقل یک خدمت را انتخاب کنید');
     try {
       await createStaff.mutateAsync({ ...form, specialties: form.specialties.split('،').map(s => s.trim()).filter(Boolean) });
       toast.success('متخصص اضافه شد');
       setShowForm(false);
-      setForm({ displayName: '', bio: '', specialties: '' });
-    } catch { toast.error('خطا در افزودن متخصص'); }
+      setForm({ displayName: '', phone: '', bio: '', specialties: '', serviceIds: [] });
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || 'خطا در افزودن متخصص');
+    }
   };
 
   return (
@@ -40,12 +52,51 @@ export default function StaffPage() {
             <input placeholder="نام متخصص *" value={form.displayName} onChange={e => setForm(p => ({...p, displayName: e.target.value}))}
               className="w-full px-4 py-2 rounded-xl border text-sm outline-none"
               style={{ borderColor: 'var(--ui-gray-200)', background: 'var(--bg-ivory)', color: 'var(--brand-navy-600)' }} />
+            <input placeholder="شماره موبایل متخصص *" value={form.phone} onChange={e => setForm(p => ({...p, phone: e.target.value}))}
+              dir="ltr"
+              className="w-full px-4 py-2 rounded-xl border text-sm outline-none"
+              style={{ borderColor: 'var(--ui-gray-200)', background: 'var(--bg-ivory)', color: 'var(--brand-navy-600)' }} />
             <input placeholder="تخصص‌ها (با ، جدا کنید)" value={form.specialties} onChange={e => setForm(p => ({...p, specialties: e.target.value}))}
               className="w-full px-4 py-2 rounded-xl border text-sm outline-none"
               style={{ borderColor: 'var(--ui-gray-200)', background: 'var(--bg-ivory)', color: 'var(--brand-navy-600)' }} />
             <textarea placeholder="بیوگرافی (اختیاری)" value={form.bio} onChange={e => setForm(p => ({...p, bio: e.target.value}))} rows={2}
               className="w-full px-4 py-2 rounded-xl border text-sm outline-none resize-none"
               style={{ borderColor: 'var(--ui-gray-200)', background: 'var(--bg-ivory)', color: 'var(--brand-navy-600)' }} />
+            <div>
+              <p className="mb-2 text-sm font-medium" style={{ color: 'var(--brand-navy-600)' }}>
+                خدمات قابل ارائه *
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {services.map((service: any) => {
+                  const selected = form.serviceIds.includes(service.id);
+                  return (
+                    <button
+                      key={service.id}
+                      type="button"
+                      onClick={() => setForm((current) => ({
+                        ...current,
+                        serviceIds: selected
+                          ? current.serviceIds.filter((item) => item !== service.id)
+                          : [...current.serviceIds, service.id],
+                      }))}
+                      className="rounded-full border px-3 py-1.5 text-xs"
+                      style={{
+                        borderColor: selected ? 'var(--brand-plum-600)' : 'var(--ui-gray-200)',
+                        background: selected ? 'var(--brand-plum-50)' : 'white',
+                        color: selected ? 'var(--brand-plum-600)' : 'var(--ui-gray-500)',
+                      }}
+                    >
+                      {service.name}
+                    </button>
+                  );
+                })}
+              </div>
+              {!services.length && (
+                <p className="text-xs" style={{ color: '#dc2626' }}>
+                  ابتدا حداقل یک خدمت برای سالن تعریف کنید.
+                </p>
+              )}
+            </div>
             <div className="flex gap-2">
               <button onClick={handleCreate} disabled={createStaff.isPending}
                 className="px-6 py-2 rounded-xl text-white text-sm font-medium disabled:opacity-50" style={{ background: 'var(--brand-plum-600)' }}>

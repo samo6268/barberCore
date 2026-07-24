@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserRole } from '@prisma/client';
-import { ServicesService, CreateServiceDto } from './services.service';
+import { ServicesService, CreateServiceDto, UpdateServiceDto } from './services.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
@@ -21,7 +21,7 @@ export class ServicesController {
   }
 
   @Patch(':id') @ApiBearerAuth() @UseGuards(JwtAuthGuard, RolesGuard) @Roles(UserRole.SALON_OWNER, UserRole.SUPER_ADMIN)
-  update(@Param('salonId') salonId: string, @Param('id') id: string, @CurrentUser() u: JwtPayload, @Body() dto: Partial<CreateServiceDto>) {
+  update(@Param('salonId') salonId: string, @Param('id') id: string, @CurrentUser() u: JwtPayload, @Body() dto: UpdateServiceDto) {
     return this.service.update(id, salonId, u.sub, dto);
   }
 

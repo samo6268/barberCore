@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { UsersService } from './users.service';
+import { UpdateProfileDto, UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser, JwtPayload } from '../../common/decorators/current-user.decorator';
 
@@ -15,7 +15,7 @@ export class UsersController {
   getMe(@CurrentUser() u: JwtPayload) { return this.service.getProfile(u.sub); }
 
   @Patch('me') @ApiOperation({ summary: 'ویرایش پروفایل' })
-  updateMe(@CurrentUser() u: JwtPayload, @Body() dto: { firstName?: string; lastName?: string; email?: string }) {
+  updateMe(@CurrentUser() u: JwtPayload, @Body() dto: UpdateProfileDto) {
     return this.service.updateProfile(u.sub, dto);
   }
 

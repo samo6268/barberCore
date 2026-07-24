@@ -14,6 +14,14 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, ApiResponse<T>
   intercept(_: ExecutionContext, next: CallHandler): Observable<ApiResponse<T>> {
     return next.handle().pipe(
       map((result) => {
+        if (
+          result &&
+          typeof result === 'object' &&
+          'success' in result &&
+          'data' in result
+        ) {
+          return result as ApiResponse<T>;
+        }
         if (result && typeof result === 'object' && 'data' in result && 'meta' in result) {
           return { success: true, ...result };
         }

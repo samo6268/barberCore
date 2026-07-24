@@ -8,7 +8,7 @@ import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 
 @ApiTags('featured')
-@Controller('v1/featured')
+@Controller('featured')
 export class FeaturedController {
   constructor(private readonly featuredService: FeaturedService) {}
 

@@ -8,7 +8,7 @@ import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 
 @ApiTags('education')
-@Controller('v1/education')
+@Controller('education')
 export class EducationController {
   constructor(private readonly educationService: EducationService) {}
 
@@ -33,21 +33,21 @@ export class EducationController {
     @Request() req: any,
     @Body() dto: { bio: string; expertise: string[] },
   ) {
-    return this.educationService.applyAsInstructor(req.user.id, dto);
+    return this.educationService.applyAsInstructor(req.user.sub, dto);
   }
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('instructor/me')
   getMyInstructor(@Request() req: any) {
-    return this.educationService.getInstructor(req.user.id);
+    return this.educationService.getInstructor(req.user.sub);
   }
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('instructor/me/earnings')
   getMyEarnings(@Request() req: any) {
-    return this.educationService.getInstructorEarnings(req.user.id);
+    return this.educationService.getInstructorEarnings(req.user.sub);
   }
 
   @ApiBearerAuth()
@@ -70,14 +70,14 @@ export class EducationController {
       level?: string; tags?: string[]; coverImageUrl?: string;
     },
   ) {
-    return this.educationService.createCourse(req.user.id, dto);
+    return this.educationService.createCourse(req.user.sub, dto);
   }
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Patch('courses/:id/publish')
   publishCourse(@Param('id') id: string, @Request() req: any) {
-    return this.educationService.publishCourse(id, req.user.id);
+    return this.educationService.publishCourse(id, req.user.sub);
   }
 
   // ── Enrollment ────────────────────────────────────────────────────────────
@@ -86,14 +86,14 @@ export class EducationController {
   @UseGuards(JwtAuthGuard)
   @Post('courses/:id/enroll')
   enroll(@Param('id') courseId: string, @Request() req: any) {
-    return this.educationService.enroll(req.user.id, courseId);
+    return this.educationService.enroll(req.user.sub, courseId);
   }
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('enrollments/:enrollmentId')
   getEnrollment(@Param('enrollmentId') enrollmentId: string, @Request() req: any) {
-    return this.educationService.getEnrollment(req.user.id, enrollmentId);
+    return this.educationService.getEnrollment(req.user.sub, enrollmentId);
   }
 
   @ApiBearerAuth()
@@ -104,7 +104,7 @@ export class EducationController {
     @Param('lessonId') lessonId: string,
     @Request() req: any,
   ) {
-    return this.educationService.completeLesson(req.user.id, enrollmentId, lessonId);
+    return this.educationService.completeLesson(req.user.sub, enrollmentId, lessonId);
   }
 
   // ── Certificates ──────────────────────────────────────────────────────────
@@ -113,6 +113,6 @@ export class EducationController {
   @UseGuards(JwtAuthGuard)
   @Get('certificates')
   getMyCertificates(@Request() req: any) {
-    return this.educationService.getUserCertificates(req.user.id);
+    return this.educationService.getUserCertificates(req.user.sub);
   }
 }

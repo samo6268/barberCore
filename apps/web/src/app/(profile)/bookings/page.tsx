@@ -1,6 +1,6 @@
 'use client';
 import { useCancelBooking, useMyBookings } from '@/lib/api-hooks';
-import { toJalali, formatPrice } from '@/lib/utils';
+import { toJalali, formatPrice, formatTime } from '@/lib/utils';
 import { Calendar, CheckCircle, XCircle, Clock } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -115,10 +115,7 @@ export default function BookingsPage() {
                         </h3>
                         <p className="text-xs mt-0.5" style={{ color: 'var(--color-muted)' }}>
                           {toJalali(b.startsAt)} —{' '}
-                          {new Date(b.startsAt).toLocaleTimeString('fa-IR', {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
+                          {formatTime(b.startsAt)}
                         </p>
                       </div>
                     </div>
@@ -169,7 +166,7 @@ export default function BookingsPage() {
                           لغو رزرو
                         </button>
                       )}
-                      {b.status === 'COMPLETED' && (
+                      {b.status === 'COMPLETED' && !b.review && (
                         <Link
                           href={`/reviews/new?bookingId=${b.id}`}
                           className="text-xs px-3 py-1.5 rounded-lg border font-medium"
@@ -180,6 +177,11 @@ export default function BookingsPage() {
                         >
                           ثبت نظر
                         </Link>
+                      )}
+                      {b.status === 'COMPLETED' && b.review && (
+                        <span className="text-xs" style={{ color: 'var(--color-muted)' }}>
+                          نظر ثبت شده
+                        </span>
                       )}
                     </div>
                   </div>

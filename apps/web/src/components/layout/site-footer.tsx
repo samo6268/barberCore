@@ -9,10 +9,10 @@ const ABOUT_LINKS = [
 ];
 
 const SERVICE_LINKS = [
-  { label: 'آرایشگاه‌های مردانه', href: '/salons?gender=male' },
-  { label: 'سالن‌های زنانه',      href: '/salons?gender=female' },
+  { label: 'آرایشگاه‌های مردانه', href: '/salons?gender=MALE' },
+  { label: 'سالن‌های زنانه',      href: '/salons?gender=FEMALE' },
   { label: 'آکادمی',             href: '/academy' },
-  { label: 'ثبت سالن',           href: '/salons/new' },
+  { label: 'ثبت سالن',           href: '/salon-owner/login?returnTo=/dashboard/salons/new' },
 ];
 
 const BOTTOM_LINKS = [
@@ -64,7 +64,7 @@ export function SiteFooter() {
           <div>
             <h4 className="text-xs uppercase tracking-wider mb-5" style={{ color: 'var(--brand-gold-600)' }}>تماس</h4>
             <ul className="space-y-3">
-              <li className="text-sm" style={{ color: 'var(--brand-navy-200)' }}>info@barbercore.ir</li>
+              <li className="text-sm" style={{ color: 'var(--brand-navy-200)' }}>info@parnegarin.ir</li>
               <li className="text-sm" style={{ color: 'var(--brand-navy-200)' }}>۰۲۱-۸۸۷۷۶۶۵۵</li>
               <li className="text-sm" style={{ color: 'var(--brand-navy-200)' }}>تهران، خیابان ولیعصر</li>
             </ul>

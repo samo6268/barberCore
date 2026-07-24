@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DayOfWeek } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
+import { getIranDayBounds, parseIranDateTime } from '../../common/time/iran-time';
 
 export interface TimeSlot {
   time: string;
@@ -97,9 +98,7 @@ export class AvailabilityService {
     }
     if (!workingHour?.isOpen) return [];
 
-    const dayStart = new Date(`${date}T00:00:00Z`);
-    const dayEnd = new Date(dayStart);
-    dayEnd.setUTCDate(dayEnd.getUTCDate() + 1);
+    const { start: dayStart, end: dayEnd } = getIranDayBounds(date);
 
     const [existingBookings, timeOffs] = await Promise.all([
       this.prisma.booking.findMany({
@@ -134,7 +133,7 @@ export class AvailabilityService {
         continue;
       }
 
-      const slotStart = new Date(`${date}T${this.minutesToTime(minute)}:00Z`);
+      const slotStart = parseIranDateTime(date, this.minutesToTime(minute));
       const slotEnd = new Date(slotStart.getTime() + duration * 60_000);
       const conflict = [...existingBookings, ...timeOffs].some(
         (item) => slotStart < item.endsAt && slotEnd > item.startsAt,
