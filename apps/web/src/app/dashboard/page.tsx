@@ -22,15 +22,20 @@ const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
 export default function DashboardPage() {
   const router = useRouter();
   const { data: user, isLoading: userLoading } = useMe();
-  const { data: salons, isLoading } = useMySalons();
+  const { data: salons, isLoading, isError, refetch } = useMySalons();
 
   useEffect(() => {
     if (!userLoading && !user) {
-      import('@/lib/mock-session').then(({ getMockUser }) => {
-        if (!getMockUser()) router.push('/login');
-      });
+      router.push('/login');
+    } else if (
+      !userLoading &&
+      user &&
+      user.role !== 'SALON_OWNER' &&
+      user.role !== 'SUPER_ADMIN'
+    ) {
+      router.push('/');
     }
-  }, [user, userLoading]);
+  }, [router, user, userLoading]);
 
   if (isLoading || userLoading) return (
     <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg-ivory)' }}>
@@ -38,12 +43,6 @@ export default function DashboardPage() {
         style={{ borderColor: 'var(--brand-plum-600)', borderTopColor: 'transparent' }} />
     </div>
   );
-
-  const MOCK_SALONS = salons?.length ? salons : [{
-    id: 'demo', name: 'سالن نمونه', city: 'تهران', status: 'ACTIVE', plan: 'FREE',
-    rating: 4.8, logoUrl: null,
-    _count: { bookings: 24, reviews: 12 },
-  }];
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg-ivory)' }}>
@@ -79,17 +78,33 @@ export default function DashboardPage() {
         </div>
 
         {/* Salon cards */}
-        <div className="grid md:grid-cols-2 gap-6">
-          {MOCK_SALONS.map((salon: any) => (
-            <SalonCard key={salon.id} salon={salon} />
-          ))}
-        </div>
+        {isError ? (
+          <div className="rounded-2xl border bg-white p-10 text-center" style={{ borderColor: 'var(--ui-gray-200)' }}>
+            <p className="text-sm" style={{ color: 'var(--ui-gray-500)' }}>دریافت اطلاعات سالن‌ها انجام نشد</p>
+            <button onClick={() => refetch()} className="mt-4 rounded-xl px-5 py-2.5 text-sm font-medium text-white" style={{ background: 'var(--brand-navy-600)' }}>
+              تلاش دوباره
+            </button>
+          </div>
+        ) : salons?.length ? (
+          <div className="grid md:grid-cols-2 gap-6">
+            {salons.map((salon: any) => <SalonCard key={salon.id} salon={salon} />)}
+          </div>
+        ) : (
+          <div className="rounded-2xl border bg-white p-10 text-center" style={{ borderColor: 'var(--ui-gray-200)' }}>
+            <Scissors className="mx-auto mb-4" size={34} style={{ color: 'var(--ui-gray-400)' }} />
+            <h2 className="font-semibold" style={{ color: 'var(--brand-navy-600)' }}>هنوز سالنی ثبت نکرده‌اید</h2>
+            <p className="mt-2 text-sm" style={{ color: 'var(--ui-gray-500)' }}>اولین سالن خود را ثبت کنید تا مدیریت خدمات و رزروها را شروع کنید.</p>
+            <Link href="/dashboard/salons/new" className="mt-5 inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white" style={{ background: 'var(--brand-navy-600)' }}>
+              <Plus size={15} /> ثبت سالن
+            </Link>
+          </div>
+        )}
 
         {/* Quick links */}
         <div className="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-4">
           {[
             { href: '/profile', icon: Users, label: 'پروفایل من' },
-            { href: '/(profile)/bookings', icon: Calendar, label: 'رزروهای من' },
+            { href: '/profile/bookings', icon: Calendar, label: 'رزروهای من' },
             { href: '/academy', icon: Star, label: 'آکادمی' },
             { href: '/salons', icon: TrendingUp, label: 'مارکت‌پلیس' },
           ].map(({ href, icon: Icon, label }) => (
@@ -108,7 +123,8 @@ export default function DashboardPage() {
 
 function SalonCard({ salon }: { salon: any }) {
   const st  = STATUS_CONFIG[salon.status] ?? STATUS_CONFIG.PENDING_REVIEW;
-  const pl  = PLAN_CONFIG[salon.plan ?? 'FREE'];
+  const plan = salon.plan ?? salon.subscription?.tier ?? 'FREE';
+  const pl  = PLAN_CONFIG[plan] ?? PLAN_CONFIG.FREE;
 
   return (
     <div className="rounded-2xl border overflow-hidden group"
@@ -145,7 +161,7 @@ function SalonCard({ salon }: { salon: any }) {
           {[
             { label: 'رزروها', value: salon._count?.bookings ?? 0, icon: Calendar, color: 'var(--brand-navy-400)' },
             { label: 'نظرات',  value: salon._count?.reviews ?? 0,  icon: Star,     color: 'var(--brand-gold-600)' },
-            { label: 'امتیاز', value: salon.rating?.toFixed(1) ?? '—', icon: TrendingUp, color: 'var(--brand-plum-600)' },
+            { label: 'امتیاز', value: salon.rating != null ? Number(salon.rating).toFixed(1) : '—', icon: TrendingUp, color: 'var(--brand-plum-600)' },
           ].map(({ label, value, icon: Icon, color }) => (
             <div key={label} className="text-center py-3 rounded-xl"
               style={{ background: 'var(--bg-ivory)' }}>
@@ -173,7 +189,7 @@ function SalonCard({ salon }: { salon: any }) {
         </div>
 
         {/* Upgrade nudge for FREE plan */}
-        {(salon.plan === 'FREE' || !salon.plan) && (
+        {plan === 'FREE' && (
           <Link href="/dashboard/subscription"
             className="mt-3 flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-medium w-full justify-center"
             style={{ background: 'linear-gradient(90deg, var(--brand-plum-50), var(--brand-gold-100))', color: 'var(--brand-plum-600)' }}>

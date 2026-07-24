@@ -68,15 +68,27 @@ async function upsertSalonHour(salonId: string, dayOfWeek: DayOfWeek, isOpen: bo
 
 async function seedDemoMarketplace(categories: Array<{ id: string; slug: string }>) {
   const categoryIds = new Map(categories.map((category) => [category.slug, category.id]));
+  const ownerPasswordHash = await bcrypt.hash('Owner@1234', 12);
   const owner = await prisma.user.upsert({
     where: { phone: '09121111111' },
-    update: { firstName: 'مریم', lastName: 'صادقی', role: UserRole.SALON_OWNER, isActive: true },
+    update: {
+      email: 'owner@parnegarin.ir',
+      passwordHash: ownerPasswordHash,
+      firstName: 'مریم',
+      lastName: 'صادقی',
+      role: UserRole.SALON_OWNER,
+      isActive: true,
+      isEmailVerified: true,
+    },
     create: {
       phone: '09121111111',
+      email: 'owner@parnegarin.ir',
+      passwordHash: ownerPasswordHash,
       firstName: 'مریم',
       lastName: 'صادقی',
       role: UserRole.SALON_OWNER,
       isPhoneVerified: true,
+      isEmailVerified: true,
     },
   });
 
@@ -386,6 +398,42 @@ async function main() {
 
   await seedDemoMarketplace(categories);
 
+  const instructorHash = await bcrypt.hash('Instructor@1234', 12);
+  const instructorUser = await prisma.user.upsert({
+    where: { email: 'instructor@parnegarin.ir' },
+    update: {
+      passwordHash: instructorHash,
+      firstName: 'سارا',
+      lastName: 'کریمی',
+      isActive: true,
+      isEmailVerified: true,
+    },
+    create: {
+      email: 'instructor@parnegarin.ir',
+      phone: '09125555555',
+      passwordHash: instructorHash,
+      firstName: 'سارا',
+      lastName: 'کریمی',
+      role: UserRole.CUSTOMER,
+      isPhoneVerified: true,
+      isEmailVerified: true,
+    },
+  });
+  await prisma.instructor.upsert({
+    where: { userId: instructorUser.id },
+    update: {
+      bio: 'مدرس رنگ و مراقبت حرفه‌ای مو',
+      expertise: ['رنگ مو', 'کراتین'],
+      isApproved: true,
+    },
+    create: {
+      userId: instructorUser.id,
+      bio: 'مدرس رنگ و مراقبت حرفه‌ای مو',
+      expertise: ['رنگ مو', 'کراتین'],
+      isApproved: true,
+    },
+  });
+
   // Default SMS templates
   const templates = [
     {
@@ -431,6 +479,8 @@ async function main() {
 
   console.log('✅ Seed complete');
   console.log(`   SuperAdmin: admin@barbercore.ir / Admin@1234`);
+  console.log(`   SalonOwner: owner@parnegarin.ir / Owner@1234`);
+  console.log(`   Instructor: instructor@parnegarin.ir / Instructor@1234`);
   console.log(`   Categories: ${categories.map((c) => c.name).join(', ')}`);
 }
 

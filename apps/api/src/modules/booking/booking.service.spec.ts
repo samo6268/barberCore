@@ -6,7 +6,13 @@ describe('BookingService', () => {
   const prisma = {
     service: { findMany: jest.fn() },
     staffProfile: { findFirst: jest.fn() },
-    booking: { findFirst: jest.fn(), create: jest.fn() },
+    salon: { findUnique: jest.fn() },
+    booking: {
+      findFirst: jest.fn(),
+      findUnique: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+    },
   };
   const availability = { getAvailableSlots: jest.fn() };
   const service = new BookingService(prisma as never, availability as never);
@@ -37,7 +43,7 @@ describe('BookingService', () => {
         data: expect.objectContaining({
           customerId: 'customer-1',
           totalPrice: 1_200_000,
-          endsAt: new Date('2030-01-10T11:15:00.000Z'),
+          endsAt: new Date('2030-01-10T07:45:00.000Z'),
           status: BookingStatus.CONFIRMED,
         }),
       }),
@@ -97,5 +103,42 @@ describe('BookingService', () => {
         data: expect.objectContaining({ staffId: 'staff-1' }),
       }),
     );
+  });
+
+  it('allows the salon owner to complete a confirmed booking', async () => {
+    prisma.booking.findUnique.mockResolvedValueOnce({
+      id: 'booking-1',
+      salonId: 'salon-1',
+      status: BookingStatus.CONFIRMED,
+    });
+    prisma.salon.findUnique.mockResolvedValueOnce({ ownerId: 'owner-1' });
+    prisma.booking.update.mockResolvedValueOnce({
+      id: 'booking-1',
+      status: BookingStatus.COMPLETED,
+    });
+
+    await service.updateStatus('booking-1', 'owner-1', BookingStatus.COMPLETED);
+
+    expect(prisma.booking.update).toHaveBeenCalledWith({
+      where: { id: 'booking-1' },
+      data: {
+        status: BookingStatus.COMPLETED,
+        completedAt: expect.any(Date),
+      },
+    });
+  });
+
+  it('rejects an invalid booking status transition', async () => {
+    prisma.booking.findUnique.mockResolvedValueOnce({
+      id: 'booking-1',
+      salonId: 'salon-1',
+      status: BookingStatus.COMPLETED,
+    });
+    prisma.salon.findUnique.mockResolvedValueOnce({ ownerId: 'owner-1' });
+
+    await expect(
+      service.updateStatus('booking-1', 'owner-1', BookingStatus.CONFIRMED),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    expect(prisma.booking.update).not.toHaveBeenCalled();
   });
 });

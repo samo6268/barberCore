@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserRole } from '@prisma/client';
-import { StaffService, CreateStaffDto } from './staff.service';
+import { StaffService, CreateStaffDto, UpdateStaffDto } from './staff.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
@@ -20,7 +20,7 @@ export class StaffController {
   }
 
   @Patch(':id') @ApiBearerAuth() @UseGuards(JwtAuthGuard, RolesGuard) @Roles(UserRole.SALON_OWNER, UserRole.SUPER_ADMIN)
-  update(@Param('salonId') sid: string, @Param('id') id: string, @CurrentUser() u: JwtPayload, @Body() dto: Partial<CreateStaffDto>) {
+  update(@Param('salonId') sid: string, @Param('id') id: string, @CurrentUser() u: JwtPayload, @Body() dto: UpdateStaffDto) {
     return this.service.update(id, sid, u.sub, dto);
   }
 

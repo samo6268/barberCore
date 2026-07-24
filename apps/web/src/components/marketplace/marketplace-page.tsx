@@ -1,11 +1,10 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { Search, SlidersHorizontal, MapPin, X } from 'lucide-react';
+import { useState } from 'react';
+import { Search, X } from 'lucide-react';
 import { useSearchSalons } from '@/lib/api-hooks';
 import { SalonCard } from '@/components/salon/salon-card';
 import { Navbar } from '@/components/layout/navbar';
-import { MOCK_SALONS_MALE, MOCK_SALONS_FEMALE } from '@/lib/mock-data';
 
 const CITIES = ['تهران', 'اصفهان', 'مشهد', 'شیراز', 'تبریز', 'کرج', 'اهواز'];
 const CATEGORIES = ['مو', 'رنگ', 'ناخن', 'آرایش', 'صورت', 'عروس', 'تخصصی'];
@@ -14,20 +13,22 @@ export function MarketplacePage({ gender }: { gender: 'male' | 'female' }) {
   const [q, setQ] = useState('');
   const [city, setCity] = useState('');
   const [activeCategory, setActiveCategory] = useState('');
-  const [search, setSearch] = useState({ q: '', city: '', gender: gender === 'male' ? 'MALE' : 'FEMALE' });
+  const [search, setSearch] = useState({
+    q: '',
+    city: '',
+    service: '',
+    gender: gender === 'male' ? 'MALE' : 'FEMALE',
+  });
 
-  const { data, isLoading } = useSearchSalons(search as Record<string, string>);
-  const mockSalons = gender === 'male' ? MOCK_SALONS_MALE : MOCK_SALONS_FEMALE;
+  const { data, isLoading, isError, refetch } = useSearchSalons(search as Record<string, string>);
+  const salons = data?.data ?? [];
 
-  const salons = useMemo(() => {
-    if (data?.data?.length) return data.data;
-    let list = mockSalons;
-    if (search.city) list = list.filter(s => s.city === search.city);
-    if (search.q) list = list.filter(s => s.name.includes(search.q) || s.description.includes(search.q));
-    return list;
-  }, [data, mockSalons, search]);
-
-  const doSearch = () => setSearch({ q, city, gender: gender === 'male' ? 'MALE' : 'FEMALE' });
+  const doSearch = () => setSearch({
+    q,
+    city,
+    service: activeCategory,
+    gender: gender === 'male' ? 'MALE' : 'FEMALE',
+  });
 
   return (
     <div data-theme={gender === 'female' ? 'female' : 'male'} className="min-h-screen" style={{ background: 'var(--color-background)' }}>
@@ -89,7 +90,11 @@ export function MarketplacePage({ gender }: { gender: 'male' | 'female' }) {
           {CATEGORIES.map(cat => (
             <button
               key={cat}
-              onClick={() => setActiveCategory(activeCategory === cat ? '' : cat)}
+              onClick={() => {
+                const service = activeCategory === cat ? '' : cat;
+                setActiveCategory(service);
+                setSearch((current) => ({ ...current, service }));
+              }}
               className="flex-none px-5 py-2 rounded-full text-body-sm font-medium transition-all duration-200"
               style={activeCategory === cat
                 ? { background: 'var(--color-primary)', color: 'var(--color-primary-foreground)' }
@@ -108,9 +113,14 @@ export function MarketplacePage({ gender }: { gender: 'male' | 'female' }) {
           <p className="text-body" style={{ color: 'var(--color-text-muted)' }}>
             {isLoading ? 'در حال جستجو...' : `${salons.length} سالن یافت شد`}
           </p>
-          {(search.q || search.city) && (
+          {(search.q || search.city || search.service) && (
             <button
-              onClick={() => { setQ(''); setCity(''); setSearch({ q: '', city: '', gender: search.gender }); }}
+              onClick={() => {
+                setQ('');
+                setCity('');
+                setActiveCategory('');
+                setSearch({ q: '', city: '', service: '', gender: search.gender });
+              }}
               className="flex items-center gap-1 text-body-sm transition-colors"
               style={{ color: 'var(--color-accent)' }}
             >
@@ -130,6 +140,13 @@ export function MarketplacePage({ gender }: { gender: 'male' | 'female' }) {
                 </div>
               </div>
             ))}
+          </div>
+        ) : isError ? (
+          <div className="text-center py-24">
+            <p className="text-body mb-4" style={{ color: 'var(--color-text-muted)' }}>دریافت فهرست سالن‌ها انجام نشد.</p>
+            <button onClick={() => refetch()} className="rounded-md px-5 py-2.5 text-body-sm font-medium" style={{ background: 'var(--color-primary)', color: 'var(--color-primary-foreground)' }}>
+              تلاش دوباره
+            </button>
           </div>
         ) : salons.length === 0 ? (
           <div className="text-center py-24">

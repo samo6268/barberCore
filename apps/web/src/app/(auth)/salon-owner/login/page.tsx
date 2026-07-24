@@ -1,42 +1,52 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import { AuthLayout } from '@/components/auth/auth-layout';
 import { SALON_IMAGES } from '@/lib/images';
+import { useLoginWithEmail } from '@/lib/api-hooks';
 
 export default function SalonOwnerLoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPw, setShowPw] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [returnTo, setReturnTo] = useState('/dashboard');
+  const login = useLoginWithEmail();
+
+  useEffect(() => {
+    const requestedPath = new URLSearchParams(window.location.search).get('returnTo');
+    if (requestedPath?.startsWith('/') && !requestedPath.startsWith('//')) {
+      setReturnTo(requestedPath);
+    }
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) return toast.error('ایمیل و رمز عبور را وارد کنید');
-    setLoading(true);
     try {
-      // TODO: wire to /v1/auth/salon-owner/login
-      await new Promise(r => setTimeout(r, 800));
+      await login.mutateAsync({ email, password });
       toast.success('خوش آمدید، سالن‌دار عزیز!');
-      router.push('/dashboard');
-    } catch {
-      toast.error('ایمیل یا رمز عبور اشتباه است');
-    } finally {
-      setLoading(false);
+      router.replace(returnTo);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || 'ایمیل یا رمز عبور اشتباه است');
     }
   };
 
   const demoLogin = async () => {
-    setLoading(true);
-    await new Promise(r => setTimeout(r, 600));
-    toast.success('ورود نمونه موفق');
-    router.push('/dashboard');
-    setLoading(false);
+    try {
+      await login.mutateAsync({
+        email: 'owner@parnegarin.ir',
+        password: 'Owner@1234',
+      });
+      toast.success('ورود آزمایشی با موفقیت انجام شد');
+      router.replace(returnTo);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || 'ابتدا داده‌های آزمایشی را Seed کنید');
+    }
   };
 
   return (
@@ -99,18 +109,12 @@ export default function SalonOwnerLoginPage() {
                 : <Eye size={16} style={{ color: 'var(--ui-gray-400)' }} />}
             </button>
           </div>
-          <div className="flex justify-between mt-2">
-            <span />
-            <Link href="#" className="text-xs" style={{ color: 'var(--brand-navy-600)' }}>
-              فراموش کردم
-            </Link>
-          </div>
         </div>
 
-        <button type="submit" disabled={loading}
+        <button type="submit" disabled={login.isPending}
           className="w-full py-3.5 rounded-xl font-semibold text-white transition-all hover:-translate-y-0.5 disabled:opacity-50 mt-2"
           style={{ background: 'var(--brand-navy-600)' }}>
-          {loading ? 'در حال ورود...' : 'ورود به داشبورد'}
+          {login.isPending ? 'در حال ورود...' : 'ورود به داشبورد'}
         </button>
 
         <div className="relative flex items-center gap-3">
@@ -119,10 +123,10 @@ export default function SalonOwnerLoginPage() {
           <div className="flex-1 h-px" style={{ background: 'var(--ui-gray-200)' }} />
         </div>
 
-        <button type="button" onClick={demoLogin} disabled={loading}
+        <button type="button" onClick={demoLogin} disabled={login.isPending}
           className="w-full py-3 rounded-xl text-sm font-medium border-2 transition-all hover:-translate-y-0.5 disabled:opacity-50"
           style={{ borderColor: 'var(--ui-gray-200)', color: 'var(--brand-navy-600)', background: 'white' }}>
-          ورود نمونه (بدون API)
+          ورود آزمایشی با API
         </button>
       </form>
 

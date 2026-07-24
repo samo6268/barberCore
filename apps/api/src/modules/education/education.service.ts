@@ -121,9 +121,9 @@ export class EducationService {
     return enrollment;
   }
 
-  async getEnrollment(userId: string, courseId: string) {
-    const enrollment = await this.prisma.courseEnrollment.findUnique({
-      where: { courseId_userId: { courseId, userId } },
+  async getEnrollment(userId: string, enrollmentId: string) {
+    const enrollment = await this.prisma.courseEnrollment.findFirst({
+      where: { id: enrollmentId, userId },
       include: { lessons: true, course: { include: { chapters: { include: { lessons: true } } } } },
     });
     if (!enrollment) throw new NotFoundException('Not enrolled');

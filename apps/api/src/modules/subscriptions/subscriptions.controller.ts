@@ -1,13 +1,19 @@
-import { Controller, Get, Post, Body, Param, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { SubscriptionsService } from './subscriptions.service';
 import { Plan } from './plan.enum';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../../common/guards/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
+import {
+  CurrentUser,
+  JwtPayload,
+} from '../../common/decorators/current-user.decorator';
 
 @ApiTags('Subscriptions')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-@Controller('v1/subscriptions')
+@Controller('subscriptions')
 export class SubscriptionsController {
   constructor(private readonly svc: SubscriptionsService) {}
 
@@ -19,11 +25,13 @@ export class SubscriptionsController {
 
   @Get('salon/:salonId')
   @ApiOperation({ summary: 'Current plan for a salon' })
-  getCurrent(@Param('salonId') salonId: string) {
-    return this.svc.getCurrentPlan(salonId);
+  getCurrent(@Param('salonId') salonId: string, @CurrentUser() user: JwtPayload) {
+    return this.svc.getCurrentPlan(salonId, user);
   }
 
   @Post('salon/:salonId/upgrade')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('SUPER_ADMIN')
   @ApiOperation({ summary: 'Upgrade salon plan (admin/payment gateway callback)' })
   upgrade(
     @Param('salonId') salonId: string,

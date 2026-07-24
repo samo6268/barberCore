@@ -1,7 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { CheckCircle, DollarSign, Users, BookOpen, Star } from 'lucide-react'
+import { useApplyAsInstructor, useMe } from '@/lib/api-hooks'
 
 const BENEFITS = [
   { icon: <DollarSign size={28} />, title: '۷۰٪ از فروش هر دوره', desc: 'بیشترین سهم درآمد در صنعت. شما دوره را می‌سازید، ما بازاریابی می‌کنیم.' },
@@ -13,10 +15,25 @@ const BENEFITS = [
 export default function BecomeInstructorPage() {
   const [form, setForm] = useState({ name: '', email: '', specialty: '', experience: '', message: '' })
   const [submitted, setSubmitted] = useState(false)
+  const { data: user, isLoading: userLoading } = useMe()
+  const applyAsInstructor = useApplyAsInstructor()
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setSubmitted(true)
+    try {
+      await applyAsInstructor.mutateAsync({
+        expertise: [form.specialty.trim()],
+        bio: [
+          form.message.trim(),
+          `نام: ${form.name.trim()}`,
+          `ایمیل: ${form.email.trim()}`,
+          `سابقه: ${form.experience} سال`,
+        ].join('\n'),
+      })
+      setSubmitted(true)
+    } catch {
+      // The mutation state renders the server error below.
+    }
   }
 
   return (
@@ -133,7 +150,21 @@ export default function BecomeInstructorPage() {
           </div>
 
           <div style={{ backgroundColor: '#fff', borderRadius: '1.5rem', padding: '2.5rem', border: '1px solid var(--ui-gray-200)' }}>
-            {submitted ? (
+            {userLoading ? (
+              <p className="text-body" style={{ textAlign: 'center', color: 'var(--color-text-muted)' }}>در حال بررسی حساب کاربری...</p>
+            ) : !user ? (
+              <div style={{ textAlign: 'center' }}>
+                <p className="text-body" style={{ color: 'var(--color-text-muted)', marginBottom: '1.25rem' }}>
+                  برای ارسال درخواست مدرس، ابتدا وارد حساب کاربری شوید.
+                </p>
+                <Link
+                  href="/login?returnTo=/academy/become-instructor"
+                  style={{ display: 'inline-block', backgroundColor: 'var(--brand-plum-600)', color: '#fff', padding: '0.75rem 1.5rem', borderRadius: '0.75rem', fontWeight: 700 }}
+                >
+                  ورود به حساب
+                </Link>
+              </div>
+            ) : submitted ? (
               <div style={{ textAlign: 'center', padding: '2rem 0' }}>
                 <CheckCircle size={56} style={{ color: '#059669', margin: '0 auto 1rem', display: 'block' }} />
                 <h3 className="text-h3" style={{ color: '#059669' }}>درخواست شما ثبت شد!</h3>
@@ -195,6 +226,7 @@ export default function BecomeInstructorPage() {
                 </div>
                 <button
                   type="submit"
+                  disabled={applyAsInstructor.isPending}
                   style={{
                     backgroundColor: 'var(--brand-plum-600)',
                     color: '#fff',
@@ -203,11 +235,17 @@ export default function BecomeInstructorPage() {
                     fontWeight: 700,
                     fontSize: '1.0625rem',
                     border: 'none',
-                    cursor: 'pointer',
+                    cursor: applyAsInstructor.isPending ? 'wait' : 'pointer',
+                    opacity: applyAsInstructor.isPending ? 0.7 : 1,
                   }}
                 >
-                  ارسال درخواست
+                  {applyAsInstructor.isPending ? 'در حال ارسال...' : 'ارسال درخواست'}
                 </button>
+                {applyAsInstructor.isError && (
+                  <p role="alert" className="text-body-sm" style={{ color: '#b91c1c', textAlign: 'center' }}>
+                    ارسال درخواست ناموفق بود. اگر قبلاً درخواست داده‌اید، وضعیت آن را از پشتیبانی پیگیری کنید.
+                  </p>
+                )}
               </form>
             )}
           </div>

@@ -40,7 +40,7 @@ export function Navbar() {
             style={{ color: 'var(--color-text)' }}>
             <Link href="/salons" className="transition-colors hover:text-[#8b5e50]">آرایشگاه‌ها</Link>
             <Link href="/academy" className="transition-colors hover:text-[#8b5e50]">آکادمی</Link>
-            <Link href="/salons/new" className="transition-colors hover:text-[#8b5e50]">ثبت سالن</Link>
+            <Link href="/salon-owner/login?returnTo=/dashboard/salons/new" className="transition-colors hover:text-[#8b5e50]">ثبت سالن</Link>
           </nav>
 
           {/* Right CTA — desktop */}
@@ -127,7 +127,7 @@ export function Navbar() {
             {[
               { href: '/salons',   label: 'آرایشگاه‌ها' },
               { href: '/academy',  label: 'آکادمی' },
-              { href: '/salons/new', label: 'ثبت سالن' },
+              { href: '/salon-owner/login?returnTo=/dashboard/salons/new', label: 'ثبت سالن' },
               { href: '/role-selector', label: 'ورود / ثبت‌نام' },
             ].map((item) => (
               <Link

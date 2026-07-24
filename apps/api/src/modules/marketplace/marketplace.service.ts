@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { GenderType, SalonStatus } from '@prisma/client';
 import { paginate } from '../../common/dto/pagination.dto';
@@ -101,7 +101,7 @@ export class MarketplaceService {
   }
 
   async getSalonBySlug(slug: string) {
-    return this.prisma.salon.findUnique({
+    const salon = await this.prisma.salon.findUnique({
       where: { slug, status: SalonStatus.ACTIVE },
       include: {
         services: {
@@ -132,6 +132,8 @@ export class MarketplaceService {
         _count: { select: { reviews: true, bookings: true } },
       },
     });
+    if (!salon) throw new NotFoundException('سالن یافت نشد');
+    return salon;
   }
 
   async getFeaturedSalons(gender?: GenderType) {

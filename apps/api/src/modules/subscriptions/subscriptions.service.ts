@@ -1,17 +1,24 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { Plan, PLAN_LIMITS } from './plan.enum';
+import { JwtPayload } from '../../common/decorators/current-user.decorator';
 
 @Injectable()
 export class SubscriptionsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getCurrentPlan(salonId: string) {
+  async getCurrentPlan(salonId: string, user: JwtPayload) {
     const salon = await this.prisma.salon.findUnique({
       where: { id: salonId },
-      select: { plan: true, planExpiresAt: true, planStartedAt: true },
+      select: { ownerId: true, plan: true, planExpiresAt: true, planStartedAt: true },
     });
     if (!salon) throw new NotFoundException('Salon not found');
+    this.assertAccess(salon.ownerId, user);
 
     const plan = (salon.plan as Plan) || Plan.FREE;
     return {
@@ -28,6 +35,11 @@ export class SubscriptionsService {
     if (!validPlans.includes(newPlan)) {
       throw new BadRequestException(`Invalid plan: ${newPlan}`);
     }
+    const currentSalon = await this.prisma.salon.findUnique({
+      where: { id: salonId },
+      select: { id: true },
+    });
+    if (!currentSalon) throw new NotFoundException('Salon not found');
 
     const now = new Date();
     const expiresAt = new Date(now);
@@ -72,5 +84,11 @@ export class SubscriptionsService {
       plan,
       ...limits,
     }));
+  }
+
+  private assertAccess(ownerId: string, user: JwtPayload) {
+    if (ownerId !== user.sub && user.role !== 'SUPER_ADMIN') {
+      throw new ForbiddenException('دسترسی غیرمجاز');
+    }
   }
 }

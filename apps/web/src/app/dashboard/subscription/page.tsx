@@ -1,7 +1,10 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Check, Zap, Star, Crown, ChevronRight } from 'lucide-react';
+import { Check, Zap, Star, Crown, ChevronRight, Loader2 } from 'lucide-react';
+import { useMySalons, useSalonSubscription } from '@/lib/api-hooks';
+import { toJalali } from '@/lib/utils';
 
 const PLANS = [
   {
@@ -52,7 +55,19 @@ const PLANS = [
 ];
 
 export default function SubscriptionPage() {
-  const currentPlan = 'FREE';
+  const { data: salons, isLoading: salonsLoading, isError: salonsError } = useMySalons();
+  const [salonId, setSalonId] = useState('');
+  const {
+    data: subscription,
+    isLoading: subscriptionLoading,
+    isError: subscriptionError,
+  } = useSalonSubscription(salonId);
+
+  useEffect(() => {
+    if (!salonId && salons?.length) setSalonId(salons[0].id);
+  }, [salonId, salons]);
+
+  const currentPlan = subscription?.plan;
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg-ivory)' }}>
@@ -77,6 +92,49 @@ export default function SubscriptionPage() {
             هرچه پلن بالاتر، کمیسیون کمتر. در پلن Enterprise فقط ۱۰٪ کمیسیون می‌دهید.
           </p>
         </div>
+
+        {salonsLoading ? (
+          <div className="flex justify-center py-12">
+            <Loader2 className="animate-spin" style={{ color: 'var(--brand-plum-600)' }} />
+          </div>
+        ) : salonsError ? (
+          <div className="mb-8 rounded-xl border border-red-200 bg-red-50 p-5 text-center text-sm text-red-700">
+            دریافت سالن‌های شما ناموفق بود. لطفاً دوباره وارد حساب شوید.
+          </div>
+        ) : !salons?.length ? (
+          <div className="mb-8 rounded-xl border p-6 text-center" style={{ background: 'white', borderColor: 'var(--ui-gray-200)' }}>
+            <p className="mb-4 text-sm" style={{ color: 'var(--ui-gray-500)' }}>برای فعال‌سازی اشتراک، ابتدا سالن خود را ثبت کنید.</p>
+            <Link href="/dashboard/salons/new" className="inline-flex rounded-xl px-5 py-2.5 text-sm font-semibold text-white" style={{ background: 'var(--brand-plum-600)' }}>
+              ثبت سالن
+            </Link>
+          </div>
+        ) : (
+          <div className="mb-8 rounded-2xl border bg-white p-5" style={{ borderColor: 'var(--ui-gray-200)' }}>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <label className="text-sm font-semibold" style={{ color: 'var(--brand-navy-600)' }}>
+                سالن
+                <select
+                  className="mr-3 rounded-lg border bg-white px-3 py-2 text-sm"
+                  style={{ borderColor: 'var(--ui-gray-200)' }}
+                  value={salonId}
+                  onChange={(event) => setSalonId(event.target.value)}
+                >
+                  {salons.map((salon: any) => <option key={salon.id} value={salon.id}>{salon.name}</option>)}
+                </select>
+              </label>
+              {subscriptionLoading ? (
+                <Loader2 size={20} className="animate-spin" style={{ color: 'var(--brand-plum-600)' }} />
+              ) : subscriptionError ? (
+                <span className="text-sm text-red-600">دریافت وضعیت اشتراک ناموفق بود.</span>
+              ) : subscription ? (
+                <div className="text-sm" style={{ color: 'var(--ui-gray-500)' }}>
+                  پلن فعال: <strong style={{ color: 'var(--brand-navy-600)' }}>{PLANS.find((plan) => plan.id === subscription.plan)?.name || subscription.plan}</strong>
+                  {subscription.expiresAt && <span> — اعتبار تا {toJalali(subscription.expiresAt)}</span>}
+                </div>
+              ) : null}
+            </div>
+          </div>
+        )}
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
           {PLANS.map(plan => {
@@ -155,13 +213,13 @@ export default function SubscriptionPage() {
                       پلن فعلی شما
                     </div>
                   ) : (
-                    <button className="w-full py-2.5 rounded-xl text-sm font-semibold transition-all hover:-translate-y-0.5"
+                    <button disabled className="w-full cursor-not-allowed py-2.5 rounded-xl text-sm font-semibold opacity-60"
                       style={{
                         background: isPopular ? 'var(--brand-plum-600)' : plan.bg,
                         color: isPopular ? 'white' : plan.color,
                         border: `1px solid ${plan.color}40`,
                       }}>
-                      انتخاب {plan.name}
+                      فعال‌سازی پس از اتصال درگاه
                     </button>
                   )}
                 </div>

@@ -176,7 +176,7 @@ export default function AcademyPage() {
                 style={{ background: 'var(--brand-gold-600)', color: 'var(--brand-plum-900)' }}>
                 <BookOpen size={18} /> مشاهده دوره‌ها
               </a>
-              <Link href="/academy/apply-instructor"
+              <Link href="/academy/become-instructor"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm border"
                 style={{ borderColor: 'rgba(250,247,242,0.3)', color: 'var(--bg-ivory)' }}>
                 ثبت‌نام به عنوان مدرس
@@ -248,7 +248,7 @@ export default function AcademyPage() {
           <p className="text-base mb-8 max-w-xl mx-auto" style={{ color: 'rgba(255,255,255,0.8)' }}>
             مهارتت را با هزاران نفر در سراسر ایران به اشتراک بگذار. ۷۰٪ درآمد دوره‌هایت مستقیم به حسابت می‌رسد.
           </p>
-          <Link href="/academy/apply-instructor"
+          <Link href="/academy/become-instructor"
             className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl font-semibold text-sm"
             style={{ background: 'var(--brand-plum-600)', color: 'white' }}>
             درخواست مدرس شدن <ChevronLeft size={18} />

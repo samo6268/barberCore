@@ -16,13 +16,17 @@ export default function ServicesPage() {
   const [form, setForm] = useState({ name: '', categoryId: '', durationMinutes: 30, price: 0, discountPrice: '', isOnlineBookable: true });
 
   const handleCreate = async () => {
-    if (!form.name || !form.price) return toast.error('نام و قیمت الزامی است');
+    if (!form.name || !form.categoryId || !form.price) {
+      return toast.error('نام، دسته‌بندی و قیمت الزامی است');
+    }
     try {
       await createService.mutateAsync({ ...form, price: Number(form.price), discountPrice: form.discountPrice ? Number(form.discountPrice) : undefined });
       toast.success('خدمت اضافه شد');
       setShowForm(false);
       setForm({ name: '', categoryId: '', durationMinutes: 30, price: 0, discountPrice: '', isOnlineBookable: true });
-    } catch { toast.error('خطا در افزودن خدمت'); }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || 'خطا در افزودن خدمت');
+    }
   };
 
   return (

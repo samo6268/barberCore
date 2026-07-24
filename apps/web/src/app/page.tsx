@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { FormEvent, useMemo, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   ArrowLeft,
@@ -21,7 +21,7 @@ import {
   Store,
   UserRound,
 } from 'lucide-react';
-import { useFeaturedSalons } from '@/lib/api-hooks';
+import { useSearchSalons } from '@/lib/api-hooks';
 import { SALON_IMAGES } from '@/lib/images';
 
 type FeaturedSalon = {
@@ -41,45 +41,6 @@ const SERVICES = [
   { name: 'ناخن', query: 'ناخن', icon: '⌁' },
   { name: 'پوست و زیبایی', query: 'پوست', icon: '○' },
   { name: 'اصلاح و گریم', query: 'اصلاح', icon: '◇' },
-];
-
-const FALLBACK_SALONS: FeaturedSalon[] = [
-  {
-    id: 'luxe-beauty',
-    slug: 'luxe-beauty',
-    name: 'لوکس بیوتی',
-    city: 'تهران',
-    rating: 4.9,
-    genderType: 'FEMALE',
-    coverImageUrl: SALON_IMAGES[0],
-  },
-  {
-    id: 'barber-classics',
-    slug: 'barber-classics',
-    name: 'باربر کلاسیک',
-    city: 'تهران',
-    rating: 4.8,
-    genderType: 'MALE',
-    coverImageUrl: SALON_IMAGES[1],
-  },
-  {
-    id: 'rose-salon',
-    slug: 'rose-salon',
-    name: 'رز سالن',
-    city: 'اصفهان',
-    rating: 4.7,
-    genderType: 'FEMALE',
-    coverImageUrl: SALON_IMAGES[2],
-  },
-  {
-    id: 'vogue-studio',
-    slug: 'vogue-studio',
-    name: 'ووگ استودیو',
-    city: 'مشهد',
-    rating: 4.9,
-    genderType: 'UNISEX',
-    coverImageUrl: SALON_IMAGES[4],
-  },
 ];
 
 const TREND_CARDS = [
@@ -322,15 +283,15 @@ function ServiceDiscovery() {
 }
 
 function FeaturedSalons() {
-  const { data, isLoading } = useFeaturedSalons();
-  const salons = useMemo(() => {
-    const live = ((data ?? []) as FeaturedSalon[]).map((salon) => ({
+  const { data, isLoading, isError } = useSearchSalons({
+    page: '1',
+    limit: '4',
+    sort: 'rating',
+  });
+  const salons = ((data?.data ?? []) as FeaturedSalon[]).map((salon) => ({
       ...salon,
       rating: Number(salon.rating),
     }));
-    const keys = new Set(live.map((salon) => salon.slug));
-    return [...live, ...FALLBACK_SALONS.filter((salon) => !keys.has(salon.slug))].slice(0, 4);
-  }, [data]);
 
   return (
     <section className="bg-[#f5f1eb] py-20 lg:py-28">
@@ -342,8 +303,23 @@ function FeaturedSalons() {
           action={{ href: '/salons', label: 'مشاهده همه سالن‌ها' }}
         />
 
+        {isLoading ? (
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {Array.from({ length: 4 }, (_, index) => (
+              <div key={index} className="h-80 animate-pulse rounded-[1.4rem] bg-white" />
+            ))}
+          </div>
+        ) : isError ? (
+          <p className="rounded-2xl bg-white p-8 text-center text-sm text-[#847980]">
+            دریافت سالن‌های منتخب انجام نشد.
+          </p>
+        ) : salons.length === 0 ? (
+          <p className="rounded-2xl bg-white p-8 text-center text-sm text-[#847980]">
+            هنوز سالن فعالی ثبت نشده است.
+          </p>
+        ) : (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {(isLoading ? FALLBACK_SALONS : salons).map((salon, index) => (
+          {salons.map((salon, index) => (
             <Link
               href={`/salons/${salon.slug}`}
               key={salon.id}
@@ -395,6 +371,7 @@ function FeaturedSalons() {
             </Link>
           ))}
         </div>
+        )}
       </div>
     </section>
   );
@@ -520,7 +497,7 @@ function EcosystemSection() {
               <p className="mt-4 text-sm leading-7 text-[#65727d]">
                 رزرو، خدمات، کارکنان و ارتباط با مشتریان را از یک پنل یکپارچه مدیریت کن.
               </p>
-              <Link href="/salons/new" className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-[#253342]">
+              <Link href="/salon-owner/login?returnTo=/dashboard/salons/new" className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-[#253342]">
                 ثبت سالن در پرنگارین <ArrowLeft size={16} />
               </Link>
             </div>

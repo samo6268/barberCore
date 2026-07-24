@@ -4,7 +4,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Star } from 'lucide-react';
 import { toast } from 'sonner';
 import { useSubmitReview } from '@/lib/api-hooks';
-import { MOCK_MY_BOOKINGS } from '@/lib/mock-data';
 
 function ReviewForm() {
   const router = useRouter();
@@ -14,16 +13,18 @@ function ReviewForm() {
   const [hover, setHover] = useState(0);
   const [comment, setComment] = useState('');
 
-  const booking = MOCK_MY_BOOKINGS.find(b => b.id === bookingId);
   const submitReview = useSubmitReview();
 
   const handleSubmit = async () => {
+    if (!bookingId) return toast.error('شناسه رزرو معتبر نیست');
     if (!rating) return toast.error('امتیاز را انتخاب کنید');
     try {
-      await submitReview.mutateAsync({ bookingId, salonId: booking?.salon?.id, rating, comment });
+      await submitReview.mutateAsync({ bookingId, rating, comment });
       toast.success('نظر شما ثبت شد ✓');
       router.push('/profile/bookings');
-    } catch { toast.error('خطا در ثبت نظر'); }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || 'خطا در ثبت نظر');
+    }
   };
 
   return (
@@ -32,9 +33,6 @@ function ReviewForm() {
         <div className="text-center">
           <div className="text-4xl mb-2">⭐</div>
           <h1 className="text-xl font-bold" style={{ color: 'var(--color-text)' }}>ثبت نظر</h1>
-          {booking && (
-            <p className="text-sm mt-1" style={{ color: 'var(--color-muted)' }}>{booking.salon?.name}</p>
-          )}
         </div>
 
         <div className="rounded-2xl p-6 border space-y-6" style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
