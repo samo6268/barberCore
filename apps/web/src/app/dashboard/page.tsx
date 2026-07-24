@@ -2,7 +2,7 @@
 import { useRouter } from 'next/navigation';
 import { useMySalons, useMe } from '@/lib/api-hooks';
 import Link from 'next/link';
-import { Plus, Settings, Calendar, Users, Scissors, Star, Zap, TrendingUp } from 'lucide-react';
+import { Plus, Settings, Calendar, Users, Scissors, Star, Zap, TrendingUp, Wallet, BarChart3 } from 'lucide-react';
 import { useEffect } from 'react';
 
 const PLAN_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
@@ -178,6 +178,8 @@ function SalonCard({ salon }: { salon: any }) {
             { href: `/dashboard/salons/${salon.id}/bookings`, icon: Calendar,  label: 'رزروها'   },
             { href: `/dashboard/salons/${salon.id}/services`, icon: Scissors,  label: 'خدمات'    },
             { href: `/dashboard/salons/${salon.id}/staff`,    icon: Users,     label: 'کارمندان' },
+            { href: `/dashboard/salons/${salon.id}/settlements`, icon: Wallet, label: 'تسویه‌ها' },
+            { href: `/dashboard/salons/${salon.id}/reports`, icon: BarChart3, label: 'گزارش‌ها' },
             { href: `/dashboard/salons/${salon.id}/settings`, icon: Settings,  label: 'تنظیمات'  },
           ].map(({ href, icon: Icon, label }) => (
             <Link key={href} href={href}

@@ -1,11 +1,13 @@
 import {
   AdvertisementStatus,
   AdvertisementType,
+  BookingStatus,
   DayOfWeek,
   GenderType,
   PrismaClient,
   SalonStatus,
   StaffStatus,
+  StaffCompensationType,
   UserRole,
 } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
@@ -89,6 +91,22 @@ async function seedDemoMarketplace(categories: Array<{ id: string; slug: string 
       role: UserRole.SALON_OWNER,
       isPhoneVerified: true,
       isEmailVerified: true,
+    },
+  });
+  const demoCustomer = await prisma.user.upsert({
+    where: { phone: '09120000001' },
+    update: {
+      firstName: 'محمد',
+      lastName: 'رضایی',
+      role: UserRole.CUSTOMER,
+      isActive: true,
+    },
+    create: {
+      phone: '09120000001',
+      firstName: 'محمد',
+      lastName: 'رضایی',
+      role: UserRole.CUSTOMER,
+      isPhoneVerified: true,
     },
   });
 
@@ -267,6 +285,7 @@ async function seedDemoMarketplace(categories: Array<{ id: string; slug: string 
       services.push(await upsertDemoService(salon.id, categoryId, service, serviceIndex + 1));
     }
 
+    const staffProfiles: Array<{ id: string }> = [];
     for (const [staffIndex, demoStaff] of demo.staff.entries()) {
       const user = await prisma.user.upsert({
         where: { phone: demoStaff.phone },
@@ -291,6 +310,12 @@ async function seedDemoMarketplace(categories: Array<{ id: string; slug: string 
           avatarUrl: demoStaff.avatarUrl,
           specialties: demoStaff.specialties,
           status: StaffStatus.ACTIVE,
+          compensationType:
+            salonIndex === 0 && staffIndex === 0
+              ? StaffCompensationType.SALARY_PLUS_PERCENTAGE
+              : StaffCompensationType.PERCENTAGE,
+          commissionRate: salonIndex === 0 && staffIndex === 0 ? 25 : 35,
+          monthlySalary: salonIndex === 0 && staffIndex === 0 ? 30_000_000 : 0,
           sortOrder: staffIndex + 1,
         },
         create: {
@@ -300,6 +325,12 @@ async function seedDemoMarketplace(categories: Array<{ id: string; slug: string 
           avatarUrl: demoStaff.avatarUrl,
           specialties: demoStaff.specialties,
           status: StaffStatus.ACTIVE,
+          compensationType:
+            salonIndex === 0 && staffIndex === 0
+              ? StaffCompensationType.SALARY_PLUS_PERCENTAGE
+              : StaffCompensationType.PERCENTAGE,
+          commissionRate: salonIndex === 0 && staffIndex === 0 ? 25 : 35,
+          monthlySalary: salonIndex === 0 && staffIndex === 0 ? 30_000_000 : 0,
           sortOrder: staffIndex + 1,
         },
       });
@@ -311,6 +342,65 @@ async function seedDemoMarketplace(categories: Array<{ id: string; slug: string 
       await prisma.staffService.createMany({
         data: serviceIds.map((serviceId) => ({ staffId: profile.id, serviceId })),
         skipDuplicates: true,
+      });
+      if (salonIndex === 0 && staffIndex === 0 && serviceIds[0]) {
+        await prisma.staffService.update({
+          where: { staffId_serviceId: { staffId: profile.id, serviceId: serviceIds[0] } },
+          data: { commissionRate: 30 },
+        });
+      }
+      staffProfiles.push(profile);
+    }
+
+    for (let bookingIndex = 0; bookingIndex < 6; bookingIndex += 1) {
+      const staff = staffProfiles[bookingIndex % staffProfiles.length];
+      const service = services[bookingIndex % services.length];
+      const startsAt = new Date(Date.now() - (bookingIndex + 2) * 86_400_000);
+      startsAt.setUTCHours(7 + (bookingIndex % 5), 30, 0, 0);
+      const endsAt = new Date(startsAt.getTime() + service.durationMinutes * 60_000);
+      const completedAt = new Date(endsAt.getTime() + 10 * 60_000);
+      const bookingId = `demo-finance-booking-${salonIndex + 1}-${bookingIndex + 1}`;
+      const itemId = `demo-finance-item-${salonIndex + 1}-${bookingIndex + 1}`;
+      await prisma.booking.upsert({
+        where: { id: bookingId },
+        update: {
+          salonId: salon.id,
+          customerId: demoCustomer.id,
+          staffId: staff.id,
+          status: BookingStatus.COMPLETED,
+          startsAt,
+          endsAt,
+          completedAt,
+          totalPrice: service.discountPrice ?? service.price,
+        },
+        create: {
+          id: bookingId,
+          salonId: salon.id,
+          customerId: demoCustomer.id,
+          staffId: staff.id,
+          status: BookingStatus.COMPLETED,
+          startsAt,
+          endsAt,
+          completedAt,
+          totalPrice: service.discountPrice ?? service.price,
+          sourceChannel: 'seed',
+        },
+      });
+      await prisma.bookingItem.upsert({
+        where: { id: itemId },
+        update: {
+          bookingId,
+          serviceId: service.id,
+          price: service.discountPrice ?? service.price,
+          duration: service.durationMinutes,
+        },
+        create: {
+          id: itemId,
+          bookingId,
+          serviceId: service.id,
+          price: service.discountPrice ?? service.price,
+          duration: service.durationMinutes,
+        },
       });
     }
 

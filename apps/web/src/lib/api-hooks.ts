@@ -233,16 +233,121 @@ export const useSalonStaff = (salonId: string) =>
     retry: false,
   });
 
+export const useSalonStaffManagement = (salonId: string) =>
+  useQuery({
+    queryKey: ['staff-management', salonId],
+    queryFn: () =>
+      api.get(`/salons/${salonId}/staff/management`).then((r) => r.data.data),
+    enabled: !!salonId,
+    retry: false,
+  });
+
 export const useCreateStaff = (salonId: string) => {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (dto: any) =>
       api.post(`/salons/${salonId}/staff`, dto).then((r) => r.data.data),
-    onSuccess: (newStaff) => {
-      qc.setQueryData(['staff', salonId], (old: any[]) => [...(old || []), newStaff]);
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['staff', salonId] });
+      qc.invalidateQueries({ queryKey: ['staff-management', salonId] });
     },
   });
 };
+
+export const useUpdateStaffCompensation = (salonId: string) => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ staffId, ...dto }: { staffId: string; [key: string]: any }) =>
+      api
+        .put(`/salons/${salonId}/staff/${staffId}/compensation`, dto)
+        .then((r) => r.data.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['staff', salonId] });
+      qc.invalidateQueries({ queryKey: ['staff-management', salonId] });
+    },
+  });
+};
+
+// ── Staff settlements & financial reports ───────────
+export const useSettlements = (
+  salonId: string,
+  filters: { staffId?: string; status?: string } = {},
+) =>
+  useQuery({
+    queryKey: ['settlements', salonId, filters],
+    queryFn: () =>
+      api
+        .get(`/salons/${salonId}/settlements`, { params: filters })
+        .then((r) => r.data.data),
+    enabled: !!salonId,
+    retry: false,
+  });
+
+export const useSettlementPreview = (
+  salonId: string,
+  params: { staffId: string; from: string; to: string },
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ['settlement-preview', salonId, params],
+    queryFn: () =>
+      api
+        .get(`/salons/${salonId}/settlements/preview`, { params })
+        .then((r) => r.data.data),
+    enabled: enabled && !!(salonId && params.staffId && params.from && params.to),
+    retry: false,
+  });
+
+export const useCreateSettlement = (salonId: string) => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (dto: any) =>
+      api.post(`/salons/${salonId}/settlements`, dto).then((r) => r.data.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['settlements', salonId] });
+      qc.invalidateQueries({ queryKey: ['settlement-preview', salonId] });
+      qc.invalidateQueries({ queryKey: ['financial-report', salonId] });
+    },
+  });
+};
+
+export const useUpdateSettlementStatus = (salonId: string) => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      settlementId,
+      ...dto
+    }: {
+      settlementId: string;
+      status: string;
+      paymentMethod?: string;
+      paymentReference?: string;
+      note?: string;
+    }) =>
+      api
+        .patch(`/salons/${salonId}/settlements/${settlementId}/status`, dto)
+        .then((r) => r.data.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['settlements', salonId] });
+      qc.invalidateQueries({ queryKey: ['settlement-preview', salonId] });
+      qc.invalidateQueries({ queryKey: ['financial-report', salonId] });
+    },
+  });
+};
+
+export const useFinancialReport = (
+  salonId: string,
+  params: { from: string; to: string },
+) =>
+  useQuery({
+    queryKey: ['financial-report', salonId, params],
+    queryFn: () =>
+      api
+        .get(`/salons/${salonId}/settlements/reports/financial`, { params })
+        .then((r) => r.data.data),
+    enabled: !!(salonId && params.from && params.to),
+    retry: false,
+  });
 
 export const useServiceCategories = () =>
   useQuery({

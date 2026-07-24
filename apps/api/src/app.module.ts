@@ -24,6 +24,7 @@ import { ReviewsModule } from './modules/reviews/reviews.module';
 import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
 import { BoostModule } from './modules/boost/boost.module';
 import { FeaturedModule } from './modules/featured/featured.module';
+import { SettlementsModule } from './modules/settlements/settlements.module';
 import { AppController } from './app.controller';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 
@@ -75,6 +76,7 @@ import { ResponseInterceptor } from './common/interceptors/response.interceptor'
     SubscriptionsModule,
     BoostModule,
     FeaturedModule,
+    SettlementsModule,
   ],
   controllers: [AppController],
   providers: [

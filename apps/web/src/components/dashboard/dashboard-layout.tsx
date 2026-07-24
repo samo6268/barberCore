@@ -1,11 +1,13 @@
 'use client';
 import Link from 'next/link';
-import { Calendar, Scissors, Users, Settings, BarChart3, ChevronRight, Zap, Star } from 'lucide-react';
+import { Calendar, Scissors, Users, Settings, BarChart3, ChevronRight, Zap, Wallet } from 'lucide-react';
 
 const TABS = [
   { key: 'bookings', label: 'رزروها',   icon: Calendar,  href: 'bookings'  },
   { key: 'services', label: 'خدمات',    icon: Scissors,  href: 'services'  },
   { key: 'staff',    label: 'کارمندان', icon: Users,     href: 'staff'     },
+  { key: 'settlements', label: 'تسویه کارکنان', icon: Wallet, href: 'settlements' },
+  { key: 'reports', label: 'گزارش‌ها', icon: BarChart3, href: 'reports' },
   { key: 'settings', label: 'تنظیمات',  icon: Settings,  href: 'settings'  },
 ];
 

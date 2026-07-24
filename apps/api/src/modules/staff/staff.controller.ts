@@ -1,7 +1,12 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserRole } from '@prisma/client';
-import { StaffService, CreateStaffDto, UpdateStaffDto } from './staff.service';
+import {
+  StaffService,
+  CreateStaffDto,
+  UpdateStaffDto,
+  UpdateStaffCompensationDto,
+} from './staff.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
@@ -11,6 +16,14 @@ import { CurrentUser, JwtPayload } from '../../common/decorators/current-user.de
 @Controller('salons/:salonId/staff')
 export class StaffController {
   constructor(private readonly service: StaffService) {}
+
+  @Get('management')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.SALON_OWNER, UserRole.SUPER_ADMIN)
+  findManagement(@Param('salonId') salonId: string, @CurrentUser() u: JwtPayload) {
+    return this.service.findManagementBySalon(salonId, u.sub);
+  }
 
   @Get() findAll(@Param('salonId') salonId: string) { return this.service.findBySalon(salonId); }
 
@@ -32,5 +45,18 @@ export class StaffController {
   @Delete(':id') @ApiBearerAuth() @UseGuards(JwtAuthGuard, RolesGuard) @Roles(UserRole.SALON_OWNER, UserRole.SUPER_ADMIN)
   remove(@Param('salonId') sid: string, @Param('id') id: string, @CurrentUser() u: JwtPayload) {
     return this.service.remove(id, sid, u.sub);
+  }
+
+  @Put(':id/compensation')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.SALON_OWNER, UserRole.SUPER_ADMIN)
+  updateCompensation(
+    @Param('salonId') sid: string,
+    @Param('id') id: string,
+    @CurrentUser() u: JwtPayload,
+    @Body() dto: UpdateStaffCompensationDto,
+  ) {
+    return this.service.updateCompensation(id, sid, u.sub, dto);
   }
 }
