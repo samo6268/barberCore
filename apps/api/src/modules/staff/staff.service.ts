@@ -6,11 +6,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
+import { StaffCompensationType } from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
   ArrayUnique,
   IsArray,
   IsInt,
+  IsEnum,
   IsMobilePhone,
   IsNumber,
   IsOptional,
@@ -20,6 +22,7 @@ import {
   Max,
   MaxLength,
   Min,
+  ValidateNested,
 } from 'class-validator';
 import { PrismaService } from '../../prisma/prisma.service';
 
@@ -31,10 +34,57 @@ export class CreateStaffDto {
   @ApiPropertyOptional({ type: [String] }) @IsOptional() @IsArray() @ArrayUnique() @IsString({ each: true }) specialties?: string[];
   @ApiProperty({ type: [String] }) @IsArray() @ArrayUnique() @IsUUID('4', { each: true }) serviceIds?: string[];
   @ApiPropertyOptional() @IsOptional() @Type(() => Number) @IsNumber() @Min(0) @Max(100) commissionRate?: number;
+  @ApiPropertyOptional({ enum: StaffCompensationType })
+  @IsOptional()
+  @IsEnum(StaffCompensationType)
+  compensationType?: StaffCompensationType;
+  @ApiPropertyOptional() @IsOptional() @Type(() => Number) @IsNumber() @Min(0) fixedServiceAmount?: number;
+  @ApiPropertyOptional() @IsOptional() @Type(() => Number) @IsNumber() @Min(0) monthlySalary?: number;
   @ApiPropertyOptional() @IsOptional() @Type(() => Number) @IsInt() @Min(0) sortOrder?: number;
 }
 
 export class UpdateStaffDto extends PartialType(CreateStaffDto) {}
+
+export class ServiceCompensationRuleDto {
+  @ApiProperty() @IsUUID() serviceId: string;
+  @ApiPropertyOptional() @IsOptional() @Type(() => Number) @IsNumber() @Min(0) @Max(100) commissionRate?: number;
+  @ApiPropertyOptional() @IsOptional() @Type(() => Number) @IsNumber() @Min(0) fixedAmount?: number;
+}
+
+export class UpdateStaffCompensationDto {
+  @ApiProperty({ enum: StaffCompensationType })
+  @IsEnum(StaffCompensationType)
+  compensationType: StaffCompensationType;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  @Max(100)
+  commissionRate?: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  fixedServiceAmount?: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  monthlySalary?: number;
+
+  @ApiPropertyOptional({ type: [ServiceCompensationRuleDto] })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ServiceCompensationRuleDto)
+  serviceRules?: ServiceCompensationRuleDto[];
+}
 
 @Injectable()
 export class StaffService {
@@ -88,6 +138,9 @@ export class StaffService {
         bio: dto.bio,
         specialties: dto.specialties || [],
         commissionRate: dto.commissionRate || 0,
+        compensationType: dto.compensationType,
+        fixedServiceAmount: dto.fixedServiceAmount || 0,
+        monthlySalary: dto.monthlySalary || 0,
         sortOrder: dto.sortOrder || 0,
       },
     });
@@ -107,8 +160,26 @@ export class StaffService {
   async findBySalon(salonId: string) {
     return this.prisma.staffProfile.findMany({
       where: { salonId, status: 'ACTIVE' },
+      select: {
+        id: true,
+        displayName: true,
+        bio: true,
+        avatarUrl: true,
+        specialties: true,
+        status: true,
+        sortOrder: true,
+        services: { select: { service: { select: { id: true, name: true } } } },
+      },
+      orderBy: { sortOrder: 'asc' },
+    });
+  }
+
+  async findManagementBySalon(salonId: string, ownerId: string) {
+    await this.assertOwner(salonId, ownerId);
+    return this.prisma.staffProfile.findMany({
+      where: { salonId, status: { not: 'INACTIVE' } },
       include: {
-        user: { select: { firstName: true, lastName: true, avatarUrl: true } },
+        user: { select: { firstName: true, lastName: true, avatarUrl: true, phone: true } },
         services: { include: { service: { select: { id: true, name: true } } } },
       },
       orderBy: { sortOrder: 'asc' },
@@ -120,7 +191,9 @@ export class StaffService {
     return this.prisma.staffProfile.update({
       where: { id },
       data: { displayName: dto.displayName, bio: dto.bio, specialties: dto.specialties,
-              commissionRate: dto.commissionRate, sortOrder: dto.sortOrder },
+              commissionRate: dto.commissionRate, compensationType: dto.compensationType,
+              fixedServiceAmount: dto.fixedServiceAmount, monthlySalary: dto.monthlySalary,
+              sortOrder: dto.sortOrder },
     });
   }
 
@@ -140,6 +213,60 @@ export class StaffService {
   async remove(id: string, salonId: string, ownerId: string) {
     await this.assertOwner(salonId, ownerId);
     return this.prisma.staffProfile.update({ where: { id }, data: { status: 'INACTIVE' } });
+  }
+
+  async updateCompensation(
+    staffId: string,
+    salonId: string,
+    ownerId: string,
+    dto: UpdateStaffCompensationDto,
+  ) {
+    await this.assertOwner(salonId, ownerId);
+    const staff = await this.prisma.staffProfile.findFirst({
+      where: { id: staffId, salonId, status: { not: 'INACTIVE' } },
+      include: { services: true },
+    });
+    if (!staff) throw new NotFoundException('متخصص یافت نشد');
+
+    const rules = dto.serviceRules ?? [];
+    const assignedServiceIds = new Set(staff.services.map((item) => item.serviceId));
+    if (rules.some((rule) => !assignedServiceIds.has(rule.serviceId))) {
+      throw new BadRequestException('قاعده مالی فقط برای خدمات منتسب به متخصص قابل ثبت است');
+    }
+
+    await this.prisma.$transaction(async (tx) => {
+      await tx.staffProfile.update({
+        where: { id: staffId },
+        data: {
+          compensationType: dto.compensationType,
+          commissionRate: dto.commissionRate ?? 0,
+          fixedServiceAmount: dto.fixedServiceAmount ?? 0,
+          monthlySalary: dto.monthlySalary ?? 0,
+        },
+      });
+      await tx.staffService.updateMany({
+        where: { staffId },
+        data: { commissionRate: null, fixedAmount: null },
+      });
+      for (const rule of rules) {
+        await tx.staffService.update({
+          where: { staffId_serviceId: { staffId, serviceId: rule.serviceId } },
+          data: {
+            commissionRate: rule.commissionRate,
+            fixedAmount: rule.fixedAmount,
+          },
+        });
+      }
+    });
+
+    return this.prisma.staffProfile.findUnique({
+      where: { id: staffId },
+      include: {
+        services: {
+          include: { service: { select: { id: true, name: true } } },
+        },
+      },
+    });
   }
 
   private async assertOwner(salonId: string, ownerId: string) {
