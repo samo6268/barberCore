@@ -285,7 +285,7 @@ async function seedDemoMarketplace(categories: Array<{ id: string; slug: string 
       services.push(await upsertDemoService(salon.id, categoryId, service, serviceIndex + 1));
     }
 
-    const staffProfiles: Array<{ id: string }> = [];
+    const staffProfiles: Array<{ id: string; userId: string }> = [];
     for (const [staffIndex, demoStaff] of demo.staff.entries()) {
       const user = await prisma.user.upsert({
         where: { phone: demoStaff.phone },
@@ -349,7 +349,7 @@ async function seedDemoMarketplace(categories: Array<{ id: string; slug: string 
           data: { commissionRate: 30 },
         });
       }
-      staffProfiles.push(profile);
+      staffProfiles.push({ id: profile.id, userId: user.id });
     }
 
     for (let bookingIndex = 0; bookingIndex < 6; bookingIndex += 1) {
@@ -402,6 +402,96 @@ async function seedDemoMarketplace(categories: Array<{ id: string; slug: string 
           duration: service.durationMinutes,
         },
       });
+    }
+
+    // Daily operations demo data for the dedicated staff portal.
+    if (salonIndex === 0 && staffProfiles[0]) {
+      const iranDateParts = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Asia/Tehran',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      }).formatToParts(new Date());
+      const part = (type: Intl.DateTimeFormatPartTypes) =>
+        iranDateParts.find((item) => item.type === type)?.value;
+      const today = `${part('year')}-${part('month')}-${part('day')}`;
+      const dailyStatuses = [
+        BookingStatus.CONFIRMED,
+        BookingStatus.PENDING,
+        BookingStatus.IN_PROGRESS,
+      ];
+      const dailyHours = ['10:00', '12:00', '14:00'];
+
+      for (let index = 0; index < dailyStatuses.length; index += 1) {
+        const service = services[index % services.length];
+        const startsAt = new Date(`${today}T${dailyHours[index]}:00+03:30`);
+        const endsAt = new Date(startsAt.getTime() + service.durationMinutes * 60_000);
+        const bookingId = `demo-staff-daily-booking-${index + 1}`;
+        const itemId = `demo-staff-daily-item-${index + 1}`;
+        await prisma.booking.upsert({
+          where: { id: bookingId },
+          update: {
+            salonId: salon.id,
+            customerId: demoCustomer.id,
+            staffId: staffProfiles[0].id,
+            status: dailyStatuses[index],
+            startsAt,
+            endsAt,
+            totalPrice: service.discountPrice ?? service.price,
+          },
+          create: {
+            id: bookingId,
+            salonId: salon.id,
+            customerId: demoCustomer.id,
+            staffId: staffProfiles[0].id,
+            status: dailyStatuses[index],
+            startsAt,
+            endsAt,
+            totalPrice: service.discountPrice ?? service.price,
+            notes: index === 0 ? 'حساسیت به مواد عطردار' : undefined,
+            sourceChannel: 'seed',
+          },
+        });
+        await prisma.bookingItem.upsert({
+          where: { id: itemId },
+          update: {
+            bookingId,
+            serviceId: service.id,
+            price: service.discountPrice ?? service.price,
+            duration: service.durationMinutes,
+          },
+          create: {
+            id: itemId,
+            bookingId,
+            serviceId: service.id,
+            price: service.discountPrice ?? service.price,
+            duration: service.durationMinutes,
+          },
+        });
+      }
+
+      const existingNotification = await prisma.notification.findFirst({
+        where: {
+          userId: staffProfiles[0].userId,
+          salonId: salon.id,
+          title: 'نوبت جدید در برنامه شما',
+        },
+      });
+      if (!existingNotification) {
+        await prisma.notification.create({
+          data: {
+            userId: staffProfiles[0].userId,
+            salonId: salon.id,
+            bookingId: 'demo-staff-daily-booking-1',
+            channel: 'IN_APP',
+            status: 'SENT',
+            title: 'نوبت جدید در برنامه شما',
+            body: 'یک نوبت جدید برای امروز به برنامه کاری شما اضافه شد.',
+            sentAt: new Date(),
+            metadata: { source: 'seed' },
+          },
+        });
+      }
     }
 
     for (const day of Object.values(DayOfWeek)) {
@@ -570,6 +660,7 @@ async function main() {
   console.log('✅ Seed complete');
   console.log(`   SuperAdmin: admin@barbercore.ir / Admin@1234`);
   console.log(`   SalonOwner: owner@parnegarin.ir / Owner@1234`);
+  console.log(`   Staff OTP demo: 09122222221 / console OTP`);
   console.log(`   Instructor: instructor@parnegarin.ir / Instructor@1234`);
   console.log(`   Categories: ${categories.map((c) => c.name).join(', ')}`);
 }

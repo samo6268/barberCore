@@ -61,7 +61,9 @@ api.interceptors.response.use(
         processQueue(err, null);
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
-        window.location.href = '/login';
+        window.location.href = window.location.pathname.startsWith('/staff')
+          ? '/staff/login'
+          : '/login';
         return Promise.reject(err);
       } finally {
         isRefreshing = false;

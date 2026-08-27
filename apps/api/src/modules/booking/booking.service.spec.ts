@@ -5,7 +5,8 @@ import { BookingService, CreateBookingDto } from './booking.service';
 describe('BookingService', () => {
   const prisma = {
     service: { findMany: jest.fn() },
-    staffProfile: { findFirst: jest.fn() },
+    staffProfile: { findFirst: jest.fn(), findUnique: jest.fn() },
+    notification: { create: jest.fn() },
     salon: { findUnique: jest.fn() },
     booking: {
       findFirst: jest.fn(),
@@ -13,6 +14,7 @@ describe('BookingService', () => {
       create: jest.fn(),
       update: jest.fn(),
     },
+    $transaction: jest.fn(),
   };
   const availability = { getAvailableSlots: jest.fn() };
   const service = new BookingService(prisma as never, availability as never);
@@ -33,6 +35,9 @@ describe('BookingService', () => {
     prisma.booking.findFirst.mockResolvedValue(null);
     prisma.booking.create.mockImplementation(({ data }) =>
       Promise.resolve({ id: 'booking-1', ...data }),
+    );
+    prisma.$transaction.mockImplementation((callback: any) =>
+      callback({ booking: prisma.booking, notification: prisma.notification }),
     );
   });
 
@@ -95,6 +100,10 @@ describe('BookingService', () => {
     prisma.staffProfile.findFirst.mockResolvedValueOnce({
       services: [{ serviceId: 'service-1' }, { serviceId: 'service-2' }],
     });
+    prisma.staffProfile.findUnique.mockResolvedValueOnce({ userId: 'staff-user-1' });
+    prisma.booking.create.mockImplementationOnce(({ data }) =>
+      Promise.resolve({ id: 'booking-1', ...data, salon: { name: 'سالن نمونه' } }),
+    );
 
     await service.create('customer-1', dto);
 

@@ -217,8 +217,7 @@ export const useSalonServices = (salonId: string) =>
 export const useCreateService = (salonId: string) => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (dto: any) =>
-      api.post(`/salons/${salonId}/services`, dto).then((r) => r.data.data),
+    mutationFn: (dto: any) => api.post(`/salons/${salonId}/services`, dto).then((r) => r.data.data),
     onSuccess: (newSvc) => {
       qc.setQueryData(['services', salonId], (old: any[]) => [...(old || []), newSvc]);
     },
@@ -236,8 +235,7 @@ export const useSalonStaff = (salonId: string) =>
 export const useSalonStaffManagement = (salonId: string) =>
   useQuery({
     queryKey: ['staff-management', salonId],
-    queryFn: () =>
-      api.get(`/salons/${salonId}/staff/management`).then((r) => r.data.data),
+    queryFn: () => api.get(`/salons/${salonId}/staff/management`).then((r) => r.data.data),
     enabled: !!salonId,
     retry: false,
   });
@@ -245,8 +243,7 @@ export const useSalonStaffManagement = (salonId: string) =>
 export const useCreateStaff = (salonId: string) => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (dto: any) =>
-      api.post(`/salons/${salonId}/staff`, dto).then((r) => r.data.data),
+    mutationFn: (dto: any) => api.post(`/salons/${salonId}/staff`, dto).then((r) => r.data.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['staff', salonId] });
       qc.invalidateQueries({ queryKey: ['staff-management', salonId] });
@@ -258,9 +255,7 @@ export const useUpdateStaffCompensation = (salonId: string) => {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ staffId, ...dto }: { staffId: string; [key: string]: any }) =>
-      api
-        .put(`/salons/${salonId}/staff/${staffId}/compensation`, dto)
-        .then((r) => r.data.data),
+      api.put(`/salons/${salonId}/staff/${staffId}/compensation`, dto).then((r) => r.data.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['staff', salonId] });
       qc.invalidateQueries({ queryKey: ['staff-management', salonId] });
@@ -276,9 +271,7 @@ export const useSettlements = (
   useQuery({
     queryKey: ['settlements', salonId, filters],
     queryFn: () =>
-      api
-        .get(`/salons/${salonId}/settlements`, { params: filters })
-        .then((r) => r.data.data),
+      api.get(`/salons/${salonId}/settlements`, { params: filters }).then((r) => r.data.data),
     enabled: !!salonId,
     retry: false,
   });
@@ -291,9 +284,7 @@ export const useSettlementPreview = (
   useQuery({
     queryKey: ['settlement-preview', salonId, params],
     queryFn: () =>
-      api
-        .get(`/salons/${salonId}/settlements/preview`, { params })
-        .then((r) => r.data.data),
+      api.get(`/salons/${salonId}/settlements/preview`, { params }).then((r) => r.data.data),
     enabled: enabled && !!(salonId && params.staffId && params.from && params.to),
     retry: false,
   });
@@ -335,10 +326,7 @@ export const useUpdateSettlementStatus = (salonId: string) => {
   });
 };
 
-export const useFinancialReport = (
-  salonId: string,
-  params: { from: string; to: string },
-) =>
+export const useFinancialReport = (salonId: string, params: { from: string; to: string }) =>
   useQuery({
     queryKey: ['financial-report', salonId, params],
     queryFn: () =>
@@ -377,5 +365,168 @@ export const useSubmitReview = () => {
       return api.post('/reviews', { bookingId, rating, comment }).then((r) => r.data);
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['my-bookings'] }),
+  });
+};
+
+// ── Staff operations portal ──────────────────────────────
+export const useStaffMemberships = () =>
+  useQuery({
+    queryKey: ['staff-memberships'],
+    queryFn: () => api.get('/staff-portal/memberships').then((r) => r.data.data),
+    retry: false,
+  });
+
+export const useStaffDashboard = (salonId: string, date?: string) =>
+  useQuery({
+    queryKey: ['staff-dashboard', salonId, date],
+    queryFn: () =>
+      api.get('/staff-portal/dashboard', { params: { salonId, date } }).then((r) => r.data.data),
+    enabled: !!salonId,
+    retry: false,
+  });
+
+export const useStaffBookings = (
+  salonId: string,
+  params: { from: string; to: string; status?: string },
+) =>
+  useQuery({
+    queryKey: ['staff-bookings', salonId, params],
+    queryFn: () =>
+      api
+        .get('/staff-portal/bookings', { params: { salonId, ...params } })
+        .then((r) => r.data.data),
+    enabled: !!(salonId && params.from && params.to),
+    retry: false,
+  });
+
+export const useUpdateStaffBookingStatus = (salonId: string) => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ bookingId, status }: { bookingId: string; status: string }) =>
+      api
+        .patch(`/staff-portal/bookings/${bookingId}/status`, { salonId, status })
+        .then((r) => r.data.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['staff-dashboard', salonId] });
+      qc.invalidateQueries({ queryKey: ['staff-bookings', salonId] });
+    },
+  });
+};
+
+export const useStaffSchedule = (salonId: string) =>
+  useQuery({
+    queryKey: ['staff-schedule', salonId],
+    queryFn: () =>
+      api.get('/staff-portal/schedule', { params: { salonId } }).then((r) => r.data.data),
+    enabled: !!salonId,
+    retry: false,
+  });
+
+export const useUpdateStaffSchedule = (salonId: string) => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (days: any[]) =>
+      api.put('/staff-portal/schedule', { salonId, days }).then((r) => r.data.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['staff-schedule', salonId] }),
+  });
+};
+
+export const useCreateStaffTimeOff = (salonId: string) => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (dto: { startsAt: string; endsAt: string; reason?: string }) =>
+      api.post('/staff-portal/time-off', { salonId, ...dto }).then((r) => r.data.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['staff-schedule', salonId] });
+      qc.invalidateQueries({ queryKey: ['staff-dashboard', salonId] });
+    },
+  });
+};
+
+export const useDeleteStaffTimeOff = (salonId: string) => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (timeOffId: string) =>
+      api
+        .delete(`/staff-portal/time-off/${timeOffId}`, { params: { salonId } })
+        .then((r) => r.data.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['staff-schedule', salonId] }),
+  });
+};
+
+export const useStaffSettlements = (salonId: string) =>
+  useQuery({
+    queryKey: ['staff-settlements', salonId],
+    queryFn: () =>
+      api.get('/staff-portal/settlements', { params: { salonId } }).then((r) => r.data.data),
+    enabled: !!salonId,
+    retry: false,
+  });
+
+export const useStaffSettlement = (salonId: string, settlementId: string) =>
+  useQuery({
+    queryKey: ['staff-settlement', salonId, settlementId],
+    queryFn: () =>
+      api
+        .get(`/staff-portal/settlements/${settlementId}`, { params: { salonId } })
+        .then((r) => r.data.data),
+    enabled: !!(salonId && settlementId),
+    retry: false,
+  });
+
+export const useStaffNotifications = (salonId: string) =>
+  useQuery({
+    queryKey: ['staff-notifications', salonId],
+    queryFn: () =>
+      api.get('/staff-portal/notifications', { params: { salonId } }).then((r) => r.data.data),
+    enabled: !!salonId,
+    retry: false,
+  });
+
+export const useReadStaffNotification = (salonId: string) => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (notificationId: string) =>
+      api
+        .patch(`/staff-portal/notifications/${notificationId}/read`, { salonId })
+        .then((r) => r.data.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['staff-notifications', salonId] });
+      qc.invalidateQueries({ queryKey: ['staff-dashboard', salonId] });
+    },
+  });
+};
+
+export const useReadAllStaffNotifications = (salonId: string) => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () =>
+      api.patch('/staff-portal/notifications/read-all', { salonId }).then((r) => r.data.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['staff-notifications', salonId] });
+      qc.invalidateQueries({ queryKey: ['staff-dashboard', salonId] });
+    },
+  });
+};
+
+export const useStaffProfile = (salonId: string) =>
+  useQuery({
+    queryKey: ['staff-profile', salonId],
+    queryFn: () =>
+      api.get('/staff-portal/profile', { params: { salonId } }).then((r) => r.data.data),
+    enabled: !!salonId,
+    retry: false,
+  });
+
+export const useUpdateStaffProfile = (salonId: string) => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (dto: { displayName?: string; bio?: string; specialties?: string[] }) =>
+      api.patch('/staff-portal/profile', { salonId, ...dto }).then((r) => r.data.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['staff-profile', salonId] });
+      qc.invalidateQueries({ queryKey: ['staff-memberships'] });
+      qc.invalidateQueries({ queryKey: ['staff-dashboard', salonId] });
+    },
   });
 };

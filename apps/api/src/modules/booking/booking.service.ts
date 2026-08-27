@@ -123,31 +123,55 @@ export class BookingService {
     });
     if (conflict) throw new BadRequestException('این زمان رزرو شده است');
 
-    const booking = await this.prisma.booking.create({
-      data: {
-        salonId: dto.salonId,
-        customerId,
-        staffId: resolvedStaffId,
-        status: BookingStatus.CONFIRMED,
-        startsAt,
-        endsAt,
-        totalPrice,
-        notes: dto.notes,
-        items: {
-          create: services.map((s) => ({
-            serviceId: s.id,
-            price: s.discountPrice ?? s.price,
-            duration: s.durationMinutes,
-          })),
+    const assignedStaff = resolvedStaffId
+      ? await this.prisma.staffProfile.findUnique({
+          where: { id: resolvedStaffId },
+          select: { userId: true },
+        })
+      : null;
+
+    return this.prisma.$transaction(async (tx) => {
+      const booking = await tx.booking.create({
+        data: {
+          salonId: dto.salonId,
+          customerId,
+          staffId: resolvedStaffId,
+          status: BookingStatus.CONFIRMED,
+          startsAt,
+          endsAt,
+          totalPrice,
+          notes: dto.notes,
+          items: {
+            create: services.map((s) => ({
+              serviceId: s.id,
+              price: s.discountPrice ?? s.price,
+              duration: s.durationMinutes,
+            })),
+          },
         },
-      },
-      include: {
-        items: { include: { service: true } },
-        staff: true,
-        salon: { select: { name: true, address: true, phone: true } },
-      },
+        include: {
+          items: { include: { service: true } },
+          staff: true,
+          salon: { select: { name: true, address: true, phone: true } },
+        },
+      });
+      if (assignedStaff) {
+        await tx.notification.create({
+          data: {
+            userId: assignedStaff.userId,
+            salonId: dto.salonId,
+            bookingId: booking.id,
+            channel: 'IN_APP',
+            status: 'SENT',
+            title: 'نوبت جدید در برنامه شما',
+            body: `یک نوبت جدید در ${booking.salon.name} به شما اختصاص یافت.`,
+            sentAt: new Date(),
+            metadata: { bookingStatus: booking.status, source: 'online_booking' },
+          },
+        });
+      }
+      return booking;
     });
-    return booking;
   }
 
   async findMyBookings(customerId: string, pagination: PaginationDto) {
@@ -207,14 +231,38 @@ export class BookingService {
     if (['COMPLETED', 'CANCELLED'].includes(booking.status))
       throw new BadRequestException('این رزرو قابل لغو نیست');
 
-    return this.prisma.booking.update({
-      where: { id },
-      data: {
-        status: BookingStatus.CANCELLED,
-        cancellationReason: reason,
-        cancelledAt: new Date(),
-        cancelledBy: userId,
-      },
+    const assignedStaff = booking.staffId
+      ? await this.prisma.staffProfile.findUnique({
+          where: { id: booking.staffId },
+          select: { userId: true },
+        })
+      : null;
+    return this.prisma.$transaction(async (tx) => {
+      const updated = await tx.booking.update({
+        where: { id },
+        data: {
+          status: BookingStatus.CANCELLED,
+          cancellationReason: reason,
+          cancelledAt: new Date(),
+          cancelledBy: userId,
+        },
+      });
+      if (assignedStaff) {
+        await tx.notification.create({
+          data: {
+            userId: assignedStaff.userId,
+            salonId: booking.salonId,
+            bookingId: booking.id,
+            channel: 'IN_APP',
+            status: 'SENT',
+            title: 'نوبت لغو شد',
+            body: 'یکی از نوبت‌های برنامه کاری شما لغو شد.',
+            sentAt: new Date(),
+            metadata: { bookingStatus: BookingStatus.CANCELLED },
+          },
+        });
+      }
+      return updated;
     });
   }
 
@@ -239,20 +287,44 @@ export class BookingService {
       throw new BadRequestException('تغییر وضعیت رزرو مجاز نیست');
     }
 
-    return this.prisma.booking.update({
-      where: { id },
-      data: {
-        status,
-        ...(status === BookingStatus.CONFIRMED ? { confirmedAt: new Date() } : {}),
-        ...(status === BookingStatus.COMPLETED ? { completedAt: new Date() } : {}),
-        ...(status === BookingStatus.CANCELLED
-          ? {
-              cancelledAt: new Date(),
-              cancelledBy: ownerId,
-              cancellationReason: 'لغو توسط سالن',
-            }
-          : {}),
-      },
+    const updateData = {
+      status,
+      ...(status === BookingStatus.CONFIRMED ? { confirmedAt: new Date() } : {}),
+      ...(status === BookingStatus.COMPLETED ? { completedAt: new Date() } : {}),
+      ...(status === BookingStatus.CANCELLED
+        ? {
+            cancelledAt: new Date(),
+            cancelledBy: ownerId,
+            cancellationReason: 'لغو توسط سالن',
+          }
+        : {}),
+    };
+    if (status !== BookingStatus.CANCELLED || !booking.staffId) {
+      return this.prisma.booking.update({ where: { id }, data: updateData });
+    }
+
+    const assignedStaff = await this.prisma.staffProfile.findUnique({
+      where: { id: booking.staffId },
+      select: { userId: true },
+    });
+    return this.prisma.$transaction(async (tx) => {
+      const updated = await tx.booking.update({ where: { id }, data: updateData });
+      if (assignedStaff) {
+        await tx.notification.create({
+          data: {
+            userId: assignedStaff.userId,
+            salonId: booking.salonId,
+            bookingId: booking.id,
+            channel: 'IN_APP',
+            status: 'SENT',
+            title: 'نوبت توسط سالن لغو شد',
+            body: 'یکی از نوبت‌های برنامه کاری شما توسط مدیر سالن لغو شد.',
+            sentAt: new Date(),
+            metadata: { bookingStatus: BookingStatus.CANCELLED, actor: 'salon_owner' },
+          },
+        });
+      }
+      return updated;
     });
   }
 
