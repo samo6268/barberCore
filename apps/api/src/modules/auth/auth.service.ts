@@ -10,6 +10,7 @@ import { OtpPurpose, UserRole } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from '../../prisma/prisma.service';
+import { SmsService } from '../notifications/sms.service';
 import { OtpService } from './otp.service';
 import { RegisterDto, LoginEmailDto } from './dto/auth.dto';
 import { JwtPayload } from '../../common/decorators/current-user.decorator';
@@ -26,14 +27,17 @@ export class AuthService {
     private jwtService: JwtService,
     private config: ConfigService,
     private otpService: OtpService,
+    private smsService: SmsService,
   ) {}
 
   async sendOtp(phone: string, purpose: OtpPurpose): Promise<{ message: string }> {
     const code = await this.otpService.createOtp(phone, purpose);
 
-    // In production this calls SmsService — for now log to console in dev
-    if (this.config.get('NODE_ENV') !== 'production') {
-      console.log(`[OTP] ${phone} → ${code}`);
+    try {
+      await this.smsService.sendOtp(phone, code);
+    } catch (error) {
+      await this.otpService.invalidateOtp(phone, purpose);
+      throw error;
     }
 
     return { message: 'کد تأیید ارسال شد' };

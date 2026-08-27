@@ -109,7 +109,6 @@ export default function CustomerLoginPage() {
           >
             {sendOtp.isPending ? 'در حال ارسال...' : 'دریافت کد تأیید'}
           </button>
-
         </div>
       ) : (
         <div className="space-y-4">
@@ -123,9 +122,11 @@ export default function CustomerLoginPage() {
             </span>{' '}
             ارسال شد
           </p>
-          <p className="text-center text-xs" style={{ color: 'var(--ui-gray-400)' }}>
-            کد ورود در محیط توسعه: ۱۲۳۴۵۶
-          </p>
+          {process.env.NODE_ENV === 'development' && (
+            <p className="text-center text-xs" style={{ color: 'var(--ui-gray-400)' }}>
+              کد ورود در محیط توسعه: ۱۲۳۴۵۶
+            </p>
+          )}
 
           <div>
             <div

@@ -1,20 +1,25 @@
 import { Injectable, BadRequestException, HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { OtpPurpose } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
+import { randomInt } from 'node:crypto';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class OtpService {
   private readonly OTP_EXPIRY_MINUTES = 5;
   private readonly MAX_ATTEMPTS = 5;
-  private readonly RATE_LIMIT_MINUTES = 2;
-  private readonly isDev: boolean;
+  private readonly RATE_LIMIT_MINUTES = 1;
+  private readonly HASH_ROUNDS = 10;
+  private readonly useFixedDevelopmentCode: boolean;
 
   constructor(
     private prisma: PrismaService,
     private config: ConfigService,
   ) {
-    this.isDev = config.get('NODE_ENV') !== 'production';
+    const isProduction = config.get('NODE_ENV') === 'production';
+    const smsProvider = config.get('SMS_PROVIDER', isProduction ? 'kavenegar' : 'console');
+    this.useFixedDevelopmentCode = !isProduction && smsProvider === 'console';
   }
 
   async createOtp(phone: string, purpose: OtpPurpose): Promise<string> {
@@ -38,10 +43,13 @@ export class OtpService {
       data: { usedAt: new Date() },
     });
 
-    const code = this.isDev ? '123456' : this.generateCode();
+    const code = this.useFixedDevelopmentCode ? '123456' : this.generateCode();
+    const codeHash = await bcrypt.hash(code, this.HASH_ROUNDS);
     const expiresAt = new Date(Date.now() + this.OTP_EXPIRY_MINUTES * 60 * 1000);
 
-    await this.prisma.otpCode.create({ data: { phone, code, purpose, expiresAt } });
+    await this.prisma.otpCode.create({
+      data: { phone, code: codeHash, purpose, expiresAt },
+    });
     return code;
   }
 
@@ -57,7 +65,9 @@ export class OtpService {
       throw new HttpException('تعداد تلاش‌ها بیش از حد مجاز است', HttpStatus.TOO_MANY_REQUESTS);
     }
 
-    if (otp.code !== code) {
+    const isValid = await bcrypt.compare(code, otp.code);
+
+    if (!isValid) {
       await this.prisma.otpCode.update({
         where: { id: otp.id },
         data: { attempts: { increment: 1 } },
@@ -68,7 +78,14 @@ export class OtpService {
     await this.prisma.otpCode.update({ where: { id: otp.id }, data: { usedAt: new Date() } });
   }
 
+  async invalidateOtp(phone: string, purpose: OtpPurpose): Promise<void> {
+    await this.prisma.otpCode.updateMany({
+      where: { phone, purpose, usedAt: null },
+      data: { usedAt: new Date() },
+    });
+  }
+
   private generateCode(): string {
-    return Math.floor(100000 + Math.random() * 900000).toString();
+    return randomInt(100000, 1000000).toString();
   }
 }
