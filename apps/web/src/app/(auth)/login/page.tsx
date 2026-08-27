@@ -122,12 +122,6 @@ export default function CustomerLoginPage() {
             </span>{' '}
             ارسال شد
           </p>
-          {process.env.NODE_ENV === 'development' && (
-            <p className="text-center text-xs" style={{ color: 'var(--ui-gray-400)' }}>
-              کد ورود در محیط توسعه: ۱۲۳۴۵۶
-            </p>
-          )}
-
           <div>
             <div
               className="flex items-center gap-3 border-2 rounded-xl px-4 py-3 transition-colors focus-within:border-[var(--brand-plum-600)]"
