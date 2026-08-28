@@ -11,10 +11,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang="fa"
       dir="rtl"
-      style={{
-        '--font-display': '"Cormorant Garamond", Estedad, Georgia, serif',
-        '--font-body': 'Vazirmatn, Inter, system-ui, sans-serif',
-      } as React.CSSProperties}
+      style={
+        {
+          '--font-sans': 'Vazirmatn, "Noto Sans Arabic", Tahoma, system-ui, sans-serif',
+          '--font-body': 'var(--font-sans)',
+        } as React.CSSProperties
+      }
     >
       <head>
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
@@ -27,7 +29,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }
         `}</style>
       </head>
-      <body className="antialiased">{children}</body>
+      <body data-typography="admin" className="antialiased">
+        {children}
+      </body>
     </html>
   );
 }

@@ -49,15 +49,19 @@ export default function TermsPage() {
         'اگر هر بخشی از این شرایط توسط دادگاه باطل اعلام شود، سایر بخش‌ها همچنان معتبر و لازم‌الاجرا خواهند بود. این توافق‌نامه کلیه توافقات قبلی بین کاربر و پرنگارین را جایگزین می‌کند.',
       ],
     },
-  ]
+  ];
 
   return (
     <main dir="rtl" style={{ backgroundColor: 'var(--bg-ivory)', minHeight: '100vh' }}>
       {/* Hero */}
       <section style={{ backgroundColor: 'var(--brand-plum-600)', padding: '4rem 0' }}>
         <div className="container-editorial" style={{ textAlign: 'center' }}>
-          <span className="eyebrow" style={{ color: 'var(--brand-gold-600)' }}>اسناد قانونی</span>
-          <h1 className="text-display-md" style={{ color: '#fff', marginTop: '0.75rem' }}>شرایط و ضوابط استفاده</h1>
+          <span className="eyebrow" style={{ color: 'var(--brand-gold-600)' }}>
+            اسناد قانونی
+          </span>
+          <h1 className="text-display-md" style={{ color: '#fff', marginTop: '0.75rem' }}>
+            شرایط و ضوابط استفاده
+          </h1>
           <p className="text-body" style={{ color: 'rgba(255,255,255,0.7)', marginTop: '0.75rem' }}>
             آخرین بروزرسانی: دی ماه ۱۴۰۳
           </p>
@@ -87,7 +91,7 @@ export default function TermsPage() {
                 <p
                   key={i}
                   className="text-body"
-                  style={{ color: 'var(--color-text-muted)', lineHeight: 2.1, marginBottom: '1rem' }}
+                  style={{ color: 'var(--color-text-muted)', marginBottom: '1rem' }}
                 >
                   {para}
                 </p>
@@ -97,5 +101,5 @@ export default function TermsPage() {
         </div>
       </section>
     </main>
-  )
+  );
 }

@@ -113,11 +113,10 @@ export default function SalonsPage() {
         <div className="container-editorial">
           <p className="eyebrow mb-3">مارکت‌پلیس پرنگارین</p>
           <h1
-            className="font-display font-semibold mb-6"
+            className="font-semibold mb-6"
             style={{
-              fontSize: '2.5rem',
+              fontSize: 'var(--type-display-lg-size)',
               color: 'var(--brand-navy-600)',
-              letterSpacing: '-0.03em',
             }}
           >
             انتخاب و رزرو آرایشگاه
@@ -284,7 +283,7 @@ export default function SalonsPage() {
           </div>
         ) : isError ? (
           <div className="text-center py-24">
-            <p className="font-display text-xl mb-3" style={{ color: 'var(--brand-navy-600)' }}>
+            <p className="text-xl mb-3" style={{ color: 'var(--brand-navy-600)' }}>
               دریافت اطلاعات سالن‌ها انجام نشد
             </p>
             <button
@@ -298,7 +297,7 @@ export default function SalonsPage() {
         ) : salons.length === 0 ? (
           <div className="text-center py-24">
             <Search className="w-10 h-10 mx-auto mb-4" style={{ color: 'var(--ui-gray-400)' }} />
-            <p className="font-display text-xl mb-2" style={{ color: 'var(--brand-navy-600)' }}>
+            <p className="text-xl mb-2" style={{ color: 'var(--brand-navy-600)' }}>
               نتیجه‌ای یافت نشد
             </p>
             <p className="text-sm mb-6" style={{ color: 'var(--ui-gray-500)' }}>
@@ -456,7 +455,7 @@ function SalonCard({ salon, fallbackImage }: { salon: SalonSummary; fallbackImag
               <div className="flex items-center gap-1.5 mb-1">
                 <h2
                   className="font-bold text-base truncate"
-                  style={{ color: 'var(--brand-navy-600)', fontFamily: 'var(--font-display)' }}
+                  style={{ color: 'var(--brand-navy-600)' }}
                 >
                   {salon.name}
                 </h2>
@@ -482,7 +481,7 @@ function SalonCard({ salon, fallbackImage }: { salon: SalonSummary; fallbackImag
               <p className="text-xs" style={{ color: 'var(--ui-gray-400)' }}>
                 شروع قیمت
               </p>
-              <p className="text-sm font-bold" style={{ color: 'var(--brand-plum-600)' }}>
+              <p className="text-price font-bold price" style={{ color: 'var(--brand-plum-600)' }}>
                 {salon.minPrice === null ? 'استعلام' : formatPrice(salon.minPrice)}
               </p>
             </div>

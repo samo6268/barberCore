@@ -1,17 +1,20 @@
-import Image from 'next/image'
-import Link from 'next/link'
-import { notFound } from 'next/navigation'
-import { Clock, User, Calendar, ArrowRight } from 'lucide-react'
+import Image from 'next/image';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import { Clock, User, Calendar, ArrowRight } from 'lucide-react';
 
-const MOCK_ARTICLES: Record<string, {
-  title: string
-  author: string
-  date: string
-  category: string
-  image: string
-  content: string[]
-  related: string[]
-}> = {
+const MOCK_ARTICLES: Record<
+  string,
+  {
+    title: string;
+    author: string;
+    date: string;
+    category: string;
+    image: string;
+    content: string[];
+    related: string[];
+  }
+> = {
   'best-haircut-styles-2024': {
     title: 'بهترین مدل موهای مردانه در ۱۴۰۳',
     author: 'سارا محمدی',
@@ -90,22 +93,52 @@ const MOCK_ARTICLES: Record<string, {
     ],
     related: ['nail-art-inspiration-2024', 'hair-care-winter-tips'],
   },
-}
+};
 
 const ALL_ARTICLES = [
-  { slug: 'best-haircut-styles-2024', title: 'بهترین مدل موهای مردانه در ۱۴۰۳', image: '/images/salons/01.svg', category: 'ترند' },
-  { slug: 'how-to-choose-right-salon', title: 'چطور بهترین آرایشگاه را انتخاب کنیم؟', image: '/images/salons/02.svg', category: 'راهنما' },
-  { slug: 'hair-care-winter-tips', title: 'مراقبت از مو در فصل زمستان', image: '/images/salons/03.svg', category: 'نکات' },
-  { slug: 'beard-grooming-guide', title: 'راهنمای کامل آراستن ریش', image: '/images/salons/04.svg', category: 'راهنما' },
-  { slug: 'nail-art-inspiration-2024', title: '۲۰ ایده الهام‌بخش برای ناخن ۱۴۰۳', image: '/images/salons/05.svg', category: 'الهام' },
-  { slug: 'makeup-natural-look', title: 'آموزش میکاپ ساده و طبیعی', image: '/images/salons/06.svg', category: 'نکات' },
-]
+  {
+    slug: 'best-haircut-styles-2024',
+    title: 'بهترین مدل موهای مردانه در ۱۴۰۳',
+    image: '/images/salons/01.svg',
+    category: 'ترند',
+  },
+  {
+    slug: 'how-to-choose-right-salon',
+    title: 'چطور بهترین آرایشگاه را انتخاب کنیم؟',
+    image: '/images/salons/02.svg',
+    category: 'راهنما',
+  },
+  {
+    slug: 'hair-care-winter-tips',
+    title: 'مراقبت از مو در فصل زمستان',
+    image: '/images/salons/03.svg',
+    category: 'نکات',
+  },
+  {
+    slug: 'beard-grooming-guide',
+    title: 'راهنمای کامل آراستن ریش',
+    image: '/images/salons/04.svg',
+    category: 'راهنما',
+  },
+  {
+    slug: 'nail-art-inspiration-2024',
+    title: '۲۰ ایده الهام‌بخش برای ناخن ۱۴۰۳',
+    image: '/images/salons/05.svg',
+    category: 'الهام',
+  },
+  {
+    slug: 'makeup-natural-look',
+    title: 'آموزش میکاپ ساده و طبیعی',
+    image: '/images/salons/06.svg',
+    category: 'نکات',
+  },
+];
 
 export default function ArticlePage({ params }: { params: { slug: string } }) {
-  const article = MOCK_ARTICLES[params.slug]
-  if (!article) notFound()
+  const article = MOCK_ARTICLES[params.slug];
+  if (!article) notFound();
 
-  const related = ALL_ARTICLES.filter((a) => article.related.includes(a.slug))
+  const related = ALL_ARTICLES.filter((a) => article.related.includes(a.slug));
 
   return (
     <main dir="rtl" style={{ backgroundColor: 'var(--bg-ivory)', minHeight: '100vh' }}>
@@ -116,12 +149,19 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
           style={{
             position: 'absolute',
             inset: 0,
-            background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 60%, transparent 100%)',
+            background:
+              'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 60%, transparent 100%)',
           }}
         />
         <div
           className="container-editorial"
-          style={{ position: 'absolute', bottom: '3rem', left: '50%', transform: 'translateX(-50%)', width: '100%' }}
+          style={{
+            position: 'absolute',
+            bottom: '3rem',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: '100%',
+          }}
         >
           <span
             style={{
@@ -130,14 +170,16 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
               color: '#fff',
               padding: '0.25rem 0.875rem',
               borderRadius: '2rem',
-              fontSize: '0.75rem',
+              fontSize: 'var(--type-caption-size)',
               fontWeight: 700,
               marginBottom: '1rem',
             }}
           >
             {article.category}
           </span>
-          <h1 className="text-display-md" style={{ color: '#fff' }}>{article.title}</h1>
+          <h1 className="text-display-md" style={{ color: '#fff' }}>
+            {article.title}
+          </h1>
         </div>
       </div>
 
@@ -149,15 +191,21 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <User size={16} style={{ color: 'var(--color-text-muted)' }} />
-            <span className="text-body-sm" style={{ color: 'var(--color-text-muted)' }}>{article.author}</span>
+            <span className="text-body-sm" style={{ color: 'var(--color-text-muted)' }}>
+              {article.author}
+            </span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <Calendar size={16} style={{ color: 'var(--color-text-muted)' }} />
-            <span className="text-body-sm" style={{ color: 'var(--color-text-muted)' }}>{article.date}</span>
+            <span className="text-body-sm" style={{ color: 'var(--color-text-muted)' }}>
+              {article.date}
+            </span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <Clock size={16} style={{ color: 'var(--color-text-muted)' }} />
-            <span className="text-body-sm" style={{ color: 'var(--color-text-muted)' }}>۵ دقیقه مطالعه</span>
+            <span className="text-body-sm" style={{ color: 'var(--color-text-muted)' }}>
+              ۵ دقیقه مطالعه
+            </span>
           </div>
         </div>
       </div>
@@ -167,7 +215,7 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
         <div className="container-editorial" style={{ maxWidth: '760px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             {article.content.map((para, i) => (
-              <p key={i} className="text-body-lg" style={{ color: 'var(--color-text)', lineHeight: 2.1 }}>
+              <p key={i} className="text-body-lg" style={{ color: 'var(--color-text)' }}>
                 {para}
               </p>
             ))}
@@ -182,8 +230,12 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
               borderRight: '4px solid var(--brand-plum-600)',
             }}
           >
-            <p className="text-body" style={{ color: 'var(--color-text-muted)', fontStyle: 'italic', lineHeight: 2 }}>
-              این مقاله توسط تیم تحریریه پرنگارین نوشته شده است. برای رزرو خدمات زیبایی به‌صورت آنلاین به سایت مراجعه کنید.
+            <p
+              className="text-body"
+              style={{ color: 'var(--color-text-muted)', fontStyle: 'italic' }}
+            >
+              این مقاله توسط تیم تحریریه پرنگارین نوشته شده است. برای رزرو خدمات زیبایی به‌صورت
+              آنلاین به سایت مراجعه کنید.
             </p>
           </div>
         </div>
@@ -192,8 +244,17 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
       {/* Related Articles */}
       <section className="section-editorial" style={{ backgroundColor: 'var(--bg-ivory-soft)' }}>
         <div className="container-editorial">
-          <h2 className="text-h2" style={{ marginBottom: '2rem' }}>مطالب مرتبط</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1.5rem', maxWidth: '700px' }}>
+          <h2 className="text-h2" style={{ marginBottom: '2rem' }}>
+            مطالب مرتبط
+          </h2>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: '1.5rem',
+              maxWidth: '700px',
+            }}
+          >
             {related.map((rel) => (
               <Link
                 key={rel.slug}
@@ -212,15 +273,22 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
                     <Image src={rel.image} alt={rel.title} fill style={{ objectFit: 'cover' }} />
                   </div>
                   <div style={{ padding: '1rem' }}>
-                    <span className="text-caption" style={{ color: 'var(--brand-plum-600)', fontWeight: 700 }}>{rel.category}</span>
-                    <div className="text-body-sm" style={{ fontWeight: 600, marginTop: '0.25rem', lineHeight: 1.6 }}>{rel.title}</div>
+                    <span
+                      className="text-caption"
+                      style={{ color: 'var(--brand-plum-600)', fontWeight: 700 }}
+                    >
+                      {rel.category}
+                    </span>
+                    <div className="text-body-sm" style={{ fontWeight: 600, marginTop: '0.25rem' }}>
+                      {rel.title}
+                    </div>
                     <div
                       style={{
                         display: 'flex',
                         alignItems: 'center',
                         gap: '0.25rem',
                         color: 'var(--brand-plum-600)',
-                        fontSize: '0.8125rem',
+                        fontSize: 'var(--type-body-sm-size)',
                         fontWeight: 600,
                         marginTop: '0.5rem',
                       }}
@@ -235,5 +303,5 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
         </div>
       </section>
     </main>
-  )
+  );
 }

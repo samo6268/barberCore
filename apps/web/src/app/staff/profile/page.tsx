@@ -96,7 +96,7 @@ export default function StaffProfilePage() {
                   placeholder="کوتاهی مو، رنگ، فیشیال"
                   className="w-full rounded-xl border border-[var(--ui-gray-200)] bg-[var(--bg-ivory)] px-4 py-3 text-sm"
                 />
-                <p className="mt-1 text-[10px] text-[var(--ui-gray-400)]">
+                <p className="mt-1 text-caption text-[var(--ui-gray-400)]">
                   موارد را با ویرگول جدا کنید.
                 </p>
               </Field>
@@ -136,7 +136,7 @@ export default function StaffProfilePage() {
                   </div>
                 ))}
               </div>
-              <p className="mt-4 flex items-start gap-2 text-[10px] leading-5 text-[var(--ui-gray-400)]">
+              <p className="mt-4 flex items-start gap-2 text-caption leading-5 text-[var(--ui-gray-400)]">
                 <ShieldCheck className="mt-0.5 shrink-0" size={13} /> انتساب خدمات توسط مدیر سالن
                 انجام می‌شود.
               </p>

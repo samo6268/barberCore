@@ -120,7 +120,7 @@ export function StaffShell({ children }: { children: React.ReactNode }) {
 
   return (
     <StaffPortalContext.Provider value={value}>
-      <div className="min-h-screen bg-[var(--bg-ivory)] pb-20 lg:pb-0">
+      <div data-typography="staff" className="min-h-screen bg-[var(--bg-ivory)] pb-20 lg:pb-0">
         <header className="sticky top-0 z-40 border-b border-[var(--ui-gray-200)] bg-white/95 backdrop-blur">
           <div className="mx-auto flex h-16 max-w-[1500px] items-center justify-between px-4 lg:px-7">
             <div className="flex min-w-0 items-center gap-3">
@@ -218,7 +218,7 @@ export function StaffShell({ children }: { children: React.ReactNode }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className="flex min-w-0 flex-col items-center gap-1 py-1 text-[10px]"
+                className="flex min-w-0 flex-col items-center gap-1 py-1 text-caption"
                 style={{ color: active ? 'var(--brand-plum-600)' : 'var(--ui-gray-400)' }}
               >
                 <Icon size={19} strokeWidth={active ? 2.4 : 1.7} />

@@ -46,7 +46,10 @@ export function SalonCard({ salon }: SalonCardProps) {
               className="w-full h-full flex items-center justify-center"
               style={{ background: 'var(--brand-rose-200)' }}
             >
-              <span className="font-display font-semibold text-display-md" style={{ color: 'var(--brand-rose-800)' }}>
+              <span
+                className="font-semibold text-display-md"
+                style={{ color: 'var(--brand-rose-800)' }}
+              >
                 {salon.name.slice(0, 2)}
               </span>
             </div>
@@ -55,14 +58,18 @@ export function SalonCard({ salon }: SalonCardProps) {
           {/* Badges */}
           <div className="absolute top-3 right-3 flex flex-col gap-1.5">
             {isFeatured && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-caption font-medium uppercase tracking-wide"
-                style={{ background: 'var(--brand-gold-600)', color: 'var(--brand-plum-900)' }}>
+              <span
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-caption font-medium uppercase tracking-wide"
+                style={{ background: 'var(--brand-gold-600)', color: 'var(--brand-plum-900)' }}
+              >
                 ویژه
               </span>
             )}
             {salon.isVerified && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-caption font-medium"
-                style={{ background: 'var(--brand-navy-600)', color: 'var(--brand-gold-100)' }}>
+              <span
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-caption font-medium"
+                style={{ background: 'var(--brand-navy-600)', color: 'var(--brand-gold-100)' }}
+              >
                 <CheckCircle size={10} strokeWidth={2} />
                 تأیید شده
               </span>
@@ -83,11 +90,17 @@ export function SalonCard({ salon }: SalonCardProps) {
         {/* Info */}
         <div className={`p-6 ${salon.logoUrl ? 'pt-8' : ''}`}>
           <div className="flex items-start justify-between gap-2">
-            <h3 className="font-display font-semibold text-h3 leading-snug" style={{ color: 'var(--color-text)' }}>
+            <h3
+              className="font-semibold text-h3 leading-snug"
+              style={{ color: 'var(--color-text)' }}
+            >
               {salon.name}
             </h3>
             <div className="flex items-center gap-1 shrink-0 mt-0.5">
-              <Star size={14} className="fill-[var(--brand-gold-600)] text-[var(--brand-gold-600)]" />
+              <Star
+                size={14}
+                className="fill-[var(--brand-gold-600)] text-[var(--brand-gold-600)]"
+              />
               <span className="text-body-sm font-medium" style={{ color: 'var(--color-text)' }}>
                 {salon.rating.toFixed(1)}
               </span>
@@ -98,14 +111,20 @@ export function SalonCard({ salon }: SalonCardProps) {
           </div>
 
           {salon.city && (
-            <div className="flex items-center gap-1 mt-2 text-caption" style={{ color: 'var(--color-text-muted)' }}>
+            <div
+              className="flex items-center gap-1 mt-2 text-caption"
+              style={{ color: 'var(--color-text-muted)' }}
+            >
               <MapPin size={12} strokeWidth={1.5} />
               {salon.city}
             </div>
           )}
 
           {minPrice != null && (
-            <div className="mt-3 text-body-sm font-medium" style={{ color: 'var(--color-primary)' }}>
+            <div
+              className="mt-3 text-body-sm font-medium"
+              style={{ color: 'var(--color-primary)' }}
+            >
               از {minPrice.toLocaleString('fa-IR')} تومان
             </div>
           )}

@@ -5,19 +5,11 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Estedad (Farsi Display) — local CDN ─────────────── */
-@font-face {
-  font-family: 'Estedad';
-  src: url('https://cdn.jsdelivr.net/gh/rastikerdar/estedad-font@v8.0.0/Estedad-FD[wght].woff2') format('woff2-variations');
-  font-weight: 200 900;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* ── Vazirmatn (Farsi Body) ──────────────────────────── */
+/* ── Vazirmatn — the single product typeface ─────────── */
 @font-face {
   font-family: 'Vazirmatn';
-  src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/fonts/webfonts/Vazirmatn[wght].woff2') format('woff2-variations');
+  src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/fonts/webfonts/Vazirmatn[wght].woff2')
+    format('woff2-variations');
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
@@ -37,24 +29,73 @@
     background-color: var(--color-background);
     color: var(--color-text);
     font-family: var(--font-body);
-    font-size: 1rem;
-    line-height: 1.7;
-    font-feature-settings: "kern" 1;
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+    font-weight: 400;
+    font-feature-settings: 'kern' 1;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   /* RTL default for Persian UI */
-  [dir="rtl"] {
-    font-family: 'Vazirmatn', system-ui, sans-serif;
+  [dir='rtl'] {
+    font-family: var(--font-sans);
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-display);
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-sans);
     font-weight: 600;
     color: var(--color-text);
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
+  }
+
+  h1 {
+    font-size: var(--type-h1-size);
+    line-height: var(--type-h1-line);
+    font-weight: 700;
+  }
+  h2 {
+    font-size: var(--type-h2-size);
+    line-height: var(--type-h2-line);
+    font-weight: 700;
+  }
+  h3 {
+    font-size: var(--type-h3-size);
+    line-height: var(--type-h3-line);
+    font-weight: 600;
+  }
+  h4,
+  h5,
+  h6 {
+    font-size: var(--type-h4-size);
+    line-height: var(--type-h4-line);
+    font-weight: 600;
+  }
+
+  button {
+    font: inherit;
+    font-size: var(--type-button-size);
+    line-height: var(--type-button-line);
+    font-weight: 600;
+  }
+
+  input,
+  select,
+  textarea {
+    font: inherit;
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+  }
+
+  label {
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
   }
 
   /* Scrollbar — editorial minimal */
@@ -90,6 +131,113 @@
 }
 
 @layer components {
+  /* ── Semantic typography tokens ─────────────────────── */
+  .type-display-lg {
+    font-size: var(--type-display-lg-size);
+    line-height: var(--type-display-lg-line);
+    font-weight: 700;
+  }
+  .type-h1 {
+    font-size: var(--type-h1-size);
+    line-height: var(--type-h1-line);
+    font-weight: 700;
+  }
+  .type-h2 {
+    font-size: var(--type-h2-size);
+    line-height: var(--type-h2-line);
+    font-weight: 700;
+  }
+  .type-h3 {
+    font-size: var(--type-h3-size);
+    line-height: var(--type-h3-line);
+    font-weight: 600;
+  }
+  .type-h4 {
+    font-size: var(--type-h4-size);
+    line-height: var(--type-h4-line);
+    font-weight: 600;
+  }
+  .type-body-lg {
+    font-size: var(--type-body-lg-size);
+    line-height: var(--type-body-lg-line);
+    font-weight: 400;
+  }
+  .type-body {
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+    font-weight: 400;
+  }
+  .type-body-sm {
+    font-size: var(--type-body-sm-size);
+    line-height: var(--type-body-sm-line);
+    font-weight: 400;
+  }
+  .type-label {
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-weight: 500;
+  }
+  .type-button {
+    font-size: var(--type-button-size);
+    line-height: var(--type-button-line);
+    font-weight: 600;
+  }
+  .type-caption {
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-weight: 400;
+  }
+  .type-price {
+    font-size: var(--type-price-size);
+    line-height: var(--type-price-line);
+    font-weight: 700;
+  }
+  .type-metric {
+    font-size: var(--type-metric-size);
+    line-height: var(--type-metric-line);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  [data-typography='marketplace'] h1 {
+    font-size: var(--type-display-lg-size);
+    line-height: var(--type-display-lg-line);
+  }
+  [data-typography='marketplace'] h2 {
+    font-size: var(--type-h2-size);
+    line-height: var(--type-h2-line);
+  }
+  [data-typography='marketplace'] h3 {
+    font-size: var(--type-h3-size);
+    line-height: var(--type-h3-line);
+  }
+  [data-typography='marketplace'] .price {
+    font-size: var(--type-price-size);
+    line-height: var(--type-price-line);
+    font-weight: 700;
+  }
+
+  [data-typography='management'],
+  [data-typography='staff'] {
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+  }
+  [data-typography='management'] h1,
+  [data-typography='staff'] h1 {
+    font-size: var(--type-h2-size);
+    line-height: var(--type-h2-line);
+  }
+  [data-typography='management'] h2,
+  [data-typography='staff'] h2 {
+    font-size: var(--type-h3-size);
+    line-height: var(--type-h3-line);
+  }
+  [data-typography='management'] h3,
+  [data-typography='staff'] h3 {
+    font-size: var(--type-h4-size);
+    line-height: var(--type-h4-line);
+  }
+
   /* ── Container editorial ────────────────────────────── */
   .container-editorial {
     width: 100%;
@@ -129,10 +277,9 @@
 
   /* ── Eyebrow label ──────────────────────────────────── */
   .eyebrow {
-    font-size: 0.75rem;
-    line-height: 1.5;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    letter-spacing: 0;
     font-weight: 500;
     color: var(--color-accent);
   }
@@ -170,8 +317,8 @@
   /* ── Opening quote glyph ────────────────────────────── */
   .quote-glyph::before {
     content: '\201C';
-    font-family: var(--font-display);
-    font-size: 5rem;
+    font-family: var(--font-sans);
+    font-size: var(--type-display-lg-size);
     line-height: 0;
     vertical-align: -2rem;
     color: var(--brand-gold-600);
@@ -203,24 +350,26 @@
 @layer utilities {
   .persian-nums {
     font-variant-numeric: tabular-nums;
-    font-feature-settings: "ss01" 1;
-  }
-
-  .font-display {
-    font-family: var(--font-display);
-  }
-
-  /* Male theme tighter letterspacing */
-  [data-theme="male"] .tracking-display {
-    letter-spacing: var(--letter-spacing-display, -0.03em);
+    font-feature-settings: 'ss01' 1;
   }
 
   /* Hide scrollbar but keep scroll */
-  .no-scrollbar::-webkit-scrollbar { display: none; }
-  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 
   /* Aspect ratio helpers for editorial images */
-  .aspect-portrait  { aspect-ratio: 3/4; }
-  .aspect-editorial { aspect-ratio: 5/6; }
-  .aspect-cinema    { aspect-ratio: 16/9; }
+  .aspect-portrait {
+    aspect-ratio: 3/4;
+  }
+  .aspect-editorial {
+    aspect-ratio: 5/6;
+  }
+  .aspect-cinema {
+    aspect-ratio: 16/9;
+  }
 }

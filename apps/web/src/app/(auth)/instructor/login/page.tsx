@@ -50,27 +50,36 @@ export default function InstructorLoginPage() {
       heroSubtitle="آکادمی پرنگارین — دوره بسازید، دانشجو جذب کنید و ۷۰٪ درآمد را دریافت کنید."
     >
       <div className="mb-8">
-        <h1 className="text-2xl font-bold mb-1" style={{ color: 'var(--brand-navy-600)', fontFamily: 'var(--font-display)' }}>
+        <h1 className="text-2xl font-bold mb-1" style={{ color: 'var(--brand-navy-600)' }}>
           ورود مدرس
         </h1>
         <p className="text-sm" style={{ color: 'var(--ui-gray-500)' }}>
           با ایمیل و رمز عبور خود وارد شوید
         </p>
         <p className="text-xs mt-2">
-          <Link href="/role-selector" style={{ color: 'var(--brand-plum-600)' }}>نقش دیگری دارید؟</Link>
+          <Link href="/role-selector" style={{ color: 'var(--brand-plum-600)' }}>
+            نقش دیگری دارید؟
+          </Link>
         </p>
       </div>
 
       <form onSubmit={handleLogin} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium mb-2" style={{ color: 'var(--brand-navy-600)' }}>
+          <label
+            className="block text-sm font-medium mb-2"
+            style={{ color: 'var(--brand-navy-600)' }}
+          >
             ایمیل
           </label>
-          <div className="flex items-center gap-3 border-2 rounded-xl px-4 py-3 transition-colors focus-within:border-[var(--brand-rose-600)]"
-            style={{ borderColor: 'var(--ui-gray-200)', background: 'white' }}>
+          <div
+            className="flex items-center gap-3 border-2 rounded-xl px-4 py-3 transition-colors focus-within:border-[var(--brand-rose-600)]"
+            style={{ borderColor: 'var(--ui-gray-200)', background: 'white' }}
+          >
             <Mail size={16} style={{ color: 'var(--ui-gray-400)' }} />
             <input
-              type="email" value={email} onChange={e => setEmail(e.target.value)}
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="instructor@example.com"
               className="flex-1 outline-none bg-transparent text-sm"
               style={{ color: 'var(--brand-navy-600)' }}
@@ -81,50 +90,76 @@ export default function InstructorLoginPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2" style={{ color: 'var(--brand-navy-600)' }}>
+          <label
+            className="block text-sm font-medium mb-2"
+            style={{ color: 'var(--brand-navy-600)' }}
+          >
             رمز عبور
           </label>
-          <div className="flex items-center gap-3 border-2 rounded-xl px-4 py-3 transition-colors focus-within:border-[var(--brand-rose-600)]"
-            style={{ borderColor: 'var(--ui-gray-200)', background: 'white' }}>
+          <div
+            className="flex items-center gap-3 border-2 rounded-xl px-4 py-3 transition-colors focus-within:border-[var(--brand-rose-600)]"
+            style={{ borderColor: 'var(--ui-gray-200)', background: 'white' }}
+          >
             <Lock size={16} style={{ color: 'var(--ui-gray-400)' }} />
             <input
-              type={showPw ? 'text' : 'password'} value={password}
-              onChange={e => setPassword(e.target.value)}
+              type={showPw ? 'text' : 'password'}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               className="flex-1 outline-none bg-transparent text-sm"
               style={{ color: 'var(--brand-navy-600)' }}
               dir="ltr"
             />
-            <button type="button" onClick={() => setShowPw(p => !p)}>
-              {showPw
-                ? <EyeOff size={16} style={{ color: 'var(--ui-gray-400)' }} />
-                : <Eye size={16} style={{ color: 'var(--ui-gray-400)' }} />}
+            <button type="button" onClick={() => setShowPw((p) => !p)}>
+              {showPw ? (
+                <EyeOff size={16} style={{ color: 'var(--ui-gray-400)' }} />
+              ) : (
+                <Eye size={16} style={{ color: 'var(--ui-gray-400)' }} />
+              )}
             </button>
           </div>
         </div>
 
-        <button type="submit" disabled={login.isPending}
+        <button
+          type="submit"
+          disabled={login.isPending}
           className="w-full py-3.5 rounded-xl font-semibold text-white transition-all hover:-translate-y-0.5 disabled:opacity-50 mt-2"
-          style={{ background: 'var(--brand-rose-600)' }}>
+          style={{ background: 'var(--brand-rose-600)' }}
+        >
           {login.isPending ? 'در حال ورود...' : 'ورود به آکادمی'}
         </button>
 
         <div className="relative flex items-center gap-3">
           <div className="flex-1 h-px" style={{ background: 'var(--ui-gray-200)' }} />
-          <span className="text-xs" style={{ color: 'var(--ui-gray-400)' }}>یا</span>
+          <span className="text-xs" style={{ color: 'var(--ui-gray-400)' }}>
+            یا
+          </span>
           <div className="flex-1 h-px" style={{ background: 'var(--ui-gray-200)' }} />
         </div>
 
-        <button type="button" onClick={demoLogin} disabled={login.isPending}
+        <button
+          type="button"
+          onClick={demoLogin}
+          disabled={login.isPending}
           className="w-full py-3 rounded-xl text-sm font-medium border-2 transition-all hover:-translate-y-0.5 disabled:opacity-50"
-          style={{ borderColor: 'var(--ui-gray-200)', color: 'var(--brand-navy-600)', background: 'white' }}>
+          style={{
+            borderColor: 'var(--ui-gray-200)',
+            color: 'var(--brand-navy-600)',
+            background: 'white',
+          }}
+        >
           ورود آزمایشی با API
         </button>
       </form>
 
       {/* Revenue share badge */}
-      <div className="mt-6 p-4 rounded-xl" style={{ background: 'var(--brand-plum-50)', border: '1px solid var(--brand-plum-200)' }}>
-        <p className="text-xs font-semibold mb-1" style={{ color: 'var(--brand-plum-600)' }}>سهم درآمد شما</p>
+      <div
+        className="mt-6 p-4 rounded-xl"
+        style={{ background: 'var(--brand-plum-50)', border: '1px solid var(--brand-plum-200)' }}
+      >
+        <p className="text-xs font-semibold mb-1" style={{ color: 'var(--brand-plum-600)' }}>
+          سهم درآمد شما
+        </p>
         <p className="text-xs" style={{ color: 'var(--ui-gray-500)' }}>
           ۷۰٪ از فروش هر دوره مستقیم به حساب شما واریز می‌شود
         </p>
@@ -132,7 +167,9 @@ export default function InstructorLoginPage() {
 
       <p className="text-center text-xs mt-6" style={{ color: 'var(--ui-gray-400)' }}>
         مدرس نیستید؟{' '}
-        <Link href="/role-selector" style={{ color: 'var(--brand-plum-600)' }}>انتخاب نقش</Link>
+        <Link href="/role-selector" style={{ color: 'var(--brand-plum-600)' }}>
+          انتخاب نقش
+        </Link>
       </p>
     </AuthLayout>
   );

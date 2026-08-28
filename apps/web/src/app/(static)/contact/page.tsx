@@ -1,25 +1,40 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Mail, Phone, MapPin, ChevronDown } from 'lucide-react'
+import { useState } from 'react';
+import { Mail, Phone, MapPin, ChevronDown } from 'lucide-react';
 
 const FAQS = [
-  { q: 'چطور می‌توانم آرایشگاه خود را ثبت کنم؟', a: 'از طریق صفحه «ثبت سالن» اطلاعات خود را وارد کنید. تیم ما ظرف ۲۴ ساعت با شما تماس می‌گیرد.' },
-  { q: 'آیا استفاده از پرنگارین برای مشتریان رایگان است؟', a: 'بله، رزرو و استفاده از پلتفرم برای مشتریان کاملاً رایگان است.' },
-  { q: 'در صورت لغو رزرو چه اتفاقی می‌افتد؟', a: 'شما می‌توانید تا ۲ ساعت قبل از وقت رزرو شده آن را لغو کنید. در غیر این صورت طبق سیاست هر سالن عمل می‌شود.' },
-  { q: 'چطور می‌توانم مشکل پرداخت را گزارش دهم؟', a: 'از طریق همین فرم تماس یا ایمیل support@parnegareen.ir با ما در ارتباط باشید.' },
+  {
+    q: 'چطور می‌توانم آرایشگاه خود را ثبت کنم؟',
+    a: 'از طریق صفحه «ثبت سالن» اطلاعات خود را وارد کنید. تیم ما ظرف ۲۴ ساعت با شما تماس می‌گیرد.',
+  },
+  {
+    q: 'آیا استفاده از پرنگارین برای مشتریان رایگان است؟',
+    a: 'بله، رزرو و استفاده از پلتفرم برای مشتریان کاملاً رایگان است.',
+  },
+  {
+    q: 'در صورت لغو رزرو چه اتفاقی می‌افتد؟',
+    a: 'شما می‌توانید تا ۲ ساعت قبل از وقت رزرو شده آن را لغو کنید. در غیر این صورت طبق سیاست هر سالن عمل می‌شود.',
+  },
+  {
+    q: 'چطور می‌توانم مشکل پرداخت را گزارش دهم؟',
+    a: 'از طریق همین فرم تماس یا ایمیل support@parnegareen.ir با ما در ارتباط باشید.',
+  },
   { q: 'آیا اپلیکیشن موبایل دارید؟', a: 'بله، اپلیکیشن پرنگارین برای iOS و Android در دسترس است.' },
-  { q: 'چطور می‌توانم نظر خود را ثبت کنم؟', a: 'پس از تکمیل هر نوبت، لینک ثبت نظر برای شما ارسال می‌شود.' },
-]
+  {
+    q: 'چطور می‌توانم نظر خود را ثبت کنم؟',
+    a: 'پس از تکمیل هر نوبت، لینک ثبت نظر برای شما ارسال می‌شود.',
+  },
+];
 
 export default function ContactPage() {
-  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' })
-  const [submitted, setSubmitted] = useState(false)
-  const [openFaq, setOpenFaq] = useState<number | null>(null)
+  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
+  const [submitted, setSubmitted] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setSubmitted(true)
+    e.preventDefault();
+    setSubmitted(true);
   }
 
   return (
@@ -27,9 +42,16 @@ export default function ContactPage() {
       {/* Hero */}
       <section style={{ backgroundColor: 'var(--brand-plum-600)', padding: '5rem 0' }}>
         <div className="container-editorial" style={{ textAlign: 'center' }}>
-          <span className="eyebrow" style={{ color: 'var(--brand-gold-600)' }}>ارتباط با ما</span>
-          <h1 className="text-display-md" style={{ color: '#fff', marginTop: '0.75rem' }}>تماس با ما</h1>
-          <p className="text-body-lg" style={{ color: 'rgba(255,255,255,0.75)', marginTop: '1rem' }}>
+          <span className="eyebrow" style={{ color: 'var(--brand-gold-600)' }}>
+            ارتباط با ما
+          </span>
+          <h1 className="text-display-md" style={{ color: '#fff', marginTop: '0.75rem' }}>
+            تماس با ما
+          </h1>
+          <p
+            className="text-body-lg"
+            style={{ color: 'rgba(255,255,255,0.75)', marginTop: '1rem' }}
+          >
             هر سوالی داری، اینجاییم تا جواب بدیم.
           </p>
         </div>
@@ -38,10 +60,26 @@ export default function ContactPage() {
       {/* Form + Info */}
       <section className="section-editorial">
         <div className="container-editorial">
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '4rem', alignItems: 'start' }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 400px',
+              gap: '4rem',
+              alignItems: 'start',
+            }}
+          >
             {/* Form */}
-            <div style={{ backgroundColor: '#fff', borderRadius: '1.5rem', padding: '2.5rem', border: '1px solid var(--ui-gray-200)' }}>
-              <h2 className="text-h2" style={{ marginBottom: '2rem' }}>پیام بفرستید</h2>
+            <div
+              style={{
+                backgroundColor: '#fff',
+                borderRadius: '1.5rem',
+                padding: '2.5rem',
+                border: '1px solid var(--ui-gray-200)',
+              }}
+            >
+              <h2 className="text-h2" style={{ marginBottom: '2rem' }}>
+                پیام بفرستید
+              </h2>
 
               {submitted ? (
                 <div
@@ -53,21 +91,41 @@ export default function ContactPage() {
                     textAlign: 'center',
                   }}
                 >
-                  <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>✅</div>
-                  <p className="text-body" style={{ color: '#166534', fontWeight: 600 }}>پیام شما ارسال شد</p>
+                  <div style={{ fontSize: 'var(--type-display-lg-size)', marginBottom: '0.75rem' }}>
+                    ✅
+                  </div>
+                  <p className="text-body" style={{ color: '#166534', fontWeight: 600 }}>
+                    پیام شما ارسال شد
+                  </p>
                   <p className="text-body-sm" style={{ color: '#166534', marginTop: '0.5rem' }}>
                     تیم پشتیبانی ما ظرف ۲۴ ساعت پاسخ خواهد داد.
                   </p>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                <form
+                  onSubmit={handleSubmit}
+                  style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}
+                >
                   {[
-                    { id: 'name', label: 'نام و نام خانوادگی', type: 'text', placeholder: 'مثال: علی رضایی' },
-                    { id: 'email', label: 'ایمیل', type: 'email', placeholder: 'example@email.com' },
+                    {
+                      id: 'name',
+                      label: 'نام و نام خانوادگی',
+                      type: 'text',
+                      placeholder: 'مثال: علی رضایی',
+                    },
+                    {
+                      id: 'email',
+                      label: 'ایمیل',
+                      type: 'email',
+                      placeholder: 'example@email.com',
+                    },
                     { id: 'subject', label: 'موضوع', type: 'text', placeholder: 'موضوع پیام شما' },
                   ].map((field) => (
                     <div key={field.id}>
-                      <label className="text-body-sm" style={{ fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>
+                      <label
+                        className="text-body-sm"
+                        style={{ fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}
+                      >
                         {field.label}
                       </label>
                       <input
@@ -82,14 +140,17 @@ export default function ContactPage() {
                           borderRadius: '0.75rem',
                           border: '1.5px solid var(--ui-gray-200)',
                           backgroundColor: 'var(--bg-ivory-soft)',
-                          fontSize: '0.9375rem',
+                          fontSize: 'var(--type-body-size)',
                           outline: 'none',
                         }}
                       />
                     </div>
                   ))}
                   <div>
-                    <label className="text-body-sm" style={{ fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>
+                    <label
+                      className="text-body-sm"
+                      style={{ fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}
+                    >
                       پیام
                     </label>
                     <textarea
@@ -104,7 +165,7 @@ export default function ContactPage() {
                         borderRadius: '0.75rem',
                         border: '1.5px solid var(--ui-gray-200)',
                         backgroundColor: 'var(--bg-ivory-soft)',
-                        fontSize: '0.9375rem',
+                        fontSize: 'var(--type-body-size)',
                         resize: 'vertical',
                         outline: 'none',
                       }}
@@ -118,7 +179,7 @@ export default function ContactPage() {
                       padding: '0.875rem',
                       borderRadius: '0.75rem',
                       fontWeight: 700,
-                      fontSize: '1rem',
+                      fontSize: 'var(--type-body-lg-size)',
                       border: 'none',
                       cursor: 'pointer',
                     }}
@@ -134,7 +195,11 @@ export default function ContactPage() {
               {[
                 { icon: <Mail size={22} />, title: 'ایمیل', value: 'support@parnegareen.ir' },
                 { icon: <Phone size={22} />, title: 'تلفن', value: '۰۲۱-۱۲۳۴-۵۶۷۸' },
-                { icon: <MapPin size={22} />, title: 'آدرس', value: 'تهران، خیابان ولیعصر، برج پرنگارین، طبقه ۵' },
+                {
+                  icon: <MapPin size={22} />,
+                  title: 'آدرس',
+                  value: 'تهران، خیابان ولیعصر، برج پرنگارین، طبقه ۵',
+                },
               ].map((info) => (
                 <div
                   key={info.title}
@@ -148,10 +213,16 @@ export default function ContactPage() {
                     alignItems: 'flex-start',
                   }}
                 >
-                  <div style={{ color: 'var(--brand-plum-600)', marginTop: '2px' }}>{info.icon}</div>
+                  <div style={{ color: 'var(--brand-plum-600)', marginTop: '2px' }}>
+                    {info.icon}
+                  </div>
                   <div>
-                    <div className="text-body-sm" style={{ color: 'var(--color-text-muted)' }}>{info.title}</div>
-                    <div className="text-body" style={{ fontWeight: 600, marginTop: '0.25rem' }}>{info.value}</div>
+                    <div className="text-body-sm" style={{ color: 'var(--color-text-muted)' }}>
+                      {info.title}
+                    </div>
+                    <div className="text-body" style={{ fontWeight: 600, marginTop: '0.25rem' }}>
+                      {info.value}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -163,9 +234,15 @@ export default function ContactPage() {
                   color: '#fff',
                 }}
               >
-                <div className="text-body" style={{ fontWeight: 700 }}>ساعات پاسخگویی</div>
-                <div className="text-body-sm" style={{ marginTop: '0.5rem', opacity: 0.85 }}>شنبه تا پنج‌شنبه: ۸ صبح تا ۸ شب</div>
-                <div className="text-body-sm" style={{ marginTop: '0.25rem', opacity: 0.85 }}>جمعه: ۱۰ صبح تا ۴ عصر</div>
+                <div className="text-body" style={{ fontWeight: 700 }}>
+                  ساعات پاسخگویی
+                </div>
+                <div className="text-body-sm" style={{ marginTop: '0.5rem', opacity: 0.85 }}>
+                  شنبه تا پنج‌شنبه: ۸ صبح تا ۸ شب
+                </div>
+                <div className="text-body-sm" style={{ marginTop: '0.25rem', opacity: 0.85 }}>
+                  جمعه: ۱۰ صبح تا ۴ عصر
+                </div>
               </div>
             </div>
           </div>
@@ -177,7 +254,9 @@ export default function ContactPage() {
         <div className="container-editorial" style={{ maxWidth: '760px' }}>
           <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
             <span className="eyebrow">سوالات متداول</span>
-            <h2 className="text-h2" style={{ marginTop: '0.75rem' }}>پرسش‌های رایج</h2>
+            <h2 className="text-h2" style={{ marginTop: '0.75rem' }}>
+              پرسش‌های رایج
+            </h2>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             {FAQS.map((faq, i) => (
@@ -204,7 +283,9 @@ export default function ContactPage() {
                     textAlign: 'right',
                   }}
                 >
-                  <span className="text-body" style={{ fontWeight: 600 }}>{faq.q}</span>
+                  <span className="text-body" style={{ fontWeight: 600 }}>
+                    {faq.q}
+                  </span>
                   <ChevronDown
                     size={18}
                     style={{
@@ -233,5 +314,5 @@ export default function ContactPage() {
         </div>
       </section>
     </main>
-  )
+  );
 }

@@ -1,25 +1,55 @@
-import Image from 'next/image'
-import { Shield, Star, Zap } from 'lucide-react'
+import Image from 'next/image';
+import { Shield, Star, Zap } from 'lucide-react';
 
 export default function AboutPage() {
   return (
     <main dir="rtl" style={{ backgroundColor: 'var(--bg-ivory)', minHeight: '100vh' }}>
       {/* Hero */}
       <section
-        style={{ backgroundColor: 'var(--brand-plum-600)', color: 'var(--color-primary-foreground)' }}
+        style={{
+          backgroundColor: 'var(--brand-plum-600)',
+          color: 'var(--color-primary-foreground)',
+        }}
         className="section-editorial"
       >
         <div className="container-editorial">
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', alignItems: 'center' }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '3rem',
+              alignItems: 'center',
+            }}
+          >
             <div>
-              <span className="eyebrow" style={{ color: 'var(--brand-gold-600)' }}>داستان ما</span>
-              <h1 className="text-display-lg" style={{ color: '#fff', marginTop: '1rem' }}>درباره پرنگارین</h1>
-              <p className="text-body-lg" style={{ color: 'rgba(255,255,255,0.8)', marginTop: '1.5rem', lineHeight: 2 }}>
-                پرنگارین پلتفرمی است که آرایشگاه‌های ایران را به مشتریان خود متصل می‌کند؛ جایی که کیفیت، سادگی و اعتماد در کنار هم معنا پیدا می‌کنند.
+              <span className="eyebrow" style={{ color: 'var(--brand-gold-600)' }}>
+                داستان ما
+              </span>
+              <h1 className="text-display-lg" style={{ color: '#fff', marginTop: '1rem' }}>
+                درباره پرنگارین
+              </h1>
+              <p
+                className="text-body-lg"
+                style={{ color: 'rgba(255,255,255,0.8)', marginTop: '1.5rem' }}
+              >
+                پرنگارین پلتفرمی است که آرایشگاه‌های ایران را به مشتریان خود متصل می‌کند؛ جایی که
+                کیفیت، سادگی و اعتماد در کنار هم معنا پیدا می‌کنند.
               </p>
             </div>
-            <div style={{ position: 'relative', height: '380px', borderRadius: '1.5rem', overflow: 'hidden' }}>
-              <Image src="/images/hero/02.svg" alt="درباره پرنگارین" fill style={{ objectFit: 'cover' }} />
+            <div
+              style={{
+                position: 'relative',
+                height: '380px',
+                borderRadius: '1.5rem',
+                overflow: 'hidden',
+              }}
+            >
+              <Image
+                src="/images/hero/02.svg"
+                alt="درباره پرنگارین"
+                fill
+                style={{ objectFit: 'cover' }}
+              />
             </div>
           </div>
         </div>
@@ -28,21 +58,50 @@ export default function AboutPage() {
       {/* Story */}
       <section className="section-editorial">
         <div className="container-editorial">
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem', alignItems: 'start' }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '4rem',
+              alignItems: 'start',
+            }}
+          >
             <div>
               <span className="eyebrow">چگونه شروع شد</span>
-              <h2 className="text-h2" style={{ marginTop: '0.75rem' }}>از ایده تا واقعیت</h2>
-              <p className="text-body" style={{ color: 'var(--color-text-muted)', marginTop: '1.5rem', lineHeight: 2 }}>
-                پرنگارین در سال ۱۴۰۱ با یک ایده ساده آغاز شد: چرا پیدا کردن یک آرایشگر ماهر باید این‌قدر سخت باشد؟ گروهی از علاقه‌مندان به فناوری و صنعت زیبایی دور هم جمع شدند تا این مشکل را حل کنند.
+              <h2 className="text-h2" style={{ marginTop: '0.75rem' }}>
+                از ایده تا واقعیت
+              </h2>
+              <p
+                className="text-body"
+                style={{ color: 'var(--color-text-muted)', marginTop: '1.5rem' }}
+              >
+                پرنگارین در سال ۱۴۰۱ با یک ایده ساده آغاز شد: چرا پیدا کردن یک آرایشگر ماهر باید
+                این‌قدر سخت باشد؟ گروهی از علاقه‌مندان به فناوری و صنعت زیبایی دور هم جمع شدند تا
+                این مشکل را حل کنند.
               </p>
-              <p className="text-body" style={{ color: 'var(--color-text-muted)', marginTop: '1rem', lineHeight: 2 }}>
-                ما باور داریم که هر نفر لایق بهترین تجربه آرایشی است؛ نه تنها در شهرهای بزرگ، بلکه در هر گوشه‌ای از ایران. به همین دلیل پلتفرمی ساختیم که آرایشگران متخصص را با مشتریان جدی مرتبط می‌کند.
+              <p
+                className="text-body"
+                style={{ color: 'var(--color-text-muted)', marginTop: '1rem' }}
+              >
+                ما باور داریم که هر نفر لایق بهترین تجربه آرایشی است؛ نه تنها در شهرهای بزرگ، بلکه
+                در هر گوشه‌ای از ایران. به همین دلیل پلتفرمی ساختیم که آرایشگران متخصص را با مشتریان
+                جدی مرتبط می‌کند.
               </p>
-              <p className="text-body" style={{ color: 'var(--color-text-muted)', marginTop: '1rem', lineHeight: 2 }}>
-                امروز پرنگارین با بیش از ۵۰۰ سالن در سراسر کشور و ده‌ها هزار مشتری راضی، یکی از بزرگ‌ترین پلتفرم‌های رزرو آنلاین صنعت زیبایی ایران است.
+              <p
+                className="text-body"
+                style={{ color: 'var(--color-text-muted)', marginTop: '1rem' }}
+              >
+                امروز پرنگارین با بیش از ۵۰۰ سالن در سراسر کشور و ده‌ها هزار مشتری راضی، یکی از
+                بزرگ‌ترین پلتفرم‌های رزرو آنلاین صنعت زیبایی ایران است.
               </p>
             </div>
-            <div style={{ backgroundColor: 'var(--bg-ivory-soft)', borderRadius: '1.5rem', padding: '2.5rem' }}>
+            <div
+              style={{
+                backgroundColor: 'var(--bg-ivory-soft)',
+                borderRadius: '1.5rem',
+                padding: '2.5rem',
+              }}
+            >
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
                 {[
                   { num: '۵۰۰+', label: 'سالن فعال' },
@@ -60,8 +119,18 @@ export default function AboutPage() {
                       border: '1px solid var(--ui-gray-200)',
                     }}
                   >
-                    <div className="text-display-md" style={{ color: 'var(--brand-plum-600)', fontWeight: 700 }}>{stat.num}</div>
-                    <div className="text-body-sm" style={{ color: 'var(--color-text-muted)', marginTop: '0.25rem' }}>{stat.label}</div>
+                    <div
+                      className="text-display-md"
+                      style={{ color: 'var(--brand-plum-600)', fontWeight: 700 }}
+                    >
+                      {stat.num}
+                    </div>
+                    <div
+                      className="text-body-sm"
+                      style={{ color: 'var(--color-text-muted)', marginTop: '0.25rem' }}
+                    >
+                      {stat.label}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -75,7 +144,9 @@ export default function AboutPage() {
         <div className="container-editorial">
           <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
             <span className="eyebrow">ارزش‌های ما</span>
-            <h2 className="text-h2" style={{ marginTop: '0.75rem' }}>آنچه به آن اعتقاد داریم</h2>
+            <h2 className="text-h2" style={{ marginTop: '0.75rem' }}>
+              آنچه به آن اعتقاد داریم
+            </h2>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2rem' }}>
             {[
@@ -104,9 +175,16 @@ export default function AboutPage() {
                   border: '1px solid var(--ui-gray-200)',
                 }}
               >
-                <div style={{ color: 'var(--brand-plum-600)', marginBottom: '1rem' }}>{val.icon}</div>
+                <div style={{ color: 'var(--brand-plum-600)', marginBottom: '1rem' }}>
+                  {val.icon}
+                </div>
                 <h3 className="text-h3">{val.title}</h3>
-                <p className="text-body" style={{ color: 'var(--color-text-muted)', marginTop: '0.75rem', lineHeight: 2 }}>{val.desc}</p>
+                <p
+                  className="text-body"
+                  style={{ color: 'var(--color-text-muted)', marginTop: '0.75rem' }}
+                >
+                  {val.desc}
+                </p>
               </div>
             ))}
           </div>
@@ -118,7 +196,9 @@ export default function AboutPage() {
         <div className="container-editorial">
           <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
             <span className="eyebrow">تیم ما</span>
-            <h2 className="text-h2" style={{ marginTop: '0.75rem' }}>افرادی که پرنگارین را می‌سازند</h2>
+            <h2 className="text-h2" style={{ marginTop: '0.75rem' }}>
+              افرادی که پرنگارین را می‌سازند
+            </h2>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2rem' }}>
             {[
@@ -140,8 +220,15 @@ export default function AboutPage() {
                   <Image src={member.img} alt={member.name} fill style={{ objectFit: 'cover' }} />
                 </div>
                 <div style={{ padding: '1.25rem', textAlign: 'center' }}>
-                  <div className="text-body" style={{ fontWeight: 600 }}>{member.name}</div>
-                  <div className="text-caption" style={{ color: 'var(--color-text-muted)', marginTop: '0.25rem' }}>{member.role}</div>
+                  <div className="text-body" style={{ fontWeight: 600 }}>
+                    {member.name}
+                  </div>
+                  <div
+                    className="text-caption"
+                    style={{ color: 'var(--color-text-muted)', marginTop: '0.25rem' }}
+                  >
+                    {member.role}
+                  </div>
                 </div>
               </div>
             ))}
@@ -152,8 +239,13 @@ export default function AboutPage() {
       {/* CTA */}
       <section className="section-editorial" style={{ backgroundColor: 'var(--brand-navy-600)' }}>
         <div className="container-editorial" style={{ textAlign: 'center' }}>
-          <h2 className="text-display-md" style={{ color: '#fff' }}>آماده‌ای شروع کنی؟</h2>
-          <p className="text-body-lg" style={{ color: 'rgba(255,255,255,0.75)', marginTop: '1rem', marginBottom: '2rem' }}>
+          <h2 className="text-display-md" style={{ color: '#fff' }}>
+            آماده‌ای شروع کنی؟
+          </h2>
+          <p
+            className="text-body-lg"
+            style={{ color: 'rgba(255,255,255,0.75)', marginTop: '1rem', marginBottom: '2rem' }}
+          >
             بهترین سالن‌های اطرافت را کشف کن و همین الان رزرو کن.
           </p>
           <a
@@ -165,7 +257,7 @@ export default function AboutPage() {
               padding: '0.875rem 2.5rem',
               borderRadius: '0.75rem',
               fontWeight: 700,
-              fontSize: '1.0625rem',
+              fontSize: 'var(--type-h4-size)',
               textDecoration: 'none',
             }}
           >
@@ -174,5 +266,5 @@ export default function AboutPage() {
         </div>
       </section>
     </main>
-  )
+  );
 }

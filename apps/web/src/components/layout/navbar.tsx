@@ -15,20 +15,19 @@ export function Navbar() {
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [mobileOpen]);
 
   return (
     <>
-      <header
-        className="fixed inset-x-0 top-0 z-50 border-b border-black/[0.06] bg-[#fffdf9]/90 backdrop-blur-xl"
-      >
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-black/[0.06] bg-[#fffdf9]/90 backdrop-blur-xl">
         <div className="container-editorial h-20 flex items-center justify-between">
-
           {/* Logo */}
           <Link
             href="/"
-            className="flex items-center gap-2 font-display font-semibold text-h3"
+            className="flex items-center gap-2 font-semibold text-h3"
             style={{ color: '#795145' }}
           >
             <ScissorsIcon size={22} />
@@ -36,11 +35,22 @@ export function Navbar() {
           </Link>
 
           {/* Center nav — desktop */}
-          <nav className="hidden md:flex items-center gap-8 text-body-sm font-medium"
-            style={{ color: 'var(--color-text)' }}>
-            <Link href="/salons" className="transition-colors hover:text-[#8b5e50]">آرایشگاه‌ها</Link>
-            <Link href="/academy" className="transition-colors hover:text-[#8b5e50]">آکادمی</Link>
-            <Link href="/salon-owner/login?returnTo=/dashboard/salons/new" className="transition-colors hover:text-[#8b5e50]">ثبت سالن</Link>
+          <nav
+            className="hidden md:flex items-center gap-8 text-body-sm font-medium"
+            style={{ color: 'var(--color-text)' }}
+          >
+            <Link href="/salons" className="transition-colors hover:text-[#8b5e50]">
+              آرایشگاه‌ها
+            </Link>
+            <Link href="/academy" className="transition-colors hover:text-[#8b5e50]">
+              آکادمی
+            </Link>
+            <Link
+              href="/salon-owner/login?returnTo=/dashboard/salons/new"
+              className="transition-colors hover:text-[#8b5e50]"
+            >
+              ثبت سالن
+            </Link>
           </nav>
 
           {/* Right CTA — desktop */}
@@ -56,40 +66,56 @@ export function Navbar() {
 
             {user ? (
               <>
-                <Link href="/profile/bookings"
+                <Link
+                  href="/profile/bookings"
                   className="p-2 rounded-lg transition-colors hover:bg-[var(--ui-gray-100)]"
-                  style={{ color: 'var(--color-text-muted)' }} aria-label="رزروها">
+                  style={{ color: 'var(--color-text-muted)' }}
+                  aria-label="رزروها"
+                >
                   <Calendar size={20} strokeWidth={1.5} />
                 </Link>
                 {(user.role === 'SALON_OWNER' || user.role === 'SUPER_ADMIN') && (
-                  <Link href="/dashboard"
+                  <Link
+                    href="/dashboard"
                     className="p-2 rounded-lg transition-colors hover:bg-[var(--ui-gray-100)]"
-                    style={{ color: 'var(--color-text-muted)' }} aria-label="داشبورد">
+                    style={{ color: 'var(--color-text-muted)' }}
+                    aria-label="داشبورد"
+                  >
                     <LayoutDashboard size={20} strokeWidth={1.5} />
                   </Link>
                 )}
-                <Link href="/profile"
+                <Link
+                  href="/profile"
                   className="flex items-center gap-2 px-4 py-2 rounded-md text-body-sm font-medium border border-[var(--ui-gray-200)] hover:bg-[var(--ui-gray-100)] transition-colors"
-                  style={{ color: 'var(--color-text)' }}>
+                  style={{ color: 'var(--color-text)' }}
+                >
                   <User size={16} strokeWidth={1.5} />
                   {user.firstName}
                 </Link>
                 <button
-                  onClick={() => { logout.mutate(); router.push('/'); }}
+                  onClick={() => {
+                    logout.mutate();
+                    router.push('/');
+                  }}
                   className="p-2 rounded-lg transition-colors hover:bg-[var(--ui-gray-100)]"
-                  style={{ color: 'var(--color-text-muted)' }}>
+                  style={{ color: 'var(--color-text-muted)' }}
+                >
                   <LogOut size={20} strokeWidth={1.5} />
                 </button>
               </>
             ) : (
               <>
-                <Link href="/role-selector"
+                <Link
+                  href="/role-selector"
                   className="px-5 py-2.5 text-body-sm font-medium rounded-md transition-all duration-250 hover:-translate-y-0.5"
-                  style={{ color: 'var(--color-text)' }}>
+                  style={{ color: 'var(--color-text)' }}
+                >
                   ورود
                 </Link>
-                <Link href="/salons"
-                  className="rounded-md bg-[#8b5e50] px-5 py-2.5 text-body-sm font-medium text-white transition-all duration-250 hover:-translate-y-0.5 hover:bg-[#6f473c]">
+                <Link
+                  href="/salons"
+                  className="rounded-md bg-[#8b5e50] px-5 py-2.5 text-body-sm font-medium text-white transition-all duration-250 hover:-translate-y-0.5 hover:bg-[#6f473c]"
+                >
                   رزرو نوبت
                 </Link>
               </>
@@ -115,7 +141,7 @@ export function Navbar() {
           style={{ background: '#30393d', color: 'var(--bg-ivory)' }}
         >
           <div className="flex justify-between items-center mb-12">
-            <span className="font-display font-semibold text-h3" style={{ color: 'var(--bg-ivory)' }}>
+            <span className="font-semibold text-h3" style={{ color: 'var(--bg-ivory)' }}>
               پرنگارین
             </span>
             <button onClick={() => setMobileOpen(false)} aria-label="بستن منو">
@@ -125,8 +151,8 @@ export function Navbar() {
 
           <nav className="flex flex-col gap-6">
             {[
-              { href: '/salons',   label: 'آرایشگاه‌ها' },
-              { href: '/academy',  label: 'آکادمی' },
+              { href: '/salons', label: 'آرایشگاه‌ها' },
+              { href: '/academy', label: 'آکادمی' },
               { href: '/salon-owner/login?returnTo=/dashboard/salons/new', label: 'ثبت سالن' },
               { href: '/role-selector', label: 'ورود / ثبت‌نام' },
             ].map((item) => (
@@ -134,7 +160,7 @@ export function Navbar() {
                 key={item.href}
                 href={item.href}
                 onClick={() => setMobileOpen(false)}
-                className="font-display font-medium text-display-md border-b pb-4"
+                className="font-medium text-display-md border-b pb-4"
                 style={{ color: 'var(--bg-ivory)', borderColor: 'rgba(255,255,255,0.15)' }}
               >
                 {item.label}

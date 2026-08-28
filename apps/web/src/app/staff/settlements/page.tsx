@@ -67,7 +67,7 @@ export default function StaffSettlementsPage() {
                           {toJalali(item.periodStart)} تا {toJalali(item.periodEnd)}
                         </p>
                         <span
-                          className="rounded-full px-2 py-0.5 text-[10px] font-semibold"
+                          className="rounded-full px-2 py-0.5 text-caption font-semibold"
                           style={{ color: palette.color, background: palette.bg }}
                         >
                           {palette.label}

@@ -56,10 +56,7 @@ export default function SalonDetailPage() {
         style={{ background: 'var(--bg-ivory)' }}
       >
         <div>
-          <h1
-            className="font-display text-2xl font-semibold mb-3"
-            style={{ color: 'var(--brand-navy-600)' }}
-          >
+          <h1 className="text-2xl font-semibold mb-3" style={{ color: 'var(--brand-navy-600)' }}>
             سالن موردنظر یافت نشد
           </h1>
           <p className="text-sm mb-6" style={{ color: 'var(--ui-gray-500)' }}>
@@ -114,7 +111,7 @@ export default function SalonDetailPage() {
                   : 'سالن خانوادگی'}
             </span>
           </div>
-          <h1 className="font-display font-semibold text-4xl lg:text-6xl mb-4">{salon.name}</h1>
+          <h1 className="font-semibold text-4xl lg:text-6xl mb-4">{salon.name}</h1>
           <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-sm sm:text-base">
             <span className="flex items-center gap-2">
               <Star className="w-5 h-5 fill-[var(--brand-gold-600)] text-[var(--brand-gold-600)]" />
@@ -262,10 +259,7 @@ export default function SalonDetailPage() {
             style={{ background: 'white', borderColor: 'var(--ui-gray-200)' }}
           >
             <p className="eyebrow mb-3">رزرو آنلاین</p>
-            <h2
-              className="font-display font-semibold text-h2 mb-2"
-              style={{ color: 'var(--color-text)' }}
-            >
+            <h2 className="font-semibold text-h2 mb-2" style={{ color: 'var(--color-text)' }}>
               نوبت خود را انتخاب کنید
             </h2>
             <p className="text-sm mb-6" style={{ color: 'var(--ui-gray-500)' }}>

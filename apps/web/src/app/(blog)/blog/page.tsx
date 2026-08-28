@@ -1,12 +1,13 @@
-import Image from 'next/image'
-import Link from 'next/link'
-import { Clock, User } from 'lucide-react'
+import Image from 'next/image';
+import Link from 'next/link';
+import { Clock, User } from 'lucide-react';
 
 const ARTICLES = [
   {
     slug: 'best-haircut-styles-2024',
     title: 'بهترین مدل موهای مردانه در ۱۴۰۳',
-    excerpt: 'امسال چه مدل‌هایی ترند هستند؟ از فید تا تیپ‌فید، کامل‌ترین راهنمای مدل مو مردانه ۱۴۰۳ را بخوانید.',
+    excerpt:
+      'امسال چه مدل‌هایی ترند هستند؟ از فید تا تیپ‌فید، کامل‌ترین راهنمای مدل مو مردانه ۱۴۰۳ را بخوانید.',
     category: 'ترند',
     author: 'سارا محمدی',
     date: '۱۵ دی ۱۴۰۳',
@@ -16,7 +17,8 @@ const ARTICLES = [
   {
     slug: 'how-to-choose-right-salon',
     title: 'چطور بهترین آرایشگاه را انتخاب کنیم؟',
-    excerpt: 'راهنمای جامع برای انتخاب آرایشگاهی که متناسب با سلیقه و نیازهای شماست. نکاتی که باید بدانید.',
+    excerpt:
+      'راهنمای جامع برای انتخاب آرایشگاهی که متناسب با سلیقه و نیازهای شماست. نکاتی که باید بدانید.',
     category: 'راهنما',
     author: 'علی رضایی',
     date: '۱۰ دی ۱۴۰۳',
@@ -26,7 +28,8 @@ const ARTICLES = [
   {
     slug: 'hair-care-winter-tips',
     title: 'مراقبت از مو در فصل زمستان',
-    excerpt: 'سرما و رطوبت کم هوا می‌تواند به موها آسیب بزند. با این نکات ساده موهایی سالم و براق داشته باشید.',
+    excerpt:
+      'سرما و رطوبت کم هوا می‌تواند به موها آسیب بزند. با این نکات ساده موهایی سالم و براق داشته باشید.',
     category: 'نکات',
     author: 'مریم کریمی',
     date: '۵ دی ۱۴۰۳',
@@ -56,23 +59,24 @@ const ARTICLES = [
   {
     slug: 'makeup-natural-look',
     title: 'آموزش میکاپ ساده و طبیعی',
-    excerpt: 'ظاهری زیبا و طبیعی با کمترین محصول. گام به گام یاد بگیرید چطور میکاپ بی‌نقص داشته باشید.',
+    excerpt:
+      'ظاهری زیبا و طبیعی با کمترین محصول. گام به گام یاد بگیرید چطور میکاپ بی‌نقص داشته باشید.',
     category: 'نکات',
     author: 'لیلا حسن‌پور',
     date: '۱۵ آذر ۱۴۰۳',
     image: '/images/salons/06.svg',
     readTime: '۸ دقیقه',
   },
-]
+];
 
-const CATEGORIES = ['همه', 'راهنما', 'ترند', 'نکات', 'الهام']
+const CATEGORIES = ['همه', 'راهنما', 'ترند', 'نکات', 'الهام'];
 
 const CATEGORY_COLORS: Record<string, string> = {
   راهنما: 'var(--brand-plum-600)',
   ترند: 'var(--brand-gold-600)',
   نکات: 'var(--brand-navy-600)',
   الهام: '#059669',
-}
+};
 
 export default function BlogPage() {
   return (
@@ -80,9 +84,16 @@ export default function BlogPage() {
       {/* Hero */}
       <section style={{ backgroundColor: 'var(--brand-plum-600)', padding: '5rem 0' }}>
         <div className="container-editorial" style={{ textAlign: 'center' }}>
-          <span className="eyebrow" style={{ color: 'var(--brand-gold-600)' }}>محتوای تخصصی</span>
-          <h1 className="text-display-lg" style={{ color: '#fff', marginTop: '0.75rem' }}>مجله پرنگارین</h1>
-          <p className="text-body-lg" style={{ color: 'rgba(255,255,255,0.75)', marginTop: '1rem' }}>
+          <span className="eyebrow" style={{ color: 'var(--brand-gold-600)' }}>
+            محتوای تخصصی
+          </span>
+          <h1 className="text-display-lg" style={{ color: '#fff', marginTop: '0.75rem' }}>
+            مجله پرنگارین
+          </h1>
+          <p
+            className="text-body-lg"
+            style={{ color: 'rgba(255,255,255,0.75)', marginTop: '1rem' }}
+          >
             آخرین ترندها، راهنماها و نکات زیبایی از متخصصان برتر
           </p>
         </div>
@@ -90,7 +101,10 @@ export default function BlogPage() {
 
       {/* Categories */}
       <div style={{ borderBottom: '1px solid var(--ui-gray-200)', backgroundColor: '#fff' }}>
-        <div className="container-editorial" style={{ display: 'flex', gap: '0.5rem', padding: '1rem 1.5rem', overflowX: 'auto' }}>
+        <div
+          className="container-editorial"
+          style={{ display: 'flex', gap: '0.5rem', padding: '1rem 1.5rem', overflowX: 'auto' }}
+        >
           {CATEGORIES.map((cat) => (
             <button
               key={cat}
@@ -101,7 +115,7 @@ export default function BlogPage() {
                 backgroundColor: cat === 'همه' ? 'var(--brand-plum-600)' : 'transparent',
                 color: cat === 'همه' ? '#fff' : 'var(--color-text-muted)',
                 cursor: 'pointer',
-                fontSize: '0.875rem',
+                fontSize: 'var(--type-body-size)',
                 fontWeight: 600,
                 whiteSpace: 'nowrap',
               }}
@@ -134,7 +148,12 @@ export default function BlogPage() {
                 }}
               >
                 <div style={{ position: 'relative', height: '200px' }}>
-                  <Image src={article.image} alt={article.title} fill style={{ objectFit: 'cover' }} />
+                  <Image
+                    src={article.image}
+                    alt={article.title}
+                    fill
+                    style={{ objectFit: 'cover' }}
+                  />
                   <span
                     style={{
                       position: 'absolute',
@@ -144,7 +163,7 @@ export default function BlogPage() {
                       color: '#fff',
                       padding: '0.25rem 0.75rem',
                       borderRadius: '2rem',
-                      fontSize: '0.75rem',
+                      fontSize: 'var(--type-caption-size)',
                       fontWeight: 700,
                     }}
                   >
@@ -152,10 +171,13 @@ export default function BlogPage() {
                   </span>
                 </div>
                 <div style={{ padding: '1.5rem' }}>
-                  <h2 className="text-h3" style={{ fontSize: '1.0625rem', lineHeight: 1.6 }}>
+                  <h2 className="text-h3" style={{ fontSize: 'var(--type-h4-size)' }}>
                     {article.title}
                   </h2>
-                  <p className="text-body-sm" style={{ color: 'var(--color-text-muted)', marginTop: '0.625rem', lineHeight: 1.8 }}>
+                  <p
+                    className="text-body-sm"
+                    style={{ color: 'var(--color-text-muted)', marginTop: '0.625rem' }}
+                  >
                     {article.excerpt}
                   </p>
                   <div
@@ -170,11 +192,15 @@ export default function BlogPage() {
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                       <User size={14} style={{ color: 'var(--color-text-muted)' }} />
-                      <span className="text-caption" style={{ color: 'var(--color-text-muted)' }}>{article.author}</span>
+                      <span className="text-caption" style={{ color: 'var(--color-text-muted)' }}>
+                        {article.author}
+                      </span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                       <Clock size={14} style={{ color: 'var(--color-text-muted)' }} />
-                      <span className="text-caption" style={{ color: 'var(--color-text-muted)' }}>{article.readTime}</span>
+                      <span className="text-caption" style={{ color: 'var(--color-text-muted)' }}>
+                        {article.readTime}
+                      </span>
                     </div>
                   </div>
                   <Link
@@ -188,7 +214,7 @@ export default function BlogPage() {
                       backgroundColor: 'var(--bg-ivory-soft)',
                       color: 'var(--brand-plum-600)',
                       fontWeight: 600,
-                      fontSize: '0.875rem',
+                      fontSize: 'var(--type-body-size)',
                       textDecoration: 'none',
                       border: '1px solid var(--ui-gray-200)',
                     }}
@@ -201,7 +227,9 @@ export default function BlogPage() {
           </div>
 
           {/* Pagination */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginTop: '3rem' }}>
+          <div
+            style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginTop: '3rem' }}
+          >
             {[1, 2, 3].map((page) => (
               <button
                 key={page}
@@ -223,5 +251,5 @@ export default function BlogPage() {
         </div>
       </section>
     </main>
-  )
+  );
 }

@@ -233,7 +233,7 @@ export default function SalonOverviewPage() {
                         <p className="truncate text-sm font-semibold text-[var(--brand-navy-600)]">
                           {booking.customer.firstName} {booking.customer.lastName}
                         </p>
-                        <p className="mt-1 truncate text-[11px] text-[var(--ui-gray-500)]">
+                        <p className="mt-1 truncate text-caption text-[var(--ui-gray-500)]">
                           {booking.staff?.displayName || 'بدون متخصص'} ·{' '}
                           {booking.items.map((item: any) => item.service.name).join('، ')}
                         </p>
@@ -241,7 +241,7 @@ export default function SalonOverviewPage() {
                       <div className="shrink-0 text-left text-xs text-[var(--brand-plum-600)]">
                         <b dir="ltr">{formatTime(booking.startsAt)}</b>
                         <br />
-                        <span className="text-[10px] text-[var(--ui-gray-400)]">
+                        <span className="text-caption text-[var(--ui-gray-400)]">
                           {toJalali(booking.startsAt, 'MM/DD')}
                         </span>
                       </div>
@@ -306,7 +306,7 @@ export default function SalonOverviewPage() {
                       <p className="truncate text-sm font-semibold text-[var(--brand-navy-600)]">
                         {member.displayName}
                       </p>
-                      <p className="mt-1 text-[11px] text-[var(--ui-gray-500)]">
+                      <p className="mt-1 text-caption text-[var(--ui-gray-500)]">
                         {member._count.bookings.toLocaleString('fa-IR')} نوبت امروز
                       </p>
                     </div>
@@ -372,8 +372,8 @@ function Metric({
           <Icon size={17} />
         </span>
       </div>
-      <p className="truncate text-lg font-bold text-[var(--brand-navy-600)] sm:text-xl">{value}</p>
-      <p className="mt-1 text-[10px] text-[var(--ui-gray-400)] sm:text-xs">{hint}</p>
+      <p className="truncate text-metric font-bold text-[var(--brand-navy-600)]">{value}</p>
+      <p className="mt-1 text-caption text-[var(--ui-gray-400)] sm:text-xs">{hint}</p>
     </div>
   );
 }
@@ -397,7 +397,7 @@ function SectionTitle({
         </span>
         <div>
           <h2 className="font-bold text-[var(--brand-navy-600)]">{title}</h2>
-          <p className="mt-1 text-[11px] text-[var(--ui-gray-500)]">{description}</p>
+          <p className="mt-1 text-caption text-[var(--ui-gray-500)]">{description}</p>
         </div>
       </div>
       {href && (
@@ -416,7 +416,7 @@ function BookingRow({ booking }: { booking: any }) {
         <p dir="ltr" className="text-sm font-bold text-[var(--brand-plum-600)]">
           {formatTime(booking.startsAt)}
         </p>
-        <p dir="ltr" className="mt-1 text-[10px] text-[var(--ui-gray-400)]">
+        <p dir="ltr" className="mt-1 text-caption text-[var(--ui-gray-400)]">
           {formatTime(booking.endsAt)}
         </p>
       </div>
@@ -424,13 +424,13 @@ function BookingRow({ booking }: { booking: any }) {
         <p className="truncate text-sm font-semibold text-[var(--brand-navy-600)]">
           {booking.customer.firstName} {booking.customer.lastName}
         </p>
-        <p className="mt-1 truncate text-[11px] text-[var(--ui-gray-500)]">
+        <p className="mt-1 truncate text-caption text-[var(--ui-gray-500)]">
           {booking.items.map((item: any) => item.service.name).join('، ')} ·{' '}
           {booking.staff?.displayName || 'بدون متخصص'}
         </p>
       </div>
       <span
-        className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-semibold ${STATUS_STYLES[booking.status] ?? STATUS_STYLES.NO_SHOW}`}
+        className={`shrink-0 rounded-full px-2.5 py-1 text-caption font-semibold ${STATUS_STYLES[booking.status] ?? STATUS_STYLES.NO_SHOW}`}
       >
         {STATUS_LABELS[booking.status] ?? booking.status}
       </span>

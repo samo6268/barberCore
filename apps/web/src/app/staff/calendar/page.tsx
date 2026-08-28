@@ -92,7 +92,7 @@ export default function StaffCalendarPage() {
             <section key={date}>
               <div className="mb-3 flex items-center gap-3">
                 <h2 className="text-sm font-bold text-[var(--brand-navy-600)]">{toJalali(date)}</h2>
-                <span className="rounded-full bg-[var(--brand-plum-50)] px-2 py-0.5 text-[10px] text-[var(--brand-plum-600)]">
+                <span className="rounded-full bg-[var(--brand-plum-50)] px-2 py-0.5 text-caption text-[var(--brand-plum-600)]">
                   {(rows as any[]).length.toLocaleString('fa-IR')} نوبت
                 </span>
               </div>

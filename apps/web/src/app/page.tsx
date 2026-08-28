@@ -69,7 +69,7 @@ const TREND_CARDS = [
 
 export default function HomePage() {
   return (
-    <main className="overflow-hidden bg-[#fffdf9]">
+    <main data-typography="marketplace" className="overflow-hidden bg-[#fffdf9]">
       <Hero />
       <TrustBar />
       <ServiceDiscovery />
@@ -115,7 +115,7 @@ function Hero() {
             ساده‌ترین راه برای پیدا کردن یک تجربه خوب
           </div>
 
-          <h1 className="mb-6 max-w-[680px] font-display text-[3rem] font-semibold leading-[1.22] text-white sm:text-[4rem] lg:text-[5.25rem]">
+          <h1 className="mb-6 max-w-[680px] type-display-lg text-white">
             زیبایی را
             <span className="block text-[#ead3a6]">با اطمینان انتخاب کن.</span>
           </h1>
@@ -131,7 +131,7 @@ function Hero() {
             <label className="flex min-w-0 items-center gap-3 rounded-xl px-4 py-3.5 sm:border-l sm:border-[#ece6df]">
               <Search size={20} className="shrink-0 text-[#8a756d]" />
               <span className="min-w-0 flex-1">
-                <span className="block text-[11px] font-medium text-[#9a8c96]">چه خدمتی؟</span>
+                <span className="block text-caption font-medium text-[#9a8c96]">چه خدمتی؟</span>
                 <input
                   value={service}
                   onChange={(event) => setService(event.target.value)}
@@ -144,7 +144,7 @@ function Hero() {
             <label className="flex min-w-0 items-center gap-3 rounded-xl border-t border-[#ece6df] px-4 py-3.5 sm:border-0">
               <MapPin size={20} className="shrink-0 text-[#8a756d]" />
               <span className="min-w-0 flex-1">
-                <span className="block text-[11px] font-medium text-[#9a8c96]">کجا؟</span>
+                <span className="block text-caption font-medium text-[#9a8c96]">کجا؟</span>
                 <input
                   value={city}
                   onChange={(event) => setCity(event.target.value)}
@@ -227,8 +227,10 @@ function SectionHeading({
     <div className="mb-10 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
       <div>
         <p className="mb-3 text-xs font-semibold tracking-[0.08em] text-[#a16e5d]">{eyebrow}</p>
-        <h2 className="font-display text-3xl font-semibold leading-tight text-[#1e171d] sm:text-4xl">{title}</h2>
-        {description && <p className="mt-3 max-w-xl text-sm leading-7 text-[#7a7076]">{description}</p>}
+        <h2 className="text-3xl font-semibold leading-tight text-[#1e171d] sm:text-4xl">{title}</h2>
+        {description && (
+          <p className="mt-3 max-w-xl text-sm leading-7 text-[#7a7076]">{description}</p>
+        )}
       </div>
       {action && (
         <Link
@@ -289,9 +291,9 @@ function FeaturedSalons() {
     sort: 'rating',
   });
   const salons = ((data?.data ?? []) as FeaturedSalon[]).map((salon) => ({
-      ...salon,
-      rating: Number(salon.rating),
-    }));
+    ...salon,
+    rating: Number(salon.rating),
+  }));
 
   return (
     <section className="bg-[#f5f1eb] py-20 lg:py-28">
@@ -318,59 +320,63 @@ function FeaturedSalons() {
             هنوز سالن فعالی ثبت نشده است.
           </p>
         ) : (
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {salons.map((salon, index) => (
-            <Link
-              href={`/salons/${salon.slug}`}
-              key={salon.id}
-              className="group overflow-hidden rounded-[1.4rem] bg-white shadow-[0_1px_0_rgba(30,20,27,0.05)]"
-            >
-              <div className="relative aspect-[4/3] overflow-hidden">
-                <Image
-                  src={salon.coverImageUrl || SALON_IMAGES[index % SALON_IMAGES.length]}
-                  alt={salon.name}
-                  fill
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                  className="object-cover transition duration-700 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent" />
-                <span className="absolute right-4 top-4 inline-flex items-center gap-1 rounded-full bg-white/90 px-3 py-1.5 text-[11px] font-semibold text-[#392e35] backdrop-blur">
-                  <CheckCircle2 size={13} className="text-[#8b5e50]" />
-                  تأییدشده
-                </span>
-                <span
-                  aria-hidden="true"
-                  className="absolute left-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-[#8b5e50] backdrop-blur transition hover:bg-white"
-                >
-                  <Heart size={17} />
-                </span>
-              </div>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {salons.map((salon, index) => (
+              <Link
+                href={`/salons/${salon.slug}`}
+                key={salon.id}
+                className="group overflow-hidden rounded-[1.4rem] bg-white shadow-[0_1px_0_rgba(30,20,27,0.05)]"
+              >
+                <div className="relative aspect-[4/3] overflow-hidden">
+                  <Image
+                    src={salon.coverImageUrl || SALON_IMAGES[index % SALON_IMAGES.length]}
+                    alt={salon.name}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    className="object-cover transition duration-700 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent" />
+                  <span className="absolute right-4 top-4 inline-flex items-center gap-1 rounded-full bg-white/90 px-3 py-1.5 text-caption font-semibold text-[#392e35] backdrop-blur">
+                    <CheckCircle2 size={13} className="text-[#8b5e50]" />
+                    تأییدشده
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className="absolute left-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-[#8b5e50] backdrop-blur transition hover:bg-white"
+                  >
+                    <Heart size={17} />
+                  </span>
+                </div>
 
-              <div className="p-5">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <h3 className="font-display text-xl font-semibold text-[#211a20]">{salon.name}</h3>
-                    <p className="mt-1.5 flex items-center gap-1 text-xs text-[#847980]">
-                      <MapPin size={13} />
-                      {salon.city}
-                    </p>
+                <div className="p-5">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h3 className="text-xl font-semibold text-[#211a20]">{salon.name}</h3>
+                      <p className="mt-1.5 flex items-center gap-1 text-xs text-[#847980]">
+                        <MapPin size={13} />
+                        {salon.city}
+                      </p>
+                    </div>
+                    <span className="flex items-center gap-1 rounded-lg bg-[#fff7e7] px-2 py-1 text-xs font-bold text-[#6c5528]">
+                      <Star size={13} className="fill-[#c8a66a] text-[#c8a66a]" />
+                      {salon.rating.toLocaleString('fa-IR', { maximumFractionDigits: 1 })}
+                    </span>
                   </div>
-                  <span className="flex items-center gap-1 rounded-lg bg-[#fff7e7] px-2 py-1 text-xs font-bold text-[#6c5528]">
-                    <Star size={13} className="fill-[#c8a66a] text-[#c8a66a]" />
-                    {salon.rating.toLocaleString('fa-IR', { maximumFractionDigits: 1 })}
-                  </span>
-                </div>
 
-                <div className="mt-5 flex items-center justify-between border-t border-[#eee9e4] pt-4">
-                  <span className="text-xs text-[#8b8086]">
-                    {salon.genderType === 'MALE' ? 'ویژه آقایان' : salon.genderType === 'UNISEX' ? 'بانوان و آقایان' : 'ویژه بانوان'}
-                  </span>
-                  <span className="text-xs font-semibold text-[#7b5145]">مشاهده و رزرو</span>
+                  <div className="mt-5 flex items-center justify-between border-t border-[#eee9e4] pt-4">
+                    <span className="text-xs text-[#8b8086]">
+                      {salon.genderType === 'MALE'
+                        ? 'ویژه آقایان'
+                        : salon.genderType === 'UNISEX'
+                          ? 'بانوان و آقایان'
+                          : 'ویژه بانوان'}
+                    </span>
+                    <span className="text-xs font-semibold text-[#7b5145]">مشاهده و رزرو</span>
+                  </div>
                 </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+              </Link>
+            ))}
+          </div>
         )}
       </div>
     </section>
@@ -406,7 +412,7 @@ function TrendSection() {
               <div className="absolute inset-x-0 bottom-0 p-7 text-white">
                 <p className="mb-2 text-xs text-white/65">{card.subtitle}</p>
                 <div className="flex items-end justify-between gap-4">
-                  <h3 className="font-display text-2xl font-semibold text-white lg:text-3xl">{card.title}</h3>
+                  <h3 className="text-2xl font-semibold text-white lg:text-3xl">{card.title}</h3>
                   <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-[#342b27] transition group-hover:-translate-x-1">
                     <ArrowLeft size={18} />
                   </span>
@@ -422,9 +428,21 @@ function TrendSection() {
 
 function ValueSection() {
   const values = [
-    { icon: Search, title: 'پیدا کن', text: 'با فیلتر خدمت، موقعیت و نوع سالن، انتخاب‌ها را دقیق‌تر کن.' },
-    { icon: UserRound, title: 'مقایسه کن', text: 'پروفایل، نمونه‌کار، متخصصان و امتیاز هر سالن را یک‌جا ببین.' },
-    { icon: Clock3, title: 'رزرو کن', text: 'زمان خالی را انتخاب کن و بدون تماس تلفنی نوبت قطعی بگیر.' },
+    {
+      icon: Search,
+      title: 'پیدا کن',
+      text: 'با فیلتر خدمت، موقعیت و نوع سالن، انتخاب‌ها را دقیق‌تر کن.',
+    },
+    {
+      icon: UserRound,
+      title: 'مقایسه کن',
+      text: 'پروفایل، نمونه‌کار، متخصصان و امتیاز هر سالن را یک‌جا ببین.',
+    },
+    {
+      icon: Clock3,
+      title: 'رزرو کن',
+      text: 'زمان خالی را انتخاب کن و بدون تماس تلفنی نوبت قطعی بگیر.',
+    },
   ];
 
   return (
@@ -433,7 +451,7 @@ function ValueSection() {
         <div className="grid gap-14 lg:grid-cols-[0.85fr_1.4fr] lg:items-start">
           <div>
             <p className="mb-4 text-xs font-semibold text-[#c8a66a]">رزرو، آن‌طور که باید باشد</p>
-            <h2 className="font-display text-4xl font-semibold leading-[1.35] text-white sm:text-5xl">
+            <h2 className="type-h2 text-white">
               انتخاب خوب،
               <br />
               از اطلاعات خوب شروع می‌شود.
@@ -445,12 +463,15 @@ function ValueSection() {
 
           <div className="grid gap-4 md:grid-cols-3">
             {values.map(({ icon: Icon, title, text }, index) => (
-              <div key={title} className="rounded-[1.35rem] border border-white/10 bg-white/[0.055] p-6">
+              <div
+                key={title}
+                className="rounded-[1.35rem] border border-white/10 bg-white/[0.055] p-6"
+              >
                 <div className="mb-10 flex items-center justify-between">
                   <Icon size={23} className="text-[#ead3a6]" strokeWidth={1.6} />
                   <span className="text-xs text-white/30">۰{index + 1}</span>
                 </div>
-                <h3 className="font-display text-2xl font-semibold text-white">{title}</h3>
+                <h3 className="text-2xl font-semibold text-white">{title}</h3>
                 <p className="mt-3 text-sm leading-7 text-white/55">{text}</p>
               </div>
             ))}
@@ -472,17 +493,23 @@ function EcosystemSection() {
                 <GraduationCap size={23} />
               </span>
               <p className="mb-3 text-xs font-semibold text-[#a16e5d]">آکادمی پرنگارین</p>
-              <h2 className="font-display text-3xl font-semibold leading-snug text-[#2d2622]">
+              <h2 className="text-3xl font-semibold leading-snug text-[#2d2622]">
                 مهارت بعدی‌ات را از حرفه‌ای‌ها یاد بگیر
               </h2>
               <p className="mt-4 text-sm leading-7 text-[#756a64]">
                 دوره‌های تخصصی آرایش و زیبایی را ببین و مسیر حرفه‌ای خودت را توسعه بده.
               </p>
-              <Link href="/academy" className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-[#7b5145]">
+              <Link
+                href="/academy"
+                className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-[#7b5145]"
+              >
                 ورود به آکادمی <ArrowLeft size={16} />
               </Link>
             </div>
-            <Palette className="absolute -bottom-10 -left-8 h-56 w-56 text-white/45" strokeWidth={0.7} />
+            <Palette
+              className="absolute -bottom-10 -left-8 h-56 w-56 text-white/45"
+              strokeWidth={0.7}
+            />
           </div>
 
           <div className="relative overflow-hidden rounded-[1.75rem] bg-[#e9ecee] p-8 sm:p-11">
@@ -491,17 +518,23 @@ function EcosystemSection() {
                 <Store size={23} />
               </span>
               <p className="mb-3 text-xs font-semibold text-[#607181]">برای صاحبان سالن</p>
-              <h2 className="font-display text-3xl font-semibold leading-snug text-[#1d2832]">
+              <h2 className="text-3xl font-semibold leading-snug text-[#1d2832]">
                 سالن خودت را هوشمندتر مدیریت کن
               </h2>
               <p className="mt-4 text-sm leading-7 text-[#65727d]">
                 رزرو، خدمات، کارکنان و ارتباط با مشتریان را از یک پنل یکپارچه مدیریت کن.
               </p>
-              <Link href="/salon-owner/login?returnTo=/dashboard/salons/new" className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-[#253342]">
+              <Link
+                href="/salon-owner/login?returnTo=/dashboard/salons/new"
+                className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-[#253342]"
+              >
                 ثبت سالن در پرنگارین <ArrowLeft size={16} />
               </Link>
             </div>
-            <Store className="absolute -bottom-11 -left-8 h-56 w-56 text-white/45" strokeWidth={0.7} />
+            <Store
+              className="absolute -bottom-11 -left-8 h-56 w-56 text-white/45"
+              strokeWidth={0.7}
+            />
           </div>
         </div>
       </div>
@@ -518,7 +551,7 @@ function FinalCallout() {
           <div className="absolute -bottom-36 -left-20 h-80 w-80 rounded-full border border-[#c8a66a]/20" />
           <div className="relative z-10 mx-auto max-w-2xl">
             <Sparkles className="mx-auto mb-5 text-[#e3c98f]" size={27} />
-            <h2 className="font-display text-4xl font-semibold leading-tight text-white sm:text-5xl">
+            <h2 className="text-4xl font-semibold leading-tight text-white sm:text-5xl">
               نوبت بعدی‌ات همین نزدیکی است
             </h2>
             <p className="mt-5 text-sm leading-7 text-white/65">

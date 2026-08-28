@@ -22,7 +22,9 @@ export function Modal({ open, onClose, title, children, size = 'md' }: ModalProp
 
   useEffect(() => {
     if (!open) return;
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
     document.addEventListener('keydown', handler);
     document.body.style.overflow = 'hidden';
     return () => {
@@ -37,7 +39,9 @@ export function Modal({ open, onClose, title, children, size = 'md' }: ModalProp
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{ backgroundColor: 'rgba(15,20,26,0.6)', backdropFilter: 'blur(8px)' }}
-      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
     >
       <div
         ref={panelRef}
@@ -59,10 +63,7 @@ export function Modal({ open, onClose, title, children, size = 'md' }: ModalProp
         </button>
 
         {title && (
-          <h2
-            id="modal-title"
-            className="font-display font-semibold text-h2 text-[var(--color-text)] mb-6"
-          >
+          <h2 id="modal-title" className="font-semibold text-h2 text-[var(--color-text)] mb-6">
             {title}
           </h2>
         )}

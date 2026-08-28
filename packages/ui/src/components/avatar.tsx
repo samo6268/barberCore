@@ -11,18 +11,18 @@ interface AvatarProps extends ImgHTMLAttributes<HTMLImageElement> {
 }
 
 const sizeMap: Record<AvatarSize, string> = {
-  32:  'w-8 h-8 text-xs',
-  40:  'w-10 h-10 text-sm',
-  56:  'w-14 h-14 text-base',
-  80:  'w-20 h-20 text-xl',
+  32: 'w-8 h-8 text-xs',
+  40: 'w-10 h-10 text-sm',
+  56: 'w-14 h-14 text-base',
+  80: 'w-20 h-20 text-xl',
   128: 'w-32 h-32 text-3xl',
 };
 
 const ringMap: Record<AvatarRing, string> = {
-  default:  'ring-1 ring-[var(--ui-gray-200)]',
+  default: 'ring-1 ring-[var(--ui-gray-200)]',
   verified: 'ring-2 ring-[var(--brand-gold-600)]',
-  premium:  'ring-2 ring-[var(--brand-rose-600)]',
-  none:     '',
+  premium: 'ring-2 ring-[var(--brand-rose-600)]',
+  none: '',
 };
 
 function initials(name?: string) {
@@ -33,7 +33,15 @@ function initials(name?: string) {
     : name.slice(0, 2).toUpperCase();
 }
 
-export function Avatar({ name, size = 40, ring = 'default', src, className = '', alt, ...props }: AvatarProps) {
+export function Avatar({
+  name,
+  size = 40,
+  ring = 'default',
+  src,
+  className = '',
+  alt,
+  ...props
+}: AvatarProps) {
   return (
     <div
       className={[
@@ -46,17 +54,9 @@ export function Avatar({ name, size = 40, ring = 'default', src, className = '',
       style={{ backgroundColor: src ? undefined : 'var(--brand-rose-200)' }}
     >
       {src ? (
-        <img
-          src={src}
-          alt={alt || name || ''}
-          className="w-full h-full object-cover"
-          {...props}
-        />
+        <img src={src} alt={alt || name || ''} className="w-full h-full object-cover" {...props} />
       ) : (
-        <span
-          className="font-display font-semibold select-none"
-          style={{ color: 'var(--brand-rose-800)' }}
-        >
+        <span className="font-semibold select-none" style={{ color: 'var(--brand-rose-800)' }}>
           {initials(name)}
         </span>
       )}

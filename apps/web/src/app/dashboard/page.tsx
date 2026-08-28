@@ -64,10 +64,7 @@ export default function DashboardPage() {
         style={{ background: 'white', borderColor: 'var(--ui-gray-200)' }}
       >
         <div className="flex items-center gap-2">
-          <span
-            className="text-base font-bold"
-            style={{ color: 'var(--brand-plum-600)', fontFamily: 'var(--font-display)' }}
-          >
+          <span className="text-base font-bold" style={{ color: 'var(--brand-plum-600)' }}>
             پرنگارین
           </span>
           <span
@@ -91,10 +88,7 @@ export default function DashboardPage() {
         {/* Greeting */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1
-              className="text-2xl font-bold mb-1"
-              style={{ color: 'var(--brand-navy-600)', fontFamily: 'var(--font-display)' }}
-            >
+            <h1 className="text-2xl font-bold mb-1" style={{ color: 'var(--brand-navy-600)' }}>
               سلام، {user?.firstName || 'کاربر'} عزیز
             </h1>
             <p className="text-sm" style={{ color: 'var(--ui-gray-500)' }}>

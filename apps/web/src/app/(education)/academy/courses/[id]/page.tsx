@@ -1,25 +1,28 @@
-'use client'
+'use client';
 
-import Image from 'next/image'
-import { notFound } from 'next/navigation'
-import { useState } from 'react'
-import { Star, Users, Clock, ChevronDown, Play } from 'lucide-react'
+import Image from 'next/image';
+import { notFound } from 'next/navigation';
+import { useState } from 'react';
+import { Star, Users, Clock, ChevronDown, Play } from 'lucide-react';
 
-const MOCK_COURSES: Record<string, {
-  title: string
-  instructor: string
-  instructorBio: string
-  category: string
-  level: string
-  price: number
-  rating: number
-  students: number
-  duration: string
-  image: string
-  about: string
-  chapters: { title: string; lessons: { name: string; duration: string }[] }[]
-  reviews: { name: string; rating: number; text: string }[]
-}> = {
+const MOCK_COURSES: Record<
+  string,
+  {
+    title: string;
+    instructor: string;
+    instructorBio: string;
+    category: string;
+    level: string;
+    price: number;
+    rating: number;
+    students: number;
+    duration: string;
+    image: string;
+    about: string;
+    chapters: { title: string; lessons: { name: string; duration: string }[] }[];
+    reviews: { name: string; rating: number; text: string }[];
+  }
+> = {
   '1': {
     title: 'کوتاهی حرفه‌ای مو',
     instructor: 'استاد محمدی',
@@ -31,7 +34,8 @@ const MOCK_COURSES: Record<string, {
     students: 340,
     duration: '۱۲ ساعت',
     image: '/images/salons/01.svg',
-    about: 'این دوره جامع تمام تکنیک‌های پایه کوتاهی مو را از صفر تا صد آموزش می‌دهد. مناسب برای کسانی که می‌خواهند آرایشگری را جدی دنبال کنند یا دانش پایه خود را تقویت نمایند.',
+    about:
+      'این دوره جامع تمام تکنیک‌های پایه کوتاهی مو را از صفر تا صد آموزش می‌دهد. مناسب برای کسانی که می‌خواهند آرایشگری را جدی دنبال کنند یا دانش پایه خود را تقویت نمایند.',
     chapters: [
       {
         title: 'فصل ۱: آشنایی با ابزار',
@@ -59,7 +63,11 @@ const MOCK_COURSES: Record<string, {
       },
     ],
     reviews: [
-      { name: 'نیلوفر ر.', rating: 5, text: 'دوره فوق‌العاده‌ای بود. استاد با حوصله و دقت آموزش داد.' },
+      {
+        name: 'نیلوفر ر.',
+        rating: 5,
+        text: 'دوره فوق‌العاده‌ای بود. استاد با حوصله و دقت آموزش داد.',
+      },
       { name: 'محمد ع.', rating: 5, text: 'بهترین سرمایه‌گذاری که کردم. الان مشتریان ثابت دارم.' },
       { name: 'سمیرا ب.', rating: 4, text: 'محتوا کامل بود، فقط کاش مثال‌های بیشتری داشت.' },
     ],
@@ -75,7 +83,8 @@ const MOCK_COURSES: Record<string, {
     students: 220,
     duration: '۱۸ ساعت',
     image: '/images/salons/02.svg',
-    about: 'این دوره تمام تکنیک‌های مدرن رنگ و هایلایت مو را از بالیاژ تا فویل آموزش می‌دهد. مناسب برای آرایشگرانی که می‌خواهند تخصص خود را در حوزه رنگ ارتقاء دهند.',
+    about:
+      'این دوره تمام تکنیک‌های مدرن رنگ و هایلایت مو را از بالیاژ تا فویل آموزش می‌دهد. مناسب برای آرایشگرانی که می‌خواهند تخصص خود را در حوزه رنگ ارتقاء دهند.',
     chapters: [
       {
         title: 'فصل ۱: اصول رنگ‌شناسی',
@@ -110,7 +119,8 @@ const MOCK_COURSES: Record<string, {
     students: 180,
     duration: '۲۴ ساعت',
     image: '/images/salons/03.svg',
-    about: 'یاد بگیرید چطور آرایش عروس بی‌نقص ایجاد کنید. این دوره شامل تکنیک‌های پیشرفته آرایش چشم، پوست، و مو می‌شود.',
+    about:
+      'یاد بگیرید چطور آرایش عروس بی‌نقص ایجاد کنید. این دوره شامل تکنیک‌های پیشرفته آرایش چشم، پوست، و مو می‌شود.',
     chapters: [
       {
         title: 'فصل ۱: آماده‌سازی پوست',
@@ -143,7 +153,8 @@ const MOCK_COURSES: Record<string, {
     students: 410,
     duration: '۱۰ ساعت',
     image: '/images/salons/04.svg',
-    about: 'از صفر با ناخن ژل و اکریلیک آشنا شوید. این دوره برای مبتدیان طراحی شده و تمام مهارت‌های پایه را پوشش می‌دهد.',
+    about:
+      'از صفر با ناخن ژل و اکریلیک آشنا شوید. این دوره برای مبتدیان طراحی شده و تمام مهارت‌های پایه را پوشش می‌دهد.',
     chapters: [
       {
         title: 'فصل ۱: مقدمه',
@@ -153,9 +164,7 @@ const MOCK_COURSES: Record<string, {
         ],
       },
     ],
-    reviews: [
-      { name: 'شیرین ک.', rating: 5, text: 'استاد احمدی خیلی صبور بودند.' },
-    ],
+    reviews: [{ name: 'شیرین ک.', rating: 5, text: 'استاد احمدی خیلی صبور بودند.' }],
   },
   '5': {
     title: 'کراتین و صافی مو',
@@ -168,7 +177,8 @@ const MOCK_COURSES: Record<string, {
     students: 155,
     duration: '۱۵ ساعت',
     image: '/images/salons/05.svg',
-    about: 'تکنیک‌های کراتین تراپی و صافی مو را به صورت حرفه‌ای بیاموزید. شامل تمام برندهای معتبر موجود در بازار ایران.',
+    about:
+      'تکنیک‌های کراتین تراپی و صافی مو را به صورت حرفه‌ای بیاموزید. شامل تمام برندهای معتبر موجود در بازار ایران.',
     chapters: [
       {
         title: 'فصل ۱: شیمی مو',
@@ -178,9 +188,7 @@ const MOCK_COURSES: Record<string, {
         ],
       },
     ],
-    reviews: [
-      { name: 'پریسا د.', rating: 5, text: 'بهترین دوره کراتین که پیدا کردم.' },
-    ],
+    reviews: [{ name: 'پریسا د.', rating: 5, text: 'بهترین دوره کراتین که پیدا کردم.' }],
   },
   '6': {
     title: 'بالیاژ و سامبره',
@@ -193,7 +201,8 @@ const MOCK_COURSES: Record<string, {
     students: 98,
     duration: '۲۰ ساعت',
     image: '/images/salons/06.svg',
-    about: 'عمیق‌ترین آموزش بالیاژ و سامبره در ایران. برای آرایشگران حرفه‌ای که می‌خواهند متمایز باشند.',
+    about:
+      'عمیق‌ترین آموزش بالیاژ و سامبره در ایران. برای آرایشگران حرفه‌ای که می‌خواهند متمایز باشند.',
     chapters: [
       {
         title: 'فصل ۱: فلسفه بالیاژ',
@@ -203,13 +212,11 @@ const MOCK_COURSES: Record<string, {
         ],
       },
     ],
-    reviews: [
-      { name: 'ستاره ج.', rating: 5, text: 'سطح دوره واقعاً پیشرفته است. توصیه می‌کنم.' },
-    ],
+    reviews: [{ name: 'ستاره ج.', rating: 5, text: 'سطح دوره واقعاً پیشرفته است. توصیه می‌کنم.' }],
   },
-}
+};
 
-const TABS = ['درباره دوره', 'سرفصل‌ها', 'مدرس', 'نظرات']
+const TABS = ['درباره دوره', 'سرفصل‌ها', 'مدرس', 'نظرات'];
 
 function renderStars(rating: number) {
   return (
@@ -218,25 +225,37 @@ function renderStars(rating: number) {
         <Star
           key={s}
           size={14}
-          style={{ color: s <= Math.round(rating) ? 'var(--brand-gold-600)' : 'var(--ui-gray-200)', fill: s <= Math.round(rating) ? 'var(--brand-gold-600)' : 'var(--ui-gray-200)' }}
+          style={{
+            color: s <= Math.round(rating) ? 'var(--brand-gold-600)' : 'var(--ui-gray-200)',
+            fill: s <= Math.round(rating) ? 'var(--brand-gold-600)' : 'var(--ui-gray-200)',
+          }}
         />
       ))}
     </div>
-  )
+  );
 }
 
 export default function CoursePage({ params }: { params: { id: string } }) {
-  const course = MOCK_COURSES[params.id]
-  if (!course) notFound()
+  const course = MOCK_COURSES[params.id];
+  if (!course) notFound();
 
-  const [tab, setTab] = useState(TABS[0])
-  const [openChapter, setOpenChapter] = useState<number | null>(0)
+  const [tab, setTab] = useState(TABS[0]);
+  const [openChapter, setOpenChapter] = useState<number | null>(0);
 
   return (
     <main dir="rtl" style={{ backgroundColor: 'var(--bg-ivory)', minHeight: '100vh' }}>
       {/* Hero */}
       <section style={{ backgroundColor: 'var(--brand-navy-600)', padding: '0' }}>
-        <div className="container-editorial" style={{ display: 'grid', gridTemplateColumns: '1fr 420px', gap: '3rem', alignItems: 'center', padding: '3rem 1.5rem' }}>
+        <div
+          className="container-editorial"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 420px',
+            gap: '3rem',
+            alignItems: 'center',
+            padding: '3rem 1.5rem',
+          }}
+        >
           <div>
             <span
               style={{
@@ -245,15 +264,20 @@ export default function CoursePage({ params }: { params: { id: string } }) {
                 color: '#fff',
                 padding: '0.25rem 0.875rem',
                 borderRadius: '2rem',
-                fontSize: '0.75rem',
+                fontSize: 'var(--type-caption-size)',
                 fontWeight: 700,
                 marginBottom: '1rem',
               }}
             >
               {course.category} · {course.level}
             </span>
-            <h1 className="text-display-md" style={{ color: '#fff' }}>{course.title}</h1>
-            <p className="text-body-lg" style={{ color: 'rgba(255,255,255,0.75)', marginTop: '1rem', lineHeight: 1.9 }}>
+            <h1 className="text-display-md" style={{ color: '#fff' }}>
+              {course.title}
+            </h1>
+            <p
+              className="text-body-lg"
+              style={{ color: 'rgba(255,255,255,0.75)', marginTop: '1rem' }}
+            >
               {course.about}
             </p>
             <div style={{ display: 'flex', gap: '2rem', marginTop: '1.5rem' }}>
@@ -262,7 +286,15 @@ export default function CoursePage({ params }: { params: { id: string } }) {
                 { icon: <Users size={16} />, label: `${course.students} دانشجو` },
                 { icon: <Star size={16} />, label: String(course.rating) },
               ].map((item) => (
-                <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', color: 'rgba(255,255,255,0.8)' }}>
+                <div
+                  key={item.label}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.375rem',
+                    color: 'rgba(255,255,255,0.8)',
+                  }}
+                >
                   {item.icon}
                   <span className="text-body-sm">{item.label}</span>
                 </div>
@@ -270,17 +302,48 @@ export default function CoursePage({ params }: { params: { id: string } }) {
             </div>
           </div>
           {/* Course card */}
-          <div style={{ backgroundColor: '#fff', borderRadius: '1.5rem', overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.15)' }}>
+          <div
+            style={{
+              backgroundColor: '#fff',
+              borderRadius: '1.5rem',
+              overflow: 'hidden',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
+            }}
+          >
             <div style={{ position: 'relative', height: '220px' }}>
               <Image src={course.image} alt={course.title} fill style={{ objectFit: 'cover' }} />
-              <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Play size={24} style={{ color: 'var(--brand-plum-600)', fill: 'var(--brand-plum-600)' }} />
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <div
+                  style={{
+                    width: '56px',
+                    height: '56px',
+                    borderRadius: '50%',
+                    backgroundColor: 'rgba(255,255,255,0.9)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Play
+                    size={24}
+                    style={{ color: 'var(--brand-plum-600)', fill: 'var(--brand-plum-600)' }}
+                  />
                 </div>
               </div>
             </div>
             <div style={{ padding: '1.5rem' }}>
-              <div className="text-display-md" style={{ color: 'var(--brand-plum-600)', fontWeight: 700 }}>
+              <div
+                className="text-display-md"
+                style={{ color: 'var(--brand-plum-600)', fontWeight: 700 }}
+              >
                 {course.price.toLocaleString('fa-IR')} تومان
               </div>
               <button
@@ -293,14 +356,21 @@ export default function CoursePage({ params }: { params: { id: string } }) {
                   padding: '0.875rem',
                   borderRadius: '0.875rem',
                   fontWeight: 700,
-                  fontSize: '1rem',
+                  fontSize: 'var(--type-body-lg-size)',
                   border: 'none',
                   cursor: 'pointer',
                 }}
               >
                 ثبت‌نام در دوره
               </button>
-              <p className="text-caption" style={{ textAlign: 'center', color: 'var(--color-text-muted)', marginTop: '0.75rem' }}>
+              <p
+                className="text-caption"
+                style={{
+                  textAlign: 'center',
+                  color: 'var(--color-text-muted)',
+                  marginTop: '0.75rem',
+                }}
+              >
                 ۳۰ روز ضمانت بازگشت وجه
               </p>
             </div>
@@ -309,7 +379,15 @@ export default function CoursePage({ params }: { params: { id: string } }) {
       </section>
 
       {/* Tabs */}
-      <div style={{ backgroundColor: '#fff', borderBottom: '1px solid var(--ui-gray-200)', position: 'sticky', top: 0, zIndex: 10 }}>
+      <div
+        style={{
+          backgroundColor: '#fff',
+          borderBottom: '1px solid var(--ui-gray-200)',
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
+        }}
+      >
         <div className="container-editorial" style={{ display: 'flex', gap: '0' }}>
           {TABS.map((t) => (
             <button
@@ -321,9 +399,10 @@ export default function CoursePage({ params }: { params: { id: string } }) {
                 backgroundColor: 'transparent',
                 color: tab === t ? 'var(--brand-plum-600)' : 'var(--color-text-muted)',
                 fontWeight: tab === t ? 700 : 500,
-                fontSize: '0.9375rem',
+                fontSize: 'var(--type-body-size)',
                 cursor: 'pointer',
-                borderBottom: tab === t ? '2px solid var(--brand-plum-600)' : '2px solid transparent',
+                borderBottom:
+                  tab === t ? '2px solid var(--brand-plum-600)' : '2px solid transparent',
               }}
             >
               {t}
@@ -337,17 +416,43 @@ export default function CoursePage({ params }: { params: { id: string } }) {
         <div className="container-editorial" style={{ maxWidth: '800px' }}>
           {tab === 'درباره دوره' && (
             <div>
-              <h2 className="text-h2" style={{ marginBottom: '1.25rem' }}>درباره این دوره</h2>
-              <p className="text-body-lg" style={{ color: 'var(--color-text-muted)', lineHeight: 2 }}>{course.about}</p>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginTop: '2rem' }}>
+              <h2 className="text-h2" style={{ marginBottom: '1.25rem' }}>
+                درباره این دوره
+              </h2>
+              <p className="text-body-lg" style={{ color: 'var(--color-text-muted)' }}>
+                {course.about}
+              </p>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(3, 1fr)',
+                  gap: '1rem',
+                  marginTop: '2rem',
+                }}
+              >
                 {[
                   { label: 'مدت دوره', value: course.duration },
                   { label: 'سطح', value: course.level },
                   { label: 'دانشجو', value: String(course.students) },
                 ].map((stat) => (
-                  <div key={stat.label} style={{ backgroundColor: 'var(--bg-ivory-soft)', borderRadius: '1rem', padding: '1.25rem', textAlign: 'center' }}>
-                    <div className="text-h3" style={{ color: 'var(--brand-plum-600)' }}>{stat.value}</div>
-                    <div className="text-caption" style={{ color: 'var(--color-text-muted)', marginTop: '0.25rem' }}>{stat.label}</div>
+                  <div
+                    key={stat.label}
+                    style={{
+                      backgroundColor: 'var(--bg-ivory-soft)',
+                      borderRadius: '1rem',
+                      padding: '1.25rem',
+                      textAlign: 'center',
+                    }}
+                  >
+                    <div className="text-h3" style={{ color: 'var(--brand-plum-600)' }}>
+                      {stat.value}
+                    </div>
+                    <div
+                      className="text-caption"
+                      style={{ color: 'var(--color-text-muted)', marginTop: '0.25rem' }}
+                    >
+                      {stat.label}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -356,10 +461,20 @@ export default function CoursePage({ params }: { params: { id: string } }) {
 
           {tab === 'سرفصل‌ها' && (
             <div>
-              <h2 className="text-h2" style={{ marginBottom: '1.5rem' }}>سرفصل‌های دوره</h2>
+              <h2 className="text-h2" style={{ marginBottom: '1.5rem' }}>
+                سرفصل‌های دوره
+              </h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 {course.chapters.map((chapter, ci) => (
-                  <div key={ci} style={{ backgroundColor: '#fff', borderRadius: '1rem', border: '1px solid var(--ui-gray-200)', overflow: 'hidden' }}>
+                  <div
+                    key={ci}
+                    style={{
+                      backgroundColor: '#fff',
+                      borderRadius: '1rem',
+                      border: '1px solid var(--ui-gray-200)',
+                      overflow: 'hidden',
+                    }}
+                  >
                     <button
                       onClick={() => setOpenChapter(openChapter === ci ? null : ci)}
                       style={{
@@ -373,8 +488,17 @@ export default function CoursePage({ params }: { params: { id: string } }) {
                         cursor: 'pointer',
                       }}
                     >
-                      <span className="text-body" style={{ fontWeight: 700 }}>{chapter.title}</span>
-                      <ChevronDown size={18} style={{ transform: openChapter === ci ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', color: 'var(--color-text-muted)' }} />
+                      <span className="text-body" style={{ fontWeight: 700 }}>
+                        {chapter.title}
+                      </span>
+                      <ChevronDown
+                        size={18}
+                        style={{
+                          transform: openChapter === ci ? 'rotate(180deg)' : 'none',
+                          transition: 'transform 0.2s',
+                          color: 'var(--color-text-muted)',
+                        }}
+                      />
                     </button>
                     {openChapter === ci && (
                       <div style={{ padding: '0.5rem 0' }}>
@@ -392,7 +516,12 @@ export default function CoursePage({ params }: { params: { id: string } }) {
                               <Play size={14} style={{ color: 'var(--color-text-muted)' }} />
                               <span className="text-body-sm">{lesson.name}</span>
                             </div>
-                            <span className="text-caption" style={{ color: 'var(--color-text-muted)' }}>{lesson.duration}</span>
+                            <span
+                              className="text-caption"
+                              style={{ color: 'var(--color-text-muted)' }}
+                            >
+                              {lesson.duration}
+                            </span>
                           </div>
                         ))}
                       </div>
@@ -405,14 +534,35 @@ export default function CoursePage({ params }: { params: { id: string } }) {
 
           {tab === 'مدرس' && (
             <div>
-              <h2 className="text-h2" style={{ marginBottom: '1.5rem' }}>مدرس دوره</h2>
+              <h2 className="text-h2" style={{ marginBottom: '1.5rem' }}>
+                مدرس دوره
+              </h2>
               <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'flex-start' }}>
-                <div style={{ position: 'relative', width: '100px', height: '100px', borderRadius: '50%', overflow: 'hidden', flexShrink: 0 }}>
-                  <Image src="/images/instructors/01.svg" alt={course.instructor} fill style={{ objectFit: 'cover' }} />
+                <div
+                  style={{
+                    position: 'relative',
+                    width: '100px',
+                    height: '100px',
+                    borderRadius: '50%',
+                    overflow: 'hidden',
+                    flexShrink: 0,
+                  }}
+                >
+                  <Image
+                    src="/images/instructors/01.svg"
+                    alt={course.instructor}
+                    fill
+                    style={{ objectFit: 'cover' }}
+                  />
                 </div>
                 <div>
                   <h3 className="text-h3">{course.instructor}</h3>
-                  <p className="text-body" style={{ color: 'var(--color-text-muted)', marginTop: '0.75rem', lineHeight: 2 }}>{course.instructorBio}</p>
+                  <p
+                    className="text-body"
+                    style={{ color: 'var(--color-text-muted)', marginTop: '0.75rem' }}
+                  >
+                    {course.instructorBio}
+                  </p>
                 </div>
               </div>
             </div>
@@ -420,15 +570,36 @@ export default function CoursePage({ params }: { params: { id: string } }) {
 
           {tab === 'نظرات' && (
             <div>
-              <h2 className="text-h2" style={{ marginBottom: '1.5rem' }}>نظرات دانشجویان</h2>
+              <h2 className="text-h2" style={{ marginBottom: '1.5rem' }}>
+                نظرات دانشجویان
+              </h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 {course.reviews.map((rev, i) => (
-                  <div key={i} style={{ backgroundColor: '#fff', borderRadius: '1rem', padding: '1.25rem', border: '1px solid var(--ui-gray-200)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.625rem' }}>
-                      <span className="text-body" style={{ fontWeight: 700 }}>{rev.name}</span>
+                  <div
+                    key={i}
+                    style={{
+                      backgroundColor: '#fff',
+                      borderRadius: '1rem',
+                      padding: '1.25rem',
+                      border: '1px solid var(--ui-gray-200)',
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: '0.625rem',
+                      }}
+                    >
+                      <span className="text-body" style={{ fontWeight: 700 }}>
+                        {rev.name}
+                      </span>
                       {renderStars(rev.rating)}
                     </div>
-                    <p className="text-body-sm" style={{ color: 'var(--color-text-muted)', lineHeight: 1.8 }}>{rev.text}</p>
+                    <p className="text-body-sm" style={{ color: 'var(--color-text-muted)' }}>
+                      {rev.text}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -437,5 +608,5 @@ export default function CoursePage({ params }: { params: { id: string } }) {
         </div>
       </section>
     </main>
-  )
+  );
 }

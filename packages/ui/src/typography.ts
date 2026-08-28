@@ -1,42 +1,40 @@
 /**
  * BarberCore Typography System
- * Loaded via next/font in the web app layout.
- * This file exports font class names and metadata — actual loading
- * happens in apps/web/src/app/layout.tsx.
+ * Shared semantic scale for web, salon/staff operations, and admin.
  */
 
 export const typographyConfig = {
   fonts: {
     display: {
-      female: 'Playfair Display',
-      male: 'Cormorant Garamond',
-      farsi: 'Estedad',
+      farsi: 'Vazirmatn',
     },
     body: {
       farsi: 'Vazirmatn',
-      latin: 'Inter',
+      fallback: 'Noto Sans Arabic',
     },
-    mono: 'JetBrains Mono',
+    mono: 'ui-monospace',
   },
 
   scale: {
-    'display-2xl': { size: '4.5rem',   lineHeight: 1.05,  letterSpacing: '-0.04em' },
-    'display-xl':  { size: '3.5rem',   lineHeight: 1.1,   letterSpacing: '-0.03em' },
-    'display-lg':  { size: '2.5rem',   lineHeight: 1.15,  letterSpacing: '-0.02em' },
-    'display-md':  { size: '2rem',     lineHeight: 1.2,   letterSpacing: '-0.015em' },
-    'h1':          { size: '1.875rem', lineHeight: 1.25 },
-    'h2':          { size: '1.5rem',   lineHeight: 1.3 },
-    'h3':          { size: '1.25rem',  lineHeight: 1.4 },
-    'body-lg':     { size: '1.125rem', lineHeight: 1.7 },
-    'body':        { size: '1rem',     lineHeight: 1.7 },
-    'body-sm':     { size: '0.875rem', lineHeight: 1.6 },
-    'caption':     { size: '0.75rem',  lineHeight: 1.5,   letterSpacing: '0.05em' },
+    'display-lg': { size: '32px', lineHeight: '44px', weight: 700 },
+    h1: { size: '28px', lineHeight: '40px', weight: 700 },
+    h2: { size: '24px', lineHeight: '36px', weight: 700 },
+    h3: { size: '20px', lineHeight: '32px', weight: 600 },
+    h4: { size: '18px', lineHeight: '28px', weight: 600 },
+    'body-lg': { size: '16px', lineHeight: '28px', weight: 400 },
+    body: { size: '14px', lineHeight: '24px', weight: 400 },
+    'body-sm': { size: '13px', lineHeight: '22px', weight: 400 },
+    label: { size: '13px', lineHeight: '20px', weight: 500 },
+    button: { size: '14px', lineHeight: '22px', weight: 600 },
+    caption: { size: '12px', lineHeight: '20px', weight: 400 },
+    price: { size: '18px', lineHeight: '28px', weight: 700 },
+    metric: { size: '24px', lineHeight: '32px', weight: 700 },
   },
 
   rules: {
-    headings: 'Display font, weight 500–700. Never 800/900.',
-    body: '400 regular, 500 for emphasis. Never bold inside paragraphs.',
-    captions: 'Uppercase tracking-wide reserved for section eyebrows.',
+    headings: 'Vazirmatn 600–700. Weight 700 is reserved for headings and KPI values.',
+    body: 'Vazirmatn 400; use 500 for labels and 600 for emphasis.',
+    captions: 'Vazirmatn 400 with an open 20px Persian line-height.',
   },
 } as const;
 

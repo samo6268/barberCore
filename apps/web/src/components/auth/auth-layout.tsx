@@ -20,11 +20,11 @@ export function AuthLayout({
 }: AuthLayoutProps) {
   return (
     <div className="min-h-screen flex" style={{ background: 'var(--bg-ivory)' }}>
-
       {/* Left — editorial hero panel */}
-      <div className="hidden lg:flex flex-col w-[45%] relative overflow-hidden"
-        style={{ background: 'var(--brand-plum-900)' }}>
-
+      <div
+        className="hidden lg:flex flex-col w-[45%] relative overflow-hidden"
+        style={{ background: 'var(--brand-plum-900)' }}
+      >
         {/* Background photo */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -35,24 +35,36 @@ export function AuthLayout({
         />
 
         {/* Gradient overlay */}
-        <div className="absolute inset-0"
-          style={{ background: 'linear-gradient(160deg, var(--brand-plum-900) 30%, rgba(75,36,74,0.4) 100%)' }} />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'linear-gradient(160deg, var(--brand-plum-900) 30%, rgba(75,36,74,0.4) 100%)',
+          }}
+        />
 
         {/* Content */}
         <div className="relative z-10 flex flex-col h-full p-14">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 mb-auto">
             <ScissorsIcon size={20} style={{ color: 'var(--brand-gold-400)' }} />
-            <span className="font-display font-semibold text-xl" style={{ color: 'var(--brand-gold-400)' }}>پرنگارین</span>
+            <span className="font-semibold text-xl" style={{ color: 'var(--brand-gold-400)' }}>
+              پرنگارین
+            </span>
           </Link>
 
           {/* Headline */}
           <div className="mb-14">
-            <p className="text-caption uppercase tracking-[0.3em] mb-4" style={{ color: 'var(--brand-gold-400)' }}>
+            <p
+              className="text-caption uppercase tracking-[0.3em] mb-4"
+              style={{ color: 'var(--brand-gold-400)' }}
+            >
               {eyebrow}
             </p>
-            <h2 className="font-display font-semibold leading-tight mb-4"
-              style={{ fontSize: '2.8rem', color: 'white', letterSpacing: '-0.03em' }}>
+            <h2
+              className="font-semibold leading-tight mb-4"
+              style={{ fontSize: 'var(--type-display-lg-size)', color: 'white' }}
+            >
               {heroTitle}
             </h2>
             <p className="text-base leading-relaxed" style={{ color: 'rgba(255,255,255,0.55)' }}>
@@ -70,16 +82,15 @@ export function AuthLayout({
 
       {/* Right — form panel */}
       <div className="flex-1 flex flex-col items-center justify-center p-8 lg:p-16">
-
         {/* Mobile logo */}
         <div className="lg:hidden flex items-center gap-2 mb-10">
           <ScissorsIcon size={18} style={{ color: 'var(--brand-plum-600)' }} />
-          <span className="font-display font-semibold text-lg" style={{ color: 'var(--brand-plum-600)' }}>پرنگارین</span>
+          <span className="font-semibold text-lg" style={{ color: 'var(--brand-plum-600)' }}>
+            پرنگارین
+          </span>
         </div>
 
-        <div className="w-full max-w-sm">
-          {children}
-        </div>
+        <div className="w-full max-w-sm">{children}</div>
       </div>
     </div>
   );

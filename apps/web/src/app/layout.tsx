@@ -29,25 +29,19 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="fa"
-      dir="rtl"
-      data-theme="female"
-      suppressHydrationWarning
-    >
+    <html lang="fa" dir="rtl" data-theme="female" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
       </head>
       <body
         className="font-sans antialiased"
-        style={{
-          backgroundColor: 'var(--color-background)',
-          color: 'var(--color-text)',
-          fontFamily: 'Vazirmatn, Inter, system-ui, sans-serif',
-          '--font-display': '"Playfair Display", Estedad, Georgia, serif',
-          '--font-body': 'Vazirmatn, Inter, system-ui, sans-serif',
-          '--font-mono': '"JetBrains Mono", monospace',
-        } as React.CSSProperties}
+        style={
+          {
+            backgroundColor: 'var(--color-background)',
+            color: 'var(--color-text)',
+            fontFamily: 'var(--font-sans)',
+          } as React.CSSProperties
+        }
       >
         <ThemeProvider attribute="data-theme" defaultTheme="female" enableSystem={false}>
           <QueryProvider>

@@ -27,7 +27,7 @@ export function StatusBadge({ status }: { status: string }) {
   const palette = STATUS_COLORS[status] ?? STATUS_COLORS.NO_SHOW;
   return (
     <span
-      className="inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold"
+      className="inline-flex rounded-full px-2.5 py-1 text-caption font-semibold"
       style={{ color: palette.color, background: palette.bg }}
     >
       {STATUS_LABELS[status] ?? status}
@@ -83,7 +83,7 @@ export function BookingCard({
             <p dir="ltr" className="text-base font-bold text-[var(--brand-plum-600)]">
               {formatTime(booking.startsAt)}
             </p>
-            <p dir="ltr" className="mt-0.5 text-[11px] text-[var(--ui-gray-500)]">
+            <p dir="ltr" className="mt-0.5 text-caption text-[var(--ui-gray-500)]">
               تا {formatTime(booking.endsAt)}
             </p>
           </div>

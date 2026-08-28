@@ -83,10 +83,7 @@ export default function RoleSelectorPage() {
         <div className="relative z-10 flex flex-col h-full p-14 justify-between">
           <Link href="/" className="flex items-center gap-2">
             <ScissorsIcon size={20} style={{ color: 'var(--brand-gold-400)' }} />
-            <span
-              className="font-display font-semibold text-xl"
-              style={{ color: 'var(--brand-gold-400)' }}
-            >
+            <span className="font-semibold text-xl" style={{ color: 'var(--brand-gold-400)' }}>
               پرنگارین
             </span>
           </Link>
@@ -98,14 +95,14 @@ export default function RoleSelectorPage() {
               WELCOME BACK
             </p>
             <h2
-              className="font-display font-semibold leading-tight mb-4"
-              style={{ fontSize: '2.5rem', color: 'white', letterSpacing: '-0.03em' }}
+              className="font-semibold leading-tight mb-4"
+              style={{ fontSize: 'var(--type-display-lg-size)', color: 'white' }}
             >
               شما کدام نقش
               <br />
               دارید؟
             </h2>
-            <p style={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1.7 }}>
+            <p style={{ color: 'rgba(255,255,255,0.5)' }}>
               پرنگارین برای مشتریان، سالن‌داران، مدرسان و مدیران یک ورود اختصاصی دارد.
             </p>
           </div>
@@ -120,10 +117,7 @@ export default function RoleSelectorPage() {
         {/* Mobile logo */}
         <div className="lg:hidden flex items-center gap-2 mb-10">
           <ScissorsIcon size={18} style={{ color: 'var(--brand-plum-600)' }} />
-          <span
-            className="font-display font-semibold text-lg"
-            style={{ color: 'var(--brand-plum-600)' }}
-          >
+          <span className="font-semibold text-lg" style={{ color: 'var(--brand-plum-600)' }}>
             پرنگارین
           </span>
         </div>
@@ -131,10 +125,7 @@ export default function RoleSelectorPage() {
         <div className="w-full max-w-md">
           <div className="text-center mb-10">
             <p className="eyebrow mb-3">ورود به سامانه</p>
-            <h1
-              className="text-2xl font-bold"
-              style={{ color: 'var(--brand-navy-600)', fontFamily: 'var(--font-display)' }}
-            >
+            <h1 className="text-2xl font-bold" style={{ color: 'var(--brand-navy-600)' }}>
               نقش خود را انتخاب کنید
             </h1>
             <p className="text-sm mt-2" style={{ color: 'var(--ui-gray-500)' }}>
@@ -168,10 +159,7 @@ export default function RoleSelectorPage() {
                     <Icon size={22} style={{ color: role.color }} />
                   </div>
                   <div className="flex-1">
-                    <h3
-                      className="font-bold text-base"
-                      style={{ color: 'var(--brand-navy-600)', fontFamily: 'var(--font-display)' }}
-                    >
+                    <h3 className="font-bold text-base" style={{ color: 'var(--brand-navy-600)' }}>
                       {role.title}
                     </h3>
                     <p className="text-xs mt-0.5" style={{ color: 'var(--ui-gray-500)' }}>

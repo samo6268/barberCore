@@ -1,5 +1,5 @@
-import Link from 'next/link'
-import { CheckCircle } from 'lucide-react'
+import Link from 'next/link';
+import { CheckCircle } from 'lucide-react';
 
 const NEXT_STEPS = [
   'تیم پرنگارین اطلاعات سالن شما را بررسی می‌کند.',
@@ -7,11 +7,21 @@ const NEXT_STEPS = [
   'پس از تأیید، پنل مدیریت سالن‌دار در اختیار شما قرار می‌گیرد.',
   'می‌توانید خدمات، کارکنان، و ساعت کاری را تنظیم کنید.',
   'سالن شما برای مشتریان قابل رزرو می‌شود.',
-]
+];
 
 export default function SalonSuccessPage() {
   return (
-    <main dir="rtl" style={{ backgroundColor: 'var(--bg-ivory)', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '3rem 1.5rem' }}>
+    <main
+      dir="rtl"
+      style={{
+        backgroundColor: 'var(--bg-ivory)',
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '3rem 1.5rem',
+      }}
+    >
       <div style={{ maxWidth: '560px', width: '100%', textAlign: 'center' }}>
         {/* Icon */}
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
@@ -22,7 +32,7 @@ export default function SalonSuccessPage() {
         <h1 className="text-display-md" style={{ color: 'var(--color-text)' }}>
           ثبت سالن شما با موفقیت انجام شد
         </h1>
-        <p className="text-body-lg" style={{ color: 'var(--color-text-muted)', marginTop: '1rem', lineHeight: 1.9 }}>
+        <p className="text-body-lg" style={{ color: 'var(--color-text-muted)', marginTop: '1rem' }}>
           تیم ما ظرف ۲۴ ساعت با شما تماس می‌گیرد و اطلاعات کامل‌تری ارائه خواهد داد.
         </p>
 
@@ -37,8 +47,19 @@ export default function SalonSuccessPage() {
             textAlign: 'right',
           }}
         >
-          <h2 className="text-h3" style={{ marginBottom: '1.25rem', textAlign: 'center' }}>مراحل بعدی</h2>
-          <ol style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem', paddingRight: '0', listStyle: 'none', margin: 0 }}>
+          <h2 className="text-h3" style={{ marginBottom: '1.25rem', textAlign: 'center' }}>
+            مراحل بعدی
+          </h2>
+          <ol
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.875rem',
+              paddingRight: '0',
+              listStyle: 'none',
+              margin: 0,
+            }}
+          >
             {NEXT_STEPS.map((step, i) => (
               <li
                 key={i}
@@ -58,7 +79,7 @@ export default function SalonSuccessPage() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: '0.8125rem',
+                    fontSize: 'var(--type-body-sm-size)',
                     fontWeight: 700,
                     marginTop: '1px',
                     flexShrink: 0,
@@ -66,14 +87,18 @@ export default function SalonSuccessPage() {
                 >
                   {i + 1}
                 </span>
-                <span className="text-body-sm" style={{ color: 'var(--color-text)', lineHeight: 1.7 }}>{step}</span>
+                <span className="text-body-sm" style={{ color: 'var(--color-text)' }}>
+                  {step}
+                </span>
               </li>
             ))}
           </ol>
         </div>
 
         {/* CTA */}
-        <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        <div
+          style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}
+        >
           <Link
             href="/salon-owner/login"
             style={{
@@ -83,7 +108,7 @@ export default function SalonSuccessPage() {
               padding: '0.9375rem',
               borderRadius: '0.875rem',
               fontWeight: 700,
-              fontSize: '1.0625rem',
+              fontSize: 'var(--type-h4-size)',
               textDecoration: 'none',
             }}
           >
@@ -98,7 +123,7 @@ export default function SalonSuccessPage() {
               padding: '0.875rem',
               borderRadius: '0.875rem',
               fontWeight: 600,
-              fontSize: '0.9375rem',
+              fontSize: 'var(--type-body-size)',
               textDecoration: 'none',
               border: '1.5px solid var(--ui-gray-200)',
             }}
@@ -108,5 +133,5 @@ export default function SalonSuccessPage() {
         </div>
       </div>
     </main>
-  )
+  );
 }

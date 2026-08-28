@@ -13,7 +13,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   return (
     <section className="mb-20">
       <p className="eyebrow mb-3">DESIGN SYSTEM</p>
-      <h2 className="font-display text-h2 font-semibold mb-10" style={{ color: 'var(--color-text)' }}>
+      <h2 className="text-h2 font-semibold mb-10" style={{ color: 'var(--color-text)' }}>
         {title}
       </h2>
       <div>{children}</div>
@@ -29,11 +29,11 @@ export default function DesignSystemPage() {
     <main className="min-h-screen" style={{ background: 'var(--color-background)' }}>
       <div className="container-editorial py-20">
         <p className="eyebrow mb-4">BARBERCORE</p>
-        <h1 className="font-display font-semibold text-display-xl mb-2" style={{ color: 'var(--color-text)' }}>
+        <h1 className="font-semibold text-display-xl mb-2" style={{ color: 'var(--color-text)' }}>
           Design System
         </h1>
         <p className="text-body-lg mb-16" style={{ color: 'var(--color-text-muted)' }}>
-          Editorial Luxury — warm, premium, photography-first
+          Vazirmatn — یک خانواده فونت، سه زمینه کاربردی
         </p>
 
         {/* Color Palette */}
@@ -44,15 +44,31 @@ export default function DesignSystemPage() {
               { label: 'Gold 600', bg: 'var(--brand-gold-600)', text: 'var(--brand-plum-900)' },
               { label: 'Rose 600', bg: 'var(--brand-rose-600)', text: '#fff' },
               { label: 'Navy 600', bg: 'var(--brand-navy-600)', text: 'var(--bg-ivory)' },
-              { label: 'Ivory', bg: 'var(--bg-ivory)', text: 'var(--color-text)', border: 'var(--ui-gray-200)' },
-              { label: 'Ivory Soft', bg: 'var(--bg-ivory-soft)', text: 'var(--color-text)', border: 'var(--ui-gray-200)' },
+              {
+                label: 'Ivory',
+                bg: 'var(--bg-ivory)',
+                text: 'var(--color-text)',
+                border: 'var(--ui-gray-200)',
+              },
+              {
+                label: 'Ivory Soft',
+                bg: 'var(--bg-ivory-soft)',
+                text: 'var(--color-text)',
+                border: 'var(--ui-gray-200)',
+              },
               { label: 'UI Gray 200', bg: 'var(--ui-gray-200)', text: 'var(--color-text)' },
               { label: 'Navy 900', bg: 'var(--brand-navy-900)', text: 'var(--bg-ivory)' },
             ].map((c) => (
-              <div key={c.label} className="rounded-xl overflow-hidden border" style={{ borderColor: c.border || 'transparent' }}>
+              <div
+                key={c.label}
+                className="rounded-xl overflow-hidden border"
+                style={{ borderColor: c.border || 'transparent' }}
+              >
                 <div className="h-16" style={{ background: c.bg }} />
                 <div className="p-3 bg-white">
-                  <p className="text-caption font-medium" style={{ color: 'var(--color-text)' }}>{c.label}</p>
+                  <p className="text-caption font-medium" style={{ color: 'var(--color-text)' }}>
+                    {c.label}
+                  </p>
                 </div>
               </div>
             ))}
@@ -63,34 +79,52 @@ export default function DesignSystemPage() {
         <Section title="تایپوگرافی">
           <div className="space-y-6" style={{ color: 'var(--color-text)' }}>
             <div>
-              <p className="text-caption mb-1" style={{ color: 'var(--color-text-muted)' }}>display-2xl / 4.5rem</p>
-              <p className="font-display font-semibold text-display-2xl leading-none">زیبایی، حالا یک تجربه است</p>
+              <p className="text-caption mb-1" style={{ color: 'var(--color-text-muted)' }}>
+                display-lg · 32/44 · 700
+              </p>
+              <p className="type-display-lg">زیبایی، حالا یک تجربه است</p>
             </div>
             <div>
-              <p className="text-caption mb-1" style={{ color: 'var(--color-text-muted)' }}>display-xl / 3.5rem</p>
-              <p className="font-display font-semibold text-display-xl">Editorial Luxury</p>
+              <p className="text-caption mb-1" style={{ color: 'var(--color-text-muted)' }}>
+                h1 · 28/40 · 700
+              </p>
+              <p className="type-h1">عنوان اصلی صفحه</p>
             </div>
             <div>
-              <p className="text-caption mb-1" style={{ color: 'var(--color-text-muted)' }}>display-lg / 2.5rem</p>
-              <p className="font-display font-semibold text-display-lg">آرایشگاه‌های برتر</p>
+              <p className="text-caption mb-1" style={{ color: 'var(--color-text-muted)' }}>
+                h2 · 24/36 · 700
+              </p>
+              <p className="type-h2">عنوان بخش اصلی</p>
             </div>
             <div>
-              <p className="text-caption mb-1" style={{ color: 'var(--color-text-muted)' }}>display-md / 2rem</p>
-              <p className="font-display font-medium text-display-md">خدمات تخصصی مو</p>
+              <p className="text-caption mb-1" style={{ color: 'var(--color-text-muted)' }}>
+                h3 · 20/32 · 600
+              </p>
+              <p className="type-h3">عنوان کارت یا زیربخش</p>
             </div>
             <div>
-              <p className="text-caption mb-1" style={{ color: 'var(--color-text-muted)' }}>h2 / 1.5rem</p>
-              <p className="font-display font-semibold text-h2">رزرو آنلاین</p>
+              <p className="text-caption mb-1" style={{ color: 'var(--color-text-muted)' }}>
+                h4 / price · 18/28 · 600–700
+              </p>
+              <p className="type-price">۱٬۲۵۰٬۰۰۰ تومان</p>
             </div>
             <div>
-              <p className="text-caption mb-1" style={{ color: 'var(--color-text-muted)' }}>body-lg / 1.125rem</p>
-              <p className="text-body-lg" style={{ color: 'var(--color-text-muted)' }}>
+              <p className="text-caption mb-1" style={{ color: 'var(--color-text-muted)' }}>
+                body-lg · 16/28 · 400
+              </p>
+              <p className="type-body-lg" style={{ color: 'var(--color-text-muted)' }}>
                 بهترین سالن‌های زیبایی ایران را کشف کنید و نوبت خود را به‌سادگی رزرو کنید.
               </p>
             </div>
             <div>
-              <p className="text-caption mb-1" style={{ color: 'var(--color-text-muted)' }}>caption / uppercase</p>
-              <p className="eyebrow">CHAPTER 01 — SERVICES</p>
+              <p className="text-caption mb-1" style={{ color: 'var(--color-text-muted)' }}>
+                body / body-sm / caption · 14/24، 13/22، 12/20
+              </p>
+              <p className="type-body">متن اصلی رابط کاربری</p>
+              <p className="type-body-sm text-[var(--color-text-muted)]">متن ثانویه و توضیحات</p>
+              <p className="type-caption text-[var(--color-text-subtle)]">
+                توضیحات کوچک و Metadata
+              </p>
             </div>
           </div>
         </Section>
@@ -99,7 +133,9 @@ export default function DesignSystemPage() {
         <Section title="دکمه‌ها">
           <div className="space-y-8">
             <div>
-              <p className="text-caption mb-4" style={{ color: 'var(--color-text-muted)' }}>Sizes</p>
+              <p className="text-caption mb-4" style={{ color: 'var(--color-text-muted)' }}>
+                Sizes
+              </p>
               <div className="flex flex-wrap items-center gap-4">
                 <Button size="sm">دکمه کوچک</Button>
                 <Button size="md">دکمه متوسط</Button>
@@ -108,7 +144,9 @@ export default function DesignSystemPage() {
               </div>
             </div>
             <div>
-              <p className="text-caption mb-4" style={{ color: 'var(--color-text-muted)' }}>Variants</p>
+              <p className="text-caption mb-4" style={{ color: 'var(--color-text-muted)' }}>
+                Variants
+              </p>
               <div className="flex flex-wrap items-center gap-4">
                 <Button variant="primary">Primary</Button>
                 <Button variant="secondary">Secondary</Button>
@@ -137,9 +175,7 @@ export default function DesignSystemPage() {
             </Card>
             <Card variant="featured">
               <CardTitle>کارت Featured</CardTitle>
-              <CardBody className="mt-3">
-                پس‌زمینه طلایی با حاشیه gold. برای محتوای ویژه.
-              </CardBody>
+              <CardBody className="mt-3">پس‌زمینه طلایی با حاشیه gold. برای محتوای ویژه.</CardBody>
             </Card>
           </div>
         </Section>
@@ -161,16 +197,22 @@ export default function DesignSystemPage() {
             {([32, 40, 56, 80, 128] as const).map((s) => (
               <div key={s} className="flex flex-col items-center gap-2">
                 <Avatar name="علی محمدی" size={s} ring="default" />
-                <span className="text-caption" style={{ color: 'var(--color-text-muted)' }}>{s}px</span>
+                <span className="text-caption" style={{ color: 'var(--color-text-muted)' }}>
+                  {s}px
+                </span>
               </div>
             ))}
             <div className="flex flex-col items-center gap-2">
               <Avatar name="سالن ویژه" size={56} ring="premium" />
-              <span className="text-caption" style={{ color: 'var(--color-text-muted)' }}>premium</span>
+              <span className="text-caption" style={{ color: 'var(--color-text-muted)' }}>
+                premium
+              </span>
             </div>
             <div className="flex flex-col items-center gap-2">
               <Avatar name="استاد حرفه‌ای" size={56} ring="verified" />
-              <span className="text-caption" style={{ color: 'var(--color-text-muted)' }}>verified</span>
+              <span className="text-caption" style={{ color: 'var(--color-text-muted)' }}>
+                verified
+              </span>
             </div>
           </div>
         </Section>
@@ -178,11 +220,7 @@ export default function DesignSystemPage() {
         {/* Input */}
         <Section title="فیلدهای ورودی">
           <div className="grid md:grid-cols-2 gap-12 max-w-xl">
-            <Input
-              label="نام"
-              value={inputVal}
-              onChange={(e) => setInputVal(e.target.value)}
-            />
+            <Input label="نام" value={inputVal} onChange={(e) => setInputVal(e.target.value)} />
             <Input label="شماره موبایل" type="tel" />
             <Input label="ایمیل" type="email" error="آدرس ایمیل معتبر نیست" />
             <Input label="شهر" hint="مثال: تهران، اصفهان" />
@@ -201,7 +239,9 @@ export default function DesignSystemPage() {
             ].map(({ Icon, label }) => (
               <div key={label} className="flex flex-col items-center gap-3">
                 <Icon size={32} style={{ color: 'var(--color-primary)' }} />
-                <span className="text-caption" style={{ color: 'var(--color-text-muted)' }}>{label}</span>
+                <span className="text-caption" style={{ color: 'var(--color-text-muted)' }}>
+                  {label}
+                </span>
               </div>
             ))}
           </div>
@@ -216,7 +256,9 @@ export default function DesignSystemPage() {
               <Input label="تاریخ" type="date" />
               <div className="flex gap-3 pt-2">
                 <Button className="flex-1">تأیید رزرو</Button>
-                <Button variant="ghost" onClick={() => setModalOpen(false)}>انصراف</Button>
+                <Button variant="ghost" onClick={() => setModalOpen(false)}>
+                  انصراف
+                </Button>
               </div>
             </div>
           </Modal>

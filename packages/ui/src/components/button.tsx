@@ -26,21 +26,24 @@ const variantClasses: Record<Variant, string> = {
 };
 
 const sizeClasses: Record<Size, string> = {
-  sm:  'px-4 py-2 text-sm',
-  md:  'px-6 py-3 text-base',
-  lg:  'px-8 py-4 text-base',
-  xl:  'px-10 py-5 text-lg',
+  sm: 'px-4 py-2 text-button',
+  md: 'px-6 py-3 text-button',
+  lg: 'px-8 py-4 text-button',
+  xl: 'px-10 py-5 text-button',
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = 'primary', size = 'md', loading, disabled, className = '', children, ...props }, ref) => {
+  (
+    { variant = 'primary', size = 'md', loading, disabled, className = '', children, ...props },
+    ref,
+  ) => {
     return (
       <button
         ref={ref}
         disabled={disabled || loading}
         className={[
           'inline-flex items-center justify-center gap-2',
-          'rounded-md font-medium',
+          'rounded-md font-semibold',
           'transition-all duration-[250ms] ease-out',
           'outline-none focus-visible:outline-none focus-visible:ring-offset-2',
           'disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none',
@@ -56,7 +59,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {children}
       </button>
     );
-  }
+  },
 );
 
 Button.displayName = 'Button';

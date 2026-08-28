@@ -54,7 +54,7 @@ export function DashboardLayout({
   const hrefFor = (href: string) => `/dashboard/salons/${salonId}${href ? `/${href}` : ''}`;
 
   return (
-    <div className="flex min-h-screen flex-col bg-[var(--bg-ivory)]">
+    <div data-typography="management" className="flex min-h-screen flex-col bg-[var(--bg-ivory)]">
       <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-[var(--ui-gray-200)] bg-white px-4 sm:px-6">
         <div className="flex min-w-0 items-center gap-2 sm:gap-3">
           <Link
@@ -70,7 +70,7 @@ export function DashboardLayout({
         </div>
         <div className="flex items-center gap-2 sm:gap-3">
           <span
-            className="rounded-full px-2.5 py-1 text-[10px] font-semibold sm:text-xs"
+            className="rounded-full px-2.5 py-1 text-caption font-semibold sm:text-xs"
             style={{ background: `${planCfg.color}18`, color: planCfg.color }}
           >
             {planCfg.label}

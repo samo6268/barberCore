@@ -175,8 +175,8 @@ function Metric({
         <Icon size={18} />
       </div>
       <p className="mt-4 text-xs text-[var(--ui-gray-500)]">{label}</p>
-      <p className="mt-1 text-lg font-bold text-[var(--brand-navy-600)] sm:text-xl">{value}</p>
-      <p className="mt-1 text-[10px] text-[var(--ui-gray-400)] sm:text-xs">{hint}</p>
+      <p className="mt-1 text-metric font-bold text-[var(--brand-navy-600)]">{value}</p>
+      <p className="mt-1 text-caption text-[var(--ui-gray-400)] sm:text-xs">{hint}</p>
     </div>
   );
 }

@@ -65,7 +65,7 @@ export default function StaffNotificationsPage() {
                   {item.title || 'اعلان پرنگارین'}
                 </p>
                 <p className="mt-1 text-sm leading-7 text-[var(--ui-gray-600)]">{item.body}</p>
-                <p className="mt-2 text-[10px] text-[var(--ui-gray-400)]">
+                <p className="mt-2 text-caption text-[var(--ui-gray-400)]">
                   {toJalali(item.createdAt)}، {formatTime(item.createdAt)}
                 </p>
               </div>

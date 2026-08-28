@@ -57,10 +57,7 @@ export default function CustomerLoginPage() {
       heroSubtitle="رزرو آنلاین بهترین سالن‌های ایران — در چند ثانیه، بدون تماس تلفنی."
     >
       <div className="mb-8">
-        <h1
-          className="text-2xl font-bold mb-1"
-          style={{ color: 'var(--brand-navy-600)', fontFamily: 'var(--font-display)' }}
-        >
+        <h1 className="text-2xl font-bold mb-1" style={{ color: 'var(--brand-navy-600)' }}>
           ورود مشتری
         </h1>
         <p className="text-sm" style={{ color: 'var(--ui-gray-500)' }}>

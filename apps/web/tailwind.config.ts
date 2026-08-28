@@ -12,21 +12,21 @@ const config: Config = {
     extend: {
       colors: {
         /* ── Semantic theme tokens (CSS var-driven) ── */
-        'theme-primary':     'var(--color-primary)',
-        'theme-primary-fg':  'var(--color-primary-foreground)',
-        'theme-accent':      'var(--color-accent)',
-        'theme-highlight':   'var(--color-highlight)',
-        'theme-bg':          'var(--color-background)',
-        'theme-surface':     'var(--color-surface)',
-        'theme-raised':      'var(--color-surface-raised)',
-        'theme-border':      'var(--color-border)',
-        'theme-text':        'var(--color-text)',
-        'theme-muted':       'var(--color-text-muted)',
-        'theme-subtle':      'var(--color-text-subtle)',
+        'theme-primary': 'var(--color-primary)',
+        'theme-primary-fg': 'var(--color-primary-foreground)',
+        'theme-accent': 'var(--color-accent)',
+        'theme-highlight': 'var(--color-highlight)',
+        'theme-bg': 'var(--color-background)',
+        'theme-surface': 'var(--color-surface)',
+        'theme-raised': 'var(--color-surface-raised)',
+        'theme-border': 'var(--color-border)',
+        'theme-text': 'var(--color-text)',
+        'theme-muted': 'var(--color-text-muted)',
+        'theme-subtle': 'var(--color-text-subtle)',
 
         /* ── Brand Plum ── */
-        'plum': {
-          50:  '#F5EBF4',
+        plum: {
+          50: '#F5EBF4',
           100: '#E3CBE1',
           200: '#C99BC6',
           300: '#AE6BAB',
@@ -40,8 +40,8 @@ const config: Config = {
         },
 
         /* ── Brand Gold ── */
-        'gold': {
-          50:  '#FBF6E8',
+        gold: {
+          50: '#FBF6E8',
           100: '#F3E5B8',
           200: '#EBD388',
           300: '#E3C158',
@@ -56,7 +56,7 @@ const config: Config = {
 
         /* ── Brand Rose ── */
         'rose-brand': {
-          50:  '#FBF1F4',
+          50: '#FBF1F4',
           100: '#F3D8E2',
           200: '#EAC5D1',
           300: '#DDA8BB',
@@ -70,8 +70,8 @@ const config: Config = {
         },
 
         /* ── Brand Navy ── */
-        'navy': {
-          50:  '#ECEFF2',
+        navy: {
+          50: '#ECEFF2',
           100: '#D2D8DE',
           200: '#B5BFC9',
           300: '#8D9BA8',
@@ -85,12 +85,12 @@ const config: Config = {
         },
 
         /* ── Ivory ── */
-        'ivory':      '#FAF7F2',
+        ivory: '#FAF7F2',
         'ivory-soft': '#F4EFE6',
 
         /* ── UI Gray ── */
         'ui-gray': {
-          50:  '#F7F4F0',
+          50: '#F7F4F0',
           100: '#F0EBE5',
           200: '#E7E2DC',
           300: '#D4CCBF',
@@ -104,30 +104,39 @@ const config: Config = {
       },
 
       fontFamily: {
-        display: ['var(--font-display)', 'Georgia', 'serif'],
-        sans:    ['var(--font-body)', 'Vazirmatn', 'system-ui', 'sans-serif'],
-        mono:    ['var(--font-mono)', 'monospace'],
-        /* Explicit families for when needed without CSS vars */
-        playfair:   ['"Playfair Display"', 'Georgia', 'serif'],
-        cormorant:  ['"Cormorant Garamond"', 'Georgia', 'serif'],
-        vazirmatn:  ['Vazirmatn', 'system-ui', 'sans-serif'],
-        inter:      ['Inter', 'system-ui', 'sans-serif'],
-        estedad:    ['Estedad', 'system-ui', 'sans-serif'],
+        display: ['var(--font-sans)', 'Vazirmatn', 'Tahoma', 'sans-serif'],
+        sans: ['var(--font-sans)', 'Vazirmatn', 'Tahoma', 'sans-serif'],
+        mono: ['var(--font-mono)', 'monospace'],
+        vazirmatn: ['Vazirmatn', 'Noto Sans Arabic', 'Tahoma', 'sans-serif'],
       },
 
       fontSize: {
-        /* Editorial type scale */
-        'display-2xl': ['4.5rem',  { lineHeight: '1.05', letterSpacing: '-0.04em' }],
-        'display-xl':  ['3.5rem',  { lineHeight: '1.1',  letterSpacing: '-0.03em' }],
-        'display-lg':  ['2.5rem',  { lineHeight: '1.15', letterSpacing: '-0.02em' }],
-        'display-md':  ['2rem',    { lineHeight: '1.2',  letterSpacing: '-0.015em' }],
-        'h1':          ['1.875rem',{ lineHeight: '1.25' }],
-        'h2':          ['1.5rem',  { lineHeight: '1.3' }],
-        'h3':          ['1.25rem', { lineHeight: '1.4' }],
-        'body-lg':     ['1.125rem',{ lineHeight: '1.7' }],
-        'body':        ['1rem',    { lineHeight: '1.7' }],
-        'body-sm':     ['0.875rem',{ lineHeight: '1.6' }],
-        'caption':     ['0.75rem', { lineHeight: '1.5', letterSpacing: '0.05em' }],
+        xs: ['12px', { lineHeight: '20px' }],
+        sm: ['14px', { lineHeight: '24px' }],
+        base: ['16px', { lineHeight: '28px' }],
+        lg: ['18px', { lineHeight: '28px' }],
+        xl: ['20px', { lineHeight: '32px' }],
+        '2xl': ['24px', { lineHeight: '36px' }],
+        '3xl': ['28px', { lineHeight: '40px' }],
+        '4xl': ['32px', { lineHeight: '44px' }],
+        '5xl': ['32px', { lineHeight: '44px' }],
+        '6xl': ['32px', { lineHeight: '44px' }],
+        'display-2xl': ['32px', { lineHeight: '44px' }],
+        'display-xl': ['32px', { lineHeight: '44px' }],
+        'display-lg': ['32px', { lineHeight: '44px' }],
+        'display-md': ['28px', { lineHeight: '40px' }],
+        h1: ['28px', { lineHeight: '40px' }],
+        h2: ['24px', { lineHeight: '36px' }],
+        h3: ['20px', { lineHeight: '32px' }],
+        h4: ['18px', { lineHeight: '28px' }],
+        'body-lg': ['16px', { lineHeight: '28px' }],
+        body: ['14px', { lineHeight: '24px' }],
+        'body-sm': ['13px', { lineHeight: '22px' }],
+        label: ['13px', { lineHeight: '20px' }],
+        button: ['14px', { lineHeight: '22px' }],
+        caption: ['12px', { lineHeight: '20px' }],
+        price: ['18px', { lineHeight: '28px' }],
+        metric: ['24px', { lineHeight: '32px' }],
       },
 
       spacing: {
@@ -144,21 +153,21 @@ const config: Config = {
       },
 
       maxWidth: {
-        'editorial': '1320px',
-        'content':   '860px',
-        'narrow':    '640px',
+        editorial: '1320px',
+        content: '860px',
+        narrow: '640px',
       },
 
       borderRadius: {
-        'sm':   'var(--radius-sm)',
-        'md':   'var(--radius-md)',
-        'lg':   'var(--radius-lg)',
-        'xl':   'var(--radius-xl)',
-        '2xl':  'var(--radius-2xl)',
+        sm: 'var(--radius-sm)',
+        md: 'var(--radius-md)',
+        lg: 'var(--radius-lg)',
+        xl: 'var(--radius-xl)',
+        '2xl': 'var(--radius-2xl)',
       },
 
       transitionTimingFunction: {
-        'editorial': 'cubic-bezier(0.22, 1, 0.36, 1)',
+        editorial: 'cubic-bezier(0.22, 1, 0.36, 1)',
       },
 
       transitionDuration: {
@@ -170,28 +179,28 @@ const config: Config = {
 
       keyframes: {
         'fade-up': {
-          '0%':   { opacity: '0', transform: 'translateY(40px)' },
+          '0%': { opacity: '0', transform: 'translateY(40px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         'clip-reveal': {
-          '0%':   { clipPath: 'inset(0 100% 0 0)' },
+          '0%': { clipPath: 'inset(0 100% 0 0)' },
           '100%': { clipPath: 'inset(0 0% 0 0)' },
         },
         'scale-in': {
-          '0%':   { opacity: '0', transform: 'scale(0.96)' },
+          '0%': { opacity: '0', transform: 'scale(0.96)' },
           '100%': { opacity: '1', transform: 'scale(1)' },
         },
         'gold-underline': {
-          '0%':   { width: '0%' },
+          '0%': { width: '0%' },
           '100%': { width: '100%' },
         },
       },
 
       animation: {
-        'fade-up':       'fade-up 600ms cubic-bezier(0.22, 1, 0.36, 1) forwards',
-        'clip-reveal':   'clip-reveal 800ms ease-in-out forwards',
-        'scale-in':      'scale-in 300ms ease-out forwards',
-        'gold-underline':'gold-underline 600ms ease-out forwards',
+        'fade-up': 'fade-up 600ms cubic-bezier(0.22, 1, 0.36, 1) forwards',
+        'clip-reveal': 'clip-reveal 800ms ease-in-out forwards',
+        'scale-in': 'scale-in 300ms ease-out forwards',
+        'gold-underline': 'gold-underline 600ms ease-out forwards',
       },
 
       backgroundImage: {
