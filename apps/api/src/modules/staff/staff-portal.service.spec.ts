@@ -33,9 +33,7 @@ const membership = {
 
 function createPrismaMock() {
   const tx = {
-    booking: { update: jest.fn() },
-    notification: { create: jest.fn() },
-    workingHour: { upsert: jest.fn() },
+    workingHour: { deleteMany: jest.fn(), createMany: jest.fn() },
   };
   return {
     staffProfile: {
@@ -43,13 +41,14 @@ function createPrismaMock() {
       findMany: jest.fn(),
       update: jest.fn(),
     },
-    booking: { findFirst: jest.fn(), findMany: jest.fn() },
+    booking: { findFirst: jest.fn(), findMany: jest.fn(), update: jest.fn() },
     notification: {
       count: jest.fn(),
       findMany: jest.fn(),
       findFirst: jest.fn(),
       update: jest.fn(),
       updateMany: jest.fn(),
+      create: jest.fn(),
     },
     staffSettlement: { findFirst: jest.fn(), findMany: jest.fn() },
     timeOff: { findFirst: jest.fn(), findMany: jest.fn(), create: jest.fn(), delete: jest.fn() },
@@ -145,7 +144,7 @@ describe('StaffPortalService', () => {
       startsAt: new Date(Date.now() - 60_000),
       salon: { name: 'سالن نمونه' },
     });
-    prisma.tx.booking.update.mockResolvedValue({
+    prisma.booking.update.mockResolvedValue({
       id: 'booking-1',
       status: BookingStatus.IN_PROGRESS,
     });
@@ -156,16 +155,38 @@ describe('StaffPortalService', () => {
       status: BookingStatus.IN_PROGRESS,
     });
 
-    expect(prisma.tx.booking.update).toHaveBeenCalledWith(
+    expect(prisma.booking.update).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({ status: BookingStatus.IN_PROGRESS }),
       }),
     );
-    expect(prisma.tx.notification.create).toHaveBeenCalledWith(
+    expect(prisma.notification.create).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({ userId: 'customer-1', bookingId: 'booking-1' }),
       }),
     );
+  });
+
+  it('اختلال اعلان، تغییر وضعیت اصلی نوبت را برنمی‌گرداند', async () => {
+    const prisma = createPrismaMock();
+    prisma.booking.findFirst.mockResolvedValue({
+      id: 'booking-1',
+      status: BookingStatus.CONFIRMED,
+      customerId: 'customer-1',
+      salonId: 'salon-1',
+      startsAt: new Date(Date.now() - 60_000),
+      salon: { name: 'سالن نمونه' },
+    });
+    prisma.booking.update.mockResolvedValue({ id: 'booking-1', status: BookingStatus.IN_PROGRESS });
+    prisma.notification.create.mockRejectedValue(new Error('temporary notification outage'));
+    const service = new StaffPortalService(prisma as any);
+
+    await expect(
+      service.updateBookingStatus('user-1', 'booking-1', {
+        salonId: 'salon-1',
+        status: BookingStatus.IN_PROGRESS,
+      }),
+    ).resolves.toEqual(expect.objectContaining({ status: BookingStatus.IN_PROGRESS }));
   });
 
   it('مرخصی هم‌زمان با نوبت فعال را ثبت نمی‌کند', async () => {

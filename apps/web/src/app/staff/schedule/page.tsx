@@ -9,6 +9,7 @@ import {
   useStaffSchedule,
   useUpdateStaffSchedule,
 } from '@/lib/api-hooks';
+import { getApiErrorMessage } from '@/lib/api';
 import { formatTime, toJalali } from '@/lib/utils';
 import { useStaffPortal } from '@/components/staff/staff-shell';
 import { EmptyState, StaffPageHeader, StaffPageLoading } from '@/components/staff/staff-ui';
@@ -75,8 +76,8 @@ export default function StaffSchedulePage() {
         })),
       );
       toast.success('برنامه هفتگی ذخیره شد');
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'ذخیره برنامه انجام نشد');
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, 'ذخیره برنامه انجام نشد'));
     }
   };
 
@@ -87,13 +88,13 @@ export default function StaffSchedulePage() {
       await createTimeOff.mutateAsync({
         startsAt: new Date(timeOff.startsAt).toISOString(),
         endsAt: new Date(timeOff.endsAt).toISOString(),
-        reason: timeOff.reason,
+        reason: timeOff.reason.trim() || undefined,
       });
       setTimeOff({ startsAt: '', endsAt: '', reason: '' });
       setShowTimeOff(false);
       toast.success('زمان مسدود ثبت شد');
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'ثبت زمان مسدود انجام نشد');
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, 'ثبت زمان مسدود انجام نشد'));
     }
   };
 
@@ -102,8 +103,8 @@ export default function StaffSchedulePage() {
     try {
       await deleteTimeOff.mutateAsync(id);
       toast.success('زمان مسدود حذف شد');
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'حذف زمان مسدود انجام نشد');
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, 'حذف زمان مسدود انجام نشد'));
     }
   };
 

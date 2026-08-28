@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { CalendarDays, CheckCircle2, Clock3, Coins, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import { useStaffDashboard, useUpdateStaffBookingStatus } from '@/lib/api-hooks';
+import { getApiErrorMessage } from '@/lib/api';
 import { formatPrice, iranDateInput, toJalali } from '@/lib/utils';
 import { useStaffPortal } from '@/components/staff/staff-shell';
 import {
@@ -25,8 +26,8 @@ export default function StaffTodayPage() {
     try {
       await updateStatus.mutateAsync({ bookingId, status });
       toast.success('وضعیت نوبت به‌روزرسانی شد');
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'تغییر وضعیت انجام نشد');
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, 'تغییر وضعیت انجام نشد'));
     }
   };
 

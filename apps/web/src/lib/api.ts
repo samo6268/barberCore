@@ -85,3 +85,11 @@ export type ApiResponse<T> = {
     totalPages: number;
   };
 };
+
+export function getApiErrorMessage(error: unknown, fallback: string) {
+  const response = (error as AxiosError<{ message?: string | string[]; errors?: string[] }>)
+    .response?.data;
+  const details = response?.errors ?? response?.message;
+  if (Array.isArray(details) && details.length) return details.join('، ');
+  return typeof details === 'string' && details.trim() ? details : fallback;
+}

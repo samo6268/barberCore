@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BookingStatus, DayOfWeek } from '@prisma/client';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   ArrayMaxSize,
   ArrayUnique,
@@ -109,6 +109,9 @@ export class CreateStaffTimeOffDto extends StaffContextDto {
   endsAt: string;
 
   @ApiPropertyOptional()
+  @Transform(({ value }) =>
+    typeof value === 'string' && value.trim().length === 0 ? undefined : value,
+  )
   @IsOptional()
   @IsString()
   @Length(2, 200)

@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { Filter } from 'lucide-react';
 import { toast } from 'sonner';
 import { useStaffBookings, useUpdateStaffBookingStatus } from '@/lib/api-hooks';
+import { getApiErrorMessage } from '@/lib/api';
 import { iranDateInput, toJalali } from '@/lib/utils';
 import { useStaffPortal } from '@/components/staff/staff-shell';
 import {
@@ -40,8 +41,8 @@ export default function StaffCalendarPage() {
     try {
       await updateStatus.mutateAsync({ bookingId, status: nextStatus });
       toast.success('وضعیت نوبت به‌روزرسانی شد');
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'تغییر وضعیت انجام نشد');
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, 'تغییر وضعیت انجام نشد'));
     }
   };
 

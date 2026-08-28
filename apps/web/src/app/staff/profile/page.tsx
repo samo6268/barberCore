@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { BadgeCheck, BriefcaseBusiness, Save, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { useStaffProfile, useUpdateStaffProfile } from '@/lib/api-hooks';
+import { getApiErrorMessage } from '@/lib/api';
 import { formatPrice } from '@/lib/utils';
 import { useStaffPortal } from '@/components/staff/staff-shell';
 import { StaffPageHeader, StaffPageLoading } from '@/components/staff/staff-ui';
@@ -35,8 +36,8 @@ export default function StaffProfilePage() {
           .filter(Boolean),
       });
       toast.success('پروفایل حرفه‌ای ذخیره شد');
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'ذخیره پروفایل انجام نشد');
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, 'ذخیره پروفایل انجام نشد'));
     }
   };
 

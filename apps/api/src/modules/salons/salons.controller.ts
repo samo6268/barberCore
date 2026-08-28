@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserRole } from '@prisma/client';
 import { SalonsService } from './salons.service';
@@ -29,6 +29,13 @@ export class SalonsController {
     return this.service.findMine(user.sub);
   }
 
+  @Get(':id/overview')
+  @Roles(UserRole.SALON_OWNER, UserRole.SUPER_ADMIN)
+  @ApiOperation({ summary: 'نمای عملیاتی و مدیریتی سالن' })
+  overview(@Param('id') id: string, @CurrentUser() user: JwtPayload, @Query('date') date?: string) {
+    return this.service.overview(id, user.sub, date);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'جزئیات سالن' })
   findOne(@Param('id') id: string) {
@@ -45,14 +52,22 @@ export class SalonsController {
   @Put(':id/working-hours')
   @Roles(UserRole.SALON_OWNER, UserRole.SUPER_ADMIN)
   @ApiOperation({ summary: 'تنظیم ساعات کاری' })
-  updateWorkingHours(@Param('id') id: string, @CurrentUser() user: JwtPayload, @Body() hours: WorkingHourDto[]) {
+  updateWorkingHours(
+    @Param('id') id: string,
+    @CurrentUser() user: JwtPayload,
+    @Body() hours: WorkingHourDto[],
+  ) {
     return this.service.updateWorkingHours(id, user.sub, hours);
   }
 
   @Patch(':id/onboarding/:step')
   @Roles(UserRole.SALON_OWNER, UserRole.SUPER_ADMIN)
   @ApiOperation({ summary: 'بروزرسانی مرحله راه‌اندازی' })
-  onboardingStep(@Param('id') id: string, @Param('step') step: number, @CurrentUser() user: JwtPayload) {
+  onboardingStep(
+    @Param('id') id: string,
+    @Param('step') step: number,
+    @CurrentUser() user: JwtPayload,
+  ) {
     return this.service.updateOnboardingStep(id, user.sub, Number(step));
   }
 }

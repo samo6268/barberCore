@@ -66,6 +66,7 @@ export function BookingCard({
   onStatus: (bookingId: string, status: string) => void;
   pending?: boolean;
 }) {
+  const noShowAvailable = new Date(booking.startsAt).getTime() <= Date.now();
   const services = booking.items
     ?.map((item: any) => item.service?.name)
     .filter(Boolean)
@@ -141,9 +142,10 @@ export function BookingCard({
               />
               <ActionButton
                 icon={UserX}
-                label="عدم مراجعه"
+                label={noShowAvailable ? 'عدم مراجعه' : 'عدم مراجعه (پس از موعد)'}
                 onClick={() => onStatus(booking.id, 'NO_SHOW')}
-                disabled={pending}
+                disabled={pending || !noShowAvailable}
+                title={noShowAvailable ? undefined : 'این عملیات پس از رسیدن زمان نوبت فعال می‌شود'}
               />
             </>
           )}
@@ -173,17 +175,20 @@ function ActionButton({
   onClick,
   disabled,
   primary = false,
+  title,
 }: {
   icon: typeof Check;
   label: string;
   onClick: () => void;
   disabled: boolean;
   primary?: boolean;
+  title?: string;
 }) {
   return (
     <button
       onClick={onClick}
       disabled={disabled}
+      title={title}
       className="flex items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-semibold disabled:opacity-50"
       style={{
         color: primary ? 'white' : 'var(--brand-navy-500)',

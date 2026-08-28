@@ -190,6 +190,17 @@ export const useMySalons = () =>
     retry: false,
   });
 
+export const useSalonOverview = (salonId: string, date?: string) =>
+  useQuery({
+    queryKey: ['salon-overview', salonId, date],
+    queryFn: () =>
+      api
+        .get(`/salons/${salonId}/overview`, { params: date ? { date } : {} })
+        .then((r) => r.data.data),
+    enabled: !!salonId,
+    retry: false,
+  });
+
 export const useSalonSubscription = (salonId: string) =>
   useQuery({
     queryKey: ['salon-subscription', salonId],

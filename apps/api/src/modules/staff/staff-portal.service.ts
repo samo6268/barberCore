@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { BookingStatus, Prisma, StaffCompensationType } from '@prisma/client';
@@ -29,6 +30,8 @@ const STAFF_STATUS_TRANSITIONS: Partial<Record<BookingStatus, BookingStatus[]>> 
 
 @Injectable()
 export class StaffPortalService {
+  private readonly logger = new Logger(StaffPortalService.name);
+
   constructor(private readonly prisma: PrismaService) {}
 
   async memberships(userId: string) {
@@ -175,17 +178,20 @@ export class StaffPortalService {
       [BookingStatus.NO_SHOW]: 'عدم مراجعه ثبت شد',
     };
 
-    return this.prisma.$transaction(async (tx) => {
-      const updated = await tx.booking.update({
-        where: { id: booking.id },
-        data: {
-          status: dto.status,
-          ...(dto.status === BookingStatus.CONFIRMED ? { confirmedAt: new Date() } : {}),
-          ...(dto.status === BookingStatus.COMPLETED ? { completedAt: new Date() } : {}),
-        },
-        include: this.bookingInclude,
-      });
-      await tx.notification.create({
+    const updated = await this.prisma.booking.update({
+      where: { id: booking.id },
+      data: {
+        status: dto.status,
+        ...(dto.status === BookingStatus.CONFIRMED ? { confirmedAt: new Date() } : {}),
+        ...(dto.status === BookingStatus.COMPLETED ? { completedAt: new Date() } : {}),
+      },
+      include: this.bookingInclude,
+    });
+
+    // Notification delivery is secondary: a transient notification failure must
+    // never roll back the staff member's operational action.
+    try {
+      await this.prisma.notification.create({
         data: {
           userId: booking.customerId,
           salonId: booking.salonId,
@@ -198,8 +204,12 @@ export class StaffPortalService {
           metadata: { bookingStatus: dto.status, actor: 'staff' },
         },
       });
-      return updated;
-    });
+    } catch (error) {
+      this.logger.warn(
+        `Booking ${booking.id} changed to ${dto.status}, but notification creation failed: ${this.errorMessage(error)}`,
+      );
+    }
+    return updated;
   }
 
   async schedule(userId: string, salonId: string) {
@@ -231,34 +241,21 @@ export class StaffPortalService {
     for (const day of dto.days) this.validateWorkingDay(day);
 
     await this.prisma.$transaction(async (tx) => {
-      for (const day of dto.days) {
-        await tx.workingHour.upsert({
-          where: {
-            salonId_staffId_dayOfWeek: {
-              salonId: dto.salonId,
-              staffId: staff.id,
-              dayOfWeek: day.dayOfWeek,
-            },
-          },
-          update: {
-            isOpen: day.isOpen,
-            openTime: day.openTime,
-            closeTime: day.closeTime,
-            breakStart: day.isOpen ? day.breakStart || null : null,
-            breakEnd: day.isOpen ? day.breakEnd || null : null,
-          },
-          create: {
-            salonId: dto.salonId,
-            staffId: staff.id,
-            dayOfWeek: day.dayOfWeek,
-            isOpen: day.isOpen,
-            openTime: day.openTime,
-            closeTime: day.closeTime,
-            breakStart: day.isOpen ? day.breakStart || null : null,
-            breakEnd: day.isOpen ? day.breakEnd || null : null,
-          },
-        });
-      }
+      await tx.workingHour.deleteMany({
+        where: { salonId: dto.salonId, staffId: staff.id },
+      });
+      await tx.workingHour.createMany({
+        data: dto.days.map((day) => ({
+          salonId: dto.salonId,
+          staffId: staff.id,
+          dayOfWeek: day.dayOfWeek,
+          isOpen: day.isOpen,
+          openTime: day.openTime,
+          closeTime: day.closeTime,
+          breakStart: day.isOpen ? day.breakStart || null : null,
+          breakEnd: day.isOpen ? day.breakEnd || null : null,
+        })),
+      });
     });
     return this.schedule(userId, dto.salonId);
   }
@@ -534,6 +531,10 @@ export class StaffPortalService {
     const get = (type: Intl.DateTimeFormatPartTypes) =>
       parts.find((part) => part.type === type)?.value;
     return `${get('year')}-${get('month')}-${get('day')}`;
+  }
+
+  private errorMessage(error: unknown) {
+    return error instanceof Error ? error.message : String(error);
   }
 
   private readonly bookingInclude = {
