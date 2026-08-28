@@ -4,17 +4,20 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import type { LucideIcon } from 'lucide-react';
 import {
   ArrowLeft,
   BadgeCheck,
-  CalendarDays,
-  CheckCircle2,
+  CalendarCheck2,
+  Check,
   Clock3,
-  GraduationCap,
-  Heart,
+  Crown,
+  Hand,
+  Leaf,
   MapPin,
   Palette,
   Search,
+  Scissors,
   ShieldCheck,
   Sparkles,
   Star,
@@ -22,48 +25,104 @@ import {
   UserRound,
 } from 'lucide-react';
 import { useSearchSalons } from '@/lib/api-hooks';
-import { SALON_IMAGES } from '@/lib/images';
+
+type GenderFilter = 'FEMALE' | 'MALE' | 'UNISEX';
 
 type FeaturedSalon = {
   id: string;
   slug: string;
   name: string;
-  city: string;
+  city?: string | null;
   rating: number;
-  genderType?: 'FEMALE' | 'MALE' | 'UNISEX';
+  reviewCount?: number;
+  genderType?: GenderFilter;
   coverImageUrl?: string | null;
+  isVerified?: boolean;
 };
 
-const SERVICES = [
-  { name: 'کوتاهی و استایل مو', query: 'کوتاهی', icon: '✂' },
-  { name: 'رنگ و لایت', query: 'رنگ مو', icon: '◐' },
-  { name: 'میکاپ', query: 'میکاپ', icon: '✦' },
-  { name: 'ناخن', query: 'ناخن', icon: '⌁' },
-  { name: 'پوست و زیبایی', query: 'پوست', icon: '○' },
-  { name: 'اصلاح و گریم', query: 'اصلاح', icon: '◇' },
+type ServiceItem = {
+  name: string;
+  hint: string;
+  query: string;
+  icon: LucideIcon;
+  tone: string;
+  iconTone: string;
+};
+
+const CITIES = ['تهران', 'کرج', 'مشهد', 'اصفهان', 'شیراز', 'تبریز'];
+
+const SERVICES: ServiceItem[] = [
+  {
+    name: 'کوتاهی و استایل',
+    hint: 'کوپ، براشینگ و استایل مو',
+    query: 'کوتاهی',
+    icon: Scissors,
+    tone: 'bg-[#f6e9e4]',
+    iconTone: 'bg-[#9a6355] text-white',
+  },
+  {
+    name: 'رنگ و احیای مو',
+    hint: 'رنگ، لایت، کراتین و احیا',
+    query: 'رنگ مو',
+    icon: Palette,
+    tone: 'bg-[#eee8f0]',
+    iconTone: 'bg-[#745b78] text-white',
+  },
+  {
+    name: 'ناخن',
+    hint: 'کاشت، ترمیم، ژلیش و پدیکور',
+    query: 'ناخن',
+    icon: Hand,
+    tone: 'bg-[#f8eee5]',
+    iconTone: 'bg-[#b07862] text-white',
+  },
+  {
+    name: 'میکاپ و عروس',
+    hint: 'میکاپ، شینیون و خدمات عروس',
+    query: 'میکاپ',
+    icon: Crown,
+    tone: 'bg-[#f5eddb]',
+    iconTone: 'bg-[#9a783f] text-white',
+  },
+  {
+    name: 'پوست و فیشال',
+    hint: 'پاکسازی و مراقبت تخصصی پوست',
+    query: 'پوست',
+    icon: Leaf,
+    tone: 'bg-[#e9f1e9]',
+    iconTone: 'bg-[#627b63] text-white',
+  },
+  {
+    name: 'اصلاح آقایان',
+    hint: 'مو، ریش و گریم حرفه‌ای',
+    query: 'اصلاح',
+    icon: UserRound,
+    tone: 'bg-[#e9edef]',
+    iconTone: 'bg-[#44555d] text-white',
+  },
 ];
 
-const TREND_CARDS = [
+const DISCOVERY_CARDS = [
   {
-    title: 'رنگ‌های گرم و طبیعی',
-    subtitle: 'ترند این فصل',
-    image: SALON_IMAGES[5],
-    href: '/salons?service=رنگ مو',
-    tone: '#6b3f50',
+    title: 'انتخاب‌های محبوب بانوان',
+    description: 'از رنگ و ناخن تا میکاپ؛ سالن مناسب سلیقه‌ات را پیدا کن.',
+    href: '/salons?gender=FEMALE',
+    image: '/images/home/salon-women.webp',
+    tag: 'سالن‌های بانوان',
   },
   {
-    title: 'استایل تازه برای آقایان',
-    subtitle: 'انتخاب حرفه‌ای',
-    image: SALON_IMAGES[1],
+    title: 'استایل حرفه‌ای آقایان',
+    description: 'آرایشگرهای منتخب را مقایسه کن و زمان خالی‌شان را ببین.',
     href: '/salons?gender=MALE',
-    tone: '#253342',
+    image: '/images/home/salon-men.webp',
+    tag: 'پیرایش آقایان',
   },
   {
-    title: 'مراقبت، فراتر از زیبایی',
-    subtitle: 'وقت رسیدگی به خودت',
-    image: SALON_IMAGES[6],
+    title: 'زمانی برای رسیدگی به خودت',
+    description: 'فضاهای آرام و متخصصان مراقبت پوست را یک‌جا کشف کن.',
     href: '/salons?service=پوست',
-    tone: '#765f50',
+    image: '/images/home/salon-skin.webp',
+    tag: 'پوست و مراقبت',
   },
 ];
 
@@ -71,12 +130,12 @@ export default function HomePage() {
   return (
     <main data-typography="marketplace" className="overflow-hidden bg-[#fffdf9]">
       <Hero />
-      <TrustBar />
+      <TrustRail />
       <ServiceDiscovery />
       <FeaturedSalons />
-      <TrendSection />
-      <ValueSection />
-      <EcosystemSection />
+      <DiscoverySection />
+      <BookingSteps />
+      <SalonOwnerCallout />
       <FinalCallout />
     </main>
   );
@@ -86,99 +145,156 @@ function Hero() {
   const router = useRouter();
   const [service, setService] = useState('');
   const [city, setCity] = useState('');
+  const [gender, setGender] = useState<GenderFilter>('FEMALE');
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
     const params = new URLSearchParams();
     if (service.trim()) params.set('service', service.trim());
     if (city.trim()) params.set('city', city.trim());
-    router.push(`/salons${params.size ? `?${params.toString()}` : ''}`);
+    if (gender !== 'UNISEX') params.set('gender', gender);
+    router.push(`/salons?${params.toString()}`);
   };
 
   return (
-    <section className="relative min-h-[760px] pt-20 lg:min-h-[820px]">
-      <Image
-        src="/images/hero/parnegarin-home-v2.webp"
-        alt="تجربه خدمات زیبایی و آرایشگری در پرنگارین"
-        fill
-        priority
-        sizes="100vw"
-        className="object-cover object-[42%_center]"
-      />
-      <div className="absolute inset-0 bg-gradient-to-l from-[#211c19]/95 via-[#352b26]/70 to-[#1b1715]/5" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#1c1816]/55 via-transparent to-[#1c1816]/10" />
-
-      <div className="container-editorial relative z-10 flex min-h-[680px] items-center py-16 lg:min-h-[740px]">
-        <div className="w-full max-w-[710px] text-white">
-          <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs backdrop-blur-md">
-            <Sparkles size={14} className="text-[#e9c98a]" />
-            ساده‌ترین راه برای پیدا کردن یک تجربه خوب
+    <section className="relative pt-20">
+      <div className="absolute inset-x-0 top-20 h-[36rem] bg-[radial-gradient(circle_at_12%_15%,rgba(196,154,60,0.12),transparent_33%),radial-gradient(circle_at_88%_35%,rgba(154,99,85,0.12),transparent_35%)]" />
+      <div className="container-editorial relative grid min-h-[690px] items-center gap-12 py-14 lg:grid-cols-[1fr_0.92fr] lg:gap-16 lg:py-20">
+        <div className="relative z-10 max-w-[650px]">
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#eadbd2] bg-white/80 px-3.5 py-2 text-caption font-medium text-[#805448] shadow-sm backdrop-blur">
+            <Sparkles size={14} /> رزرو آنلاین سالن‌ها و متخصصان منتخب
           </div>
-
-          <h1 className="mb-6 max-w-[680px] type-display-lg text-white">
-            زیبایی را
-            <span className="block text-[#ead3a6]">با اطمینان انتخاب کن.</span>
+          <h1 className="type-display-lg text-[#211a1e]">
+            سالن و متخصصی را پیدا کن که
+            <span className="mt-1 block text-[#9a6355]">واقعاً به سلیقه‌ات می‌آید.</span>
           </h1>
-
-          <p className="mb-9 max-w-xl text-base leading-8 text-white/75 sm:text-lg">
-            سالن‌ها و متخصصان برتر را مقایسه کن، زمان‌های خالی را ببین و نوبتت را همان لحظه رزرو کن.
+          <p className="mt-5 max-w-xl type-body-lg text-[#6f666a]">
+            خدمات، نمونه‌کار، امتیاز و زمان‌های خالی را مقایسه کن و بدون تماس تلفنی نوبت بگیر.
           </p>
 
           <form
             onSubmit={submit}
-            className="grid gap-2 rounded-[1.4rem] bg-white p-2.5 shadow-[0_24px_80px_rgba(10,5,10,0.28)] sm:grid-cols-[1fr_0.8fr_auto]"
+            className="mt-8 rounded-[1.5rem] border border-[#e9e0d9] bg-white p-2.5 shadow-[0_22px_60px_rgba(64,42,47,0.11)]"
           >
-            <label className="flex min-w-0 items-center gap-3 rounded-xl px-4 py-3.5 sm:border-l sm:border-[#ece6df]">
-              <Search size={20} className="shrink-0 text-[#8a756d]" />
-              <span className="min-w-0 flex-1">
-                <span className="block text-caption font-medium text-[#9a8c96]">چه خدمتی؟</span>
-                <input
-                  value={service}
-                  onChange={(event) => setService(event.target.value)}
-                  className="mt-0.5 w-full bg-transparent text-sm font-medium text-[#29231f] outline-none placeholder:text-[#756b66]"
-                  placeholder="مثلاً کوتاهی یا رنگ مو"
-                />
-              </span>
-            </label>
-
-            <label className="flex min-w-0 items-center gap-3 rounded-xl border-t border-[#ece6df] px-4 py-3.5 sm:border-0">
-              <MapPin size={20} className="shrink-0 text-[#8a756d]" />
-              <span className="min-w-0 flex-1">
-                <span className="block text-caption font-medium text-[#9a8c96]">کجا؟</span>
-                <input
-                  value={city}
-                  onChange={(event) => setCity(event.target.value)}
-                  className="mt-0.5 w-full bg-transparent text-sm font-medium text-[#29231f] outline-none placeholder:text-[#756b66]"
-                  placeholder="شهر یا محله"
-                />
-              </span>
-            </label>
-
-            <button
-              type="submit"
-              className="flex min-h-14 items-center justify-center gap-2 rounded-xl bg-[#8b5e50] px-7 text-sm font-semibold text-white transition hover:bg-[#6f473c]"
+            <fieldset
+              className="mb-2 flex gap-1 rounded-xl bg-[#f6f2ee] p-1"
+              aria-label="نوع خدمات"
             >
-              جست‌وجو
-              <ArrowLeft size={17} />
-            </button>
+              {(
+                [
+                  ['FEMALE', 'بانوان'],
+                  ['MALE', 'آقایان'],
+                  ['UNISEX', 'همه'],
+                ] as [GenderFilter, string][]
+              ).map(([value, label]) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setGender(value)}
+                  aria-pressed={gender === value}
+                  className={`min-h-10 flex-1 rounded-lg px-3 transition ${gender === value ? 'bg-white text-[#7e5145] shadow-sm' : 'text-[#7d7476] hover:text-[#3a3034]'}`}
+                >
+                  {label}
+                </button>
+              ))}
+            </fieldset>
+            <div className="grid gap-1 sm:grid-cols-[1.2fr_0.85fr_auto]">
+              <label className="flex min-w-0 items-center gap-3 rounded-xl px-3.5 py-3 sm:border-l sm:border-[#eee7e2]">
+                <Search size={20} className="shrink-0 text-[#9a6355]" />
+                <span className="min-w-0 flex-1">
+                  <span className="block text-caption text-[#92888c]">چه خدمتی می‌خواهی؟</span>
+                  <input
+                    value={service}
+                    onChange={(event) => setService(event.target.value)}
+                    list="home-services"
+                    className="mt-0.5 w-full bg-transparent font-medium text-[#282024] outline-none placeholder:font-normal placeholder:text-[#8b8385]"
+                    placeholder="مثلاً رنگ مو یا کوتاهی"
+                  />
+                  <datalist id="home-services">
+                    {SERVICES.map((item) => (
+                      <option key={item.query} value={item.query} />
+                    ))}
+                  </datalist>
+                </span>
+              </label>
+              <label className="flex min-w-0 items-center gap-3 rounded-xl border-t border-[#eee7e2] px-3.5 py-3 sm:border-0">
+                <MapPin size={20} className="shrink-0 text-[#9a6355]" />
+                <span className="min-w-0 flex-1">
+                  <span className="block text-caption text-[#92888c]">در کدام شهر؟</span>
+                  <input
+                    value={city}
+                    onChange={(event) => setCity(event.target.value)}
+                    list="home-cities"
+                    className="mt-0.5 w-full bg-transparent font-medium text-[#282024] outline-none"
+                    placeholder="مثلاً تهران"
+                  />
+                  <datalist id="home-cities">
+                    {CITIES.map((item) => (
+                      <option key={item} value={item} />
+                    ))}
+                  </datalist>
+                </span>
+              </label>
+              <button
+                type="submit"
+                className="flex min-h-14 items-center justify-center gap-2 rounded-xl bg-[#8f594d] px-6 text-white transition hover:-translate-y-0.5 hover:bg-[#75463c] sm:min-w-32"
+              >
+                پیدا کن <ArrowLeft size={17} />
+              </button>
+            </div>
           </form>
 
-          <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3 text-xs text-white/70">
-            <span className="text-white/45">جست‌وجوی محبوب:</span>
+          <div className="mt-5 flex flex-wrap items-center gap-2">
+            <span className="ml-1 text-caption text-[#8d8387]">پرطرفدار:</span>
             {[
-              ['کوتاهی مو', 'کوتاهی'],
-              ['رنگ و لایت', 'رنگ مو'],
-              ['میکاپ', 'میکاپ'],
-              ['اصلاح آقایان', 'اصلاح'],
-            ].map(([label, query]) => (
-              <Link
-                key={label}
-                href={`/salons?service=${encodeURIComponent(query)}`}
-                className="border-b border-white/25 pb-0.5 transition hover:border-[#ead3a6] hover:text-[#ead3a6]"
+              { label: 'رنگ و لایت', query: 'رنگ مو' },
+              { label: 'کاشت ناخن', query: 'ناخن' },
+              { label: 'فیشال', query: 'پوست' },
+              { label: 'اصلاح آقایان', query: 'اصلاح', gender: 'MALE' as GenderFilter },
+            ].map((item) => (
+              <button
+                key={item.label}
+                type="button"
+                onClick={() => {
+                  setService(item.query);
+                  if (item.gender) setGender(item.gender);
+                }}
+                className="rounded-full border border-[#e7ddd7] bg-white px-3 py-1.5 text-caption text-[#665d60] transition hover:border-[#cfaea2] hover:text-[#8f594d]"
               >
-                {label}
-              </Link>
+                {item.label}
+              </button>
             ))}
+          </div>
+        </div>
+
+        <div className="relative mx-auto w-full max-w-[590px] lg:mx-0">
+          <div className="absolute -inset-5 rounded-[2.6rem] border border-[#e9ded4]" />
+          <div className="relative aspect-[4/4.6] overflow-hidden rounded-[2rem] bg-[#e9dfd5] shadow-[0_30px_90px_rgba(60,39,43,0.18)] sm:aspect-[5/4.2] lg:aspect-[4/4.7]">
+            <Image
+              src="/images/home/hero-salon-v3.webp"
+              alt="تجربه حرفه‌ای خدمات زیبایی در سالن منتخب پرنگارین"
+              fill
+              priority
+              sizes="(max-width: 1024px) 100vw, 46vw"
+              className="object-cover object-[58%_center]"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#20191a]/30 via-transparent to-white/5" />
+          </div>
+          <div className="absolute -right-3 top-8 flex items-center gap-3 rounded-2xl border border-white/60 bg-white/90 px-4 py-3 shadow-[0_12px_35px_rgba(48,35,38,0.14)] backdrop-blur sm:-right-7">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e8f1e9] text-[#58725b]">
+              <BadgeCheck size={20} />
+            </span>
+            <span>
+              <strong className="block text-label text-[#2a2326]">انتخاب شفاف</strong>
+              <span className="text-caption text-[#7e7578]">پروفایل و امتیاز کاربران</span>
+            </span>
+          </div>
+          <div className="absolute -bottom-5 left-3 flex items-center gap-3 rounded-2xl border border-white/60 bg-[#2d383c]/95 px-4 py-3 text-white shadow-[0_14px_40px_rgba(34,43,46,0.24)] backdrop-blur sm:-left-7 sm:px-5">
+            <CalendarCheck2 size={21} className="text-[#e7c98d]" />
+            <span>
+              <strong className="block text-label text-white">نوبت آنلاین</strong>
+              <span className="text-caption text-white/60">بدون تماس و هماهنگی طولانی</span>
+            </span>
           </div>
         </div>
       </div>
@@ -186,24 +302,24 @@ function Hero() {
   );
 }
 
-function TrustBar() {
+function TrustRail() {
   const items = [
-    { icon: BadgeCheck, title: 'متخصصان تأییدشده', text: 'انتخاب با اطلاعات شفاف' },
-    { icon: CalendarDays, title: 'رزرو آنلاین و فوری', text: 'بدون تماس و انتظار' },
-    { icon: ShieldCheck, title: 'انتخاب مطمئن', text: 'امتیاز و تجربه کاربران' },
+    { icon: BadgeCheck, title: 'سالن‌های تأییدشده', text: 'اطلاعات روشن و قابل مقایسه' },
+    { icon: Star, title: 'نظر کاربران واقعی', text: 'انتخاب بر پایه تجربه دیگران' },
+    { icon: CalendarCheck2, title: 'رزرو بدون تماس', text: 'انتخاب خدمت، متخصص و ساعت' },
+    { icon: ShieldCheck, title: 'همراهی تا روز نوبت', text: 'مشاهده و مدیریت رزروها' },
   ];
-
   return (
-    <section className="border-b border-[#ebe5df] bg-white">
-      <div className="container-editorial grid divide-y divide-[#ebe5df] md:grid-cols-3 md:divide-x md:divide-x-reverse md:divide-y-0">
+    <section className="border-y border-[#eee7e1] bg-white">
+      <div className="container-editorial grid grid-cols-2 gap-px bg-[#eee7e1] lg:grid-cols-4">
         {items.map(({ icon: Icon, title, text }) => (
-          <div key={title} className="flex items-center gap-4 px-3 py-7 md:justify-center">
-            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#f3e9e2] text-[#8b5e50]">
-              <Icon size={21} strokeWidth={1.7} />
+          <div key={title} className="flex min-h-28 items-center gap-3 bg-white px-3 py-5 sm:px-5">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#f5ece7] text-[#8f594d]">
+              <Icon size={19} strokeWidth={1.7} />
             </span>
             <span>
-              <strong className="block text-sm text-[#1f1920]">{title}</strong>
-              <span className="mt-1 block text-xs text-[#81767d]">{text}</span>
+              <strong className="block text-label text-[#2b2427]">{title}</strong>
+              <span className="mt-0.5 block text-caption text-[#847b7e]">{text}</span>
             </span>
           </div>
         ))}
@@ -224,18 +340,16 @@ function SectionHeading({
   action?: { href: string; label: string };
 }) {
   return (
-    <div className="mb-10 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+    <div className="mb-9 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
       <div>
-        <p className="mb-3 text-xs font-semibold tracking-[0.08em] text-[#a16e5d]">{eyebrow}</p>
-        <h2 className="text-3xl font-semibold leading-tight text-[#1e171d] sm:text-4xl">{title}</h2>
-        {description && (
-          <p className="mt-3 max-w-xl text-sm leading-7 text-[#7a7076]">{description}</p>
-        )}
+        <p className="mb-2 type-label text-[#9a6355]">{eyebrow}</p>
+        <h2 className="type-h1 text-[#211a1e]">{title}</h2>
+        {description && <p className="mt-3 max-w-xl type-body text-[#756c70]">{description}</p>}
       </div>
       {action && (
         <Link
           href={action.href}
-          className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-[#7b5145] transition hover:gap-3"
+          className="inline-flex w-fit items-center gap-2 type-button text-[#805146] transition hover:gap-3"
         >
           {action.label}
           <ArrowLeft size={16} />
@@ -247,35 +361,33 @@ function SectionHeading({
 
 function ServiceDiscovery() {
   return (
-    <section className="py-20 lg:py-28">
+    <section id="services" className="scroll-mt-24 py-16 lg:py-24">
       <div className="container-editorial">
         <SectionHeading
-          eyebrow="از چه خدمتی شروع کنیم؟"
-          title="هر چیزی که برای خودت می‌خواهی"
-          description="خدمت دلخواهت را انتخاب کن و بهترین گزینه‌های نزدیک به خودت را ببین."
+          eyebrow="سریع‌تر به انتخابت برس"
+          title="دنبال چه خدمتی هستی؟"
+          description="از میان خدمات پرطرفدار شروع کن و سالن‌ها و متخصصان مرتبط را ببین."
         />
-
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-          {SERVICES.map((service, index) => (
+        <div className="-mx-6 flex snap-x gap-3 overflow-x-auto px-6 pb-3 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-3">
+          {SERVICES.map(({ name, hint, query, icon: Icon, tone, iconTone }) => (
             <Link
-              key={service.name}
-              href={`/salons?service=${encodeURIComponent(service.query)}`}
-              className="group flex min-h-44 flex-col justify-between rounded-[1.25rem] border border-[#e9e3dd] bg-white p-5 transition duration-300 hover:-translate-y-1 hover:border-[#d8bfcf] hover:shadow-[0_16px_40px_rgba(54,35,48,0.08)]"
+              key={name}
+              href={`/salons?service=${encodeURIComponent(query)}`}
+              className={`group flex min-w-[270px] snap-start items-center gap-4 rounded-[1.3rem] p-4 transition hover:-translate-y-1 hover:shadow-[0_16px_38px_rgba(58,40,44,0.09)] sm:min-w-0 ${tone}`}
             >
               <span
-                className={`flex h-11 w-11 items-center justify-center rounded-full text-xl ${
-                  index % 2 ? 'bg-[#f3eee7] text-[#756052]' : 'bg-[#f3e9e2] text-[#8b5e50]'
-                }`}
+                className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl shadow-sm ${iconTone}`}
               >
-                {service.icon}
+                <Icon size={24} strokeWidth={1.7} />
               </span>
-              <span className="mt-8 flex items-end justify-between gap-2">
-                <strong className="text-sm leading-6 text-[#2b2329]">{service.name}</strong>
-                <ArrowLeft
-                  size={15}
-                  className="shrink-0 text-[#a69c96] transition group-hover:-translate-x-1 group-hover:text-[#8b5e50]"
-                />
+              <span className="min-w-0 flex-1">
+                <strong className="block type-h4 text-[#292125]">{name}</strong>
+                <span className="mt-0.5 block type-caption text-[#796f72]">{hint}</span>
               </span>
+              <ArrowLeft
+                size={17}
+                className="shrink-0 text-[#8e8587] transition group-hover:-translate-x-1"
+              />
             </Link>
           ))}
         </div>
@@ -285,97 +397,101 @@ function ServiceDiscovery() {
 }
 
 function FeaturedSalons() {
-  const { data, isLoading, isError } = useSearchSalons({
-    page: '1',
-    limit: '4',
-    sort: 'rating',
-  });
+  const { data, isLoading, isError } = useSearchSalons({ page: '1', limit: '3', sort: 'rating' });
   const salons = ((data?.data ?? []) as FeaturedSalon[]).map((salon) => ({
     ...salon,
     rating: Number(salon.rating),
   }));
-
   return (
-    <section className="bg-[#f5f1eb] py-20 lg:py-28">
+    <section className="bg-[#f5f1ec] py-16 lg:py-24">
       <div className="container-editorial">
         <SectionHeading
-          eyebrow="منتخب پرنگارین"
-          title="سالن‌هایی که ارزش امتحان دارند"
-          description="گزینه‌های محبوب را با امتیاز، موقعیت و فضای کاری‌شان مقایسه کن."
-          action={{ href: '/salons', label: 'مشاهده همه سالن‌ها' }}
+          eyebrow="پیشنهادهای پرنگارین"
+          title="سالن‌هایی برای یک انتخاب مطمئن"
+          description="پروفایل، خدمات، متخصصان و تجربه کاربران را ببین و انتخاب آگاهانه‌تری داشته باش."
+          action={{ href: '/salons', label: 'دیدن همه سالن‌ها' }}
         />
-
         {isLoading ? (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {Array.from({ length: 4 }, (_, index) => (
-              <div key={index} className="h-80 animate-pulse rounded-[1.4rem] bg-white" />
+          <div className="grid gap-5 md:grid-cols-3">
+            {Array.from({ length: 3 }, (_, index) => (
+              <div key={index} className="h-[430px] animate-pulse rounded-[1.6rem] bg-white" />
             ))}
           </div>
         ) : isError ? (
-          <p className="rounded-2xl bg-white p-8 text-center text-sm text-[#847980]">
-            دریافت سالن‌های منتخب انجام نشد.
-          </p>
+          <MarketplaceNotice
+            title="ارتباط با سالن‌ها برقرار نشد"
+            text="چند لحظه دیگر دوباره امتحان کن یا همه سالن‌ها را ببین."
+          />
         ) : salons.length === 0 ? (
-          <p className="rounded-2xl bg-white p-8 text-center text-sm text-[#847980]">
-            هنوز سالن فعالی ثبت نشده است.
-          </p>
+          <MarketplaceNotice
+            title="سالن‌های منتخب به‌زودی اینجا دیده می‌شوند"
+            text="ما در حال بررسی و اضافه‌کردن سالن‌های باکیفیت هستیم."
+          />
         ) : (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {salons.map((salon, index) => (
-              <Link
-                href={`/salons/${salon.slug}`}
-                key={salon.id}
-                className="group overflow-hidden rounded-[1.4rem] bg-white shadow-[0_1px_0_rgba(30,20,27,0.05)]"
-              >
-                <div className="relative aspect-[4/3] overflow-hidden">
-                  <Image
-                    src={salon.coverImageUrl || SALON_IMAGES[index % SALON_IMAGES.length]}
-                    alt={salon.name}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                    className="object-cover transition duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent" />
-                  <span className="absolute right-4 top-4 inline-flex items-center gap-1 rounded-full bg-white/90 px-3 py-1.5 text-caption font-semibold text-[#392e35] backdrop-blur">
-                    <CheckCircle2 size={13} className="text-[#8b5e50]" />
-                    تأییدشده
-                  </span>
-                  <span
-                    aria-hidden="true"
-                    className="absolute left-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-[#8b5e50] backdrop-blur transition hover:bg-white"
-                  >
-                    <Heart size={17} />
-                  </span>
-                </div>
-
-                <div className="p-5">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <h3 className="text-xl font-semibold text-[#211a20]">{salon.name}</h3>
-                      <p className="mt-1.5 flex items-center gap-1 text-xs text-[#847980]">
-                        <MapPin size={13} />
-                        {salon.city}
-                      </p>
-                    </div>
-                    <span className="flex items-center gap-1 rounded-lg bg-[#fff7e7] px-2 py-1 text-xs font-bold text-[#6c5528]">
-                      <Star size={13} className="fill-[#c8a66a] text-[#c8a66a]" />
-                      {salon.rating.toLocaleString('fa-IR', { maximumFractionDigits: 1 })}
+          <div className="grid gap-5 md:grid-cols-3">
+            {salons.map((salon, index) => {
+              const fallbackImage =
+                salon.genderType === 'MALE'
+                  ? '/images/home/salon-men.webp'
+                  : index === 2
+                    ? '/images/home/salon-skin.webp'
+                    : '/images/home/salon-women.webp';
+              return (
+                <Link
+                  href={`/salons/${salon.slug}`}
+                  key={salon.id}
+                  className="group overflow-hidden rounded-[1.6rem] border border-[#e9e1da] bg-white transition hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(49,33,38,0.12)]"
+                >
+                  <div className="relative aspect-[4/3] overflow-hidden">
+                    <Image
+                      src={salon.coverImageUrl || fallbackImage}
+                      alt={salon.name}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-cover transition duration-700 group-hover:scale-[1.04]"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
+                    <span className="absolute right-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1.5 type-caption font-medium text-[#3b3034] backdrop-blur">
+                      <BadgeCheck size={14} className="text-[#8f594d]" /> قابل رزرو آنلاین
                     </span>
-                  </div>
-
-                  <div className="mt-5 flex items-center justify-between border-t border-[#eee9e4] pt-4">
-                    <span className="text-xs text-[#8b8086]">
+                    <span className="absolute bottom-4 right-4 rounded-full bg-[#272124]/85 px-3 py-1.5 type-caption text-white backdrop-blur">
                       {salon.genderType === 'MALE'
                         ? 'ویژه آقایان'
                         : salon.genderType === 'UNISEX'
                           ? 'بانوان و آقایان'
                           : 'ویژه بانوان'}
                     </span>
-                    <span className="text-xs font-semibold text-[#7b5145]">مشاهده و رزرو</span>
                   </div>
-                </div>
-              </Link>
-            ))}
+                  <div className="p-5">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <h3 className="type-h3 text-[#251e22]">{salon.name}</h3>
+                        <p className="mt-1 flex items-center gap-1.5 type-caption text-[#81777a]">
+                          <MapPin size={14} />
+                          {salon.city || 'مشاهده موقعیت در پروفایل'}
+                        </p>
+                      </div>
+                      {salon.rating > 0 ? (
+                        <span className="flex items-center gap-1 rounded-lg bg-[#fff6df] px-2.5 py-1.5 type-label text-[#6f5623]">
+                          <Star size={14} className="fill-[#c89f52] text-[#c89f52]" />
+                          {salon.rating.toLocaleString('fa-IR', { maximumFractionDigits: 1 })}
+                        </span>
+                      ) : (
+                        <span className="rounded-lg bg-[#f1eeeb] px-2.5 py-1.5 type-caption text-[#756d70]">
+                          جدید
+                        </span>
+                      )}
+                    </div>
+                    <div className="mt-5 flex items-center justify-between border-t border-[#eee8e3] pt-4">
+                      <span className="type-caption text-[#8b8184]">خدمات و زمان‌های خالی</span>
+                      <span className="inline-flex items-center gap-1.5 type-button text-[#805146]">
+                        مشاهده و رزرو <ArrowLeft size={15} />
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>
@@ -383,40 +499,58 @@ function FeaturedSalons() {
   );
 }
 
-function TrendSection() {
+function MarketplaceNotice({ title, text }: { title: string; text: string }) {
   return (
-    <section className="py-20 lg:py-28">
+    <div className="flex min-h-56 flex-col items-center justify-center rounded-[1.6rem] border border-dashed border-[#d9ccc3] bg-white px-6 text-center">
+      <span className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#f5ece7] text-[#8f594d]">
+        <Store size={22} />
+      </span>
+      <h3 className="type-h4 text-[#2e272a]">{title}</h3>
+      <p className="mt-2 type-body-sm text-[#81777a]">{text}</p>
+      <Link
+        href="/salons"
+        className="mt-5 inline-flex items-center gap-2 type-button text-[#805146]"
+      >
+        مشاهده بازار سالن‌ها <ArrowLeft size={15} />
+      </Link>
+    </div>
+  );
+}
+
+function DiscoverySection() {
+  return (
+    <section className="py-16 lg:py-24">
       <div className="container-editorial">
         <SectionHeading
-          eyebrow="الان چه چیزی محبوب است؟"
-          title="برای انتخاب بعدی الهام بگیر"
-          description="ترندهای روز را ببین و متخصص مناسب همان سبک را پیدا کن."
+          eyebrow="برای هر سلیقه و هر سبک"
+          title="انتخابی که با تو شروع می‌شود"
+          description="مسیر مناسب خودت را انتخاب کن؛ پرنگارین گزینه‌های مرتبط را برایت مرتب می‌کند."
         />
-
-        <div className="grid gap-5 lg:grid-cols-[1.2fr_0.9fr_0.9fr]">
-          {TREND_CARDS.map((card, index) => (
+        <div className="grid gap-4 lg:grid-cols-[1.16fr_0.92fr_0.92fr]">
+          {DISCOVERY_CARDS.map((card, index) => (
             <Link
               key={card.title}
               href={card.href}
-              className={`group relative overflow-hidden rounded-[1.6rem] ${index === 0 ? 'min-h-[500px]' : 'min-h-[360px] lg:min-h-[500px]'}`}
-              style={{ background: card.tone }}
+              className={`group relative overflow-hidden rounded-[1.7rem] ${index === 0 ? 'min-h-[500px]' : 'min-h-[370px] lg:min-h-[500px]'}`}
             >
               <Image
                 src={card.image}
                 alt={card.title}
                 fill
-                sizes="(max-width: 1024px) 100vw, 40vw"
-                className="object-cover opacity-75 transition duration-700 group-hover:scale-105"
+                sizes="(max-width: 1024px) 100vw, 38vw"
+                className="object-cover transition duration-700 group-hover:scale-[1.04]"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 p-7 text-white">
-                <p className="mb-2 text-xs text-white/65">{card.subtitle}</p>
-                <div className="flex items-end justify-between gap-4">
-                  <h3 className="text-2xl font-semibold text-white lg:text-3xl">{card.title}</h3>
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-[#342b27] transition group-hover:-translate-x-1">
-                    <ArrowLeft size={18} />
-                  </span>
-                </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-[#191416]/90 via-[#21191b]/15 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-7">
+                <span className="mb-3 inline-flex rounded-full border border-white/25 bg-white/10 px-3 py-1.5 type-caption text-white backdrop-blur">
+                  {card.tag}
+                </span>
+                <h3 className="type-h2 text-white">{card.title}</h3>
+                <p className="mt-2 max-w-sm type-body-sm text-white/70">{card.description}</p>
+                <span className="mt-5 inline-flex items-center gap-2 type-button text-[#f0d8a8]">
+                  دیدن پیشنهادها{' '}
+                  <ArrowLeft size={16} className="transition group-hover:-translate-x-1" />
+                </span>
               </div>
             </Link>
           ))}
@@ -426,53 +560,45 @@ function TrendSection() {
   );
 }
 
-function ValueSection() {
-  const values = [
+function BookingSteps() {
+  const steps = [
+    { icon: Search, title: 'پیدا کن', text: 'خدمت و شهر را مشخص کن تا گزینه‌های مرتبط را ببینی.' },
     {
-      icon: Search,
-      title: 'پیدا کن',
-      text: 'با فیلتر خدمت، موقعیت و نوع سالن، انتخاب‌ها را دقیق‌تر کن.',
-    },
-    {
-      icon: UserRound,
+      icon: Star,
       title: 'مقایسه کن',
-      text: 'پروفایل، نمونه‌کار، متخصصان و امتیاز هر سالن را یک‌جا ببین.',
+      text: 'سالن، متخصص، نمونه‌کار، امتیاز و قیمت را کنار هم ببین.',
     },
     {
       icon: Clock3,
-      title: 'رزرو کن',
-      text: 'زمان خالی را انتخاب کن و بدون تماس تلفنی نوبت قطعی بگیر.',
+      title: 'وقت بگیر',
+      text: 'روز و ساعت مناسب را انتخاب کن و رزروت را آنلاین ثبت کن.',
     },
   ];
-
   return (
-    <section className="bg-[#30393d] py-20 text-white lg:py-28">
+    <section id="how-it-works" className="scroll-mt-20 bg-[#293438] py-16 text-white lg:py-24">
       <div className="container-editorial">
-        <div className="grid gap-14 lg:grid-cols-[0.85fr_1.4fr] lg:items-start">
+        <div className="grid gap-12 lg:grid-cols-[0.78fr_1.4fr] lg:items-start">
           <div>
-            <p className="mb-4 text-xs font-semibold text-[#c8a66a]">رزرو، آن‌طور که باید باشد</p>
-            <h2 className="type-h2 text-white">
-              انتخاب خوب،
-              <br />
-              از اطلاعات خوب شروع می‌شود.
-            </h2>
-            <p className="mt-5 max-w-md text-sm leading-8 text-white/60">
-              پرنگارین فاصله میان پیدا کردن سالن مناسب و گرفتن نوبت را کوتاه می‌کند.
+            <p className="mb-3 type-label text-[#e5c68a]">ساده، روشن و بدون تماس</p>
+            <h2 className="type-h1 text-white">از تصمیم تا رزرو، فقط در چند دقیقه</h2>
+            <p className="mt-4 max-w-md type-body text-white/60">
+              وقتت را صرف پیدا کردن شماره و هماهنگی چندباره نکن؛ مسیر رزرو یک‌جا و قابل پیگیری است.
             </p>
           </div>
-
-          <div className="grid gap-4 md:grid-cols-3">
-            {values.map(({ icon: Icon, title, text }, index) => (
+          <div className="grid gap-3 md:grid-cols-3">
+            {steps.map(({ icon: Icon, title, text }, index) => (
               <div
                 key={title}
-                className="rounded-[1.35rem] border border-white/10 bg-white/[0.055] p-6"
+                className="rounded-[1.35rem] border border-white/10 bg-white/[0.055] p-5 sm:p-6"
               >
-                <div className="mb-10 flex items-center justify-between">
-                  <Icon size={23} className="text-[#ead3a6]" strokeWidth={1.6} />
-                  <span className="text-xs text-white/30">۰{index + 1}</span>
+                <div className="mb-9 flex items-center justify-between">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-[#efd39e]">
+                    <Icon size={21} strokeWidth={1.7} />
+                  </span>
+                  <span className="type-caption text-white/30">۰{index + 1}</span>
                 </div>
-                <h3 className="text-2xl font-semibold text-white">{title}</h3>
-                <p className="mt-3 text-sm leading-7 text-white/55">{text}</p>
+                <h3 className="type-h3 text-white">{title}</h3>
+                <p className="mt-2 type-body-sm text-white/60">{text}</p>
               </div>
             ))}
           </div>
@@ -482,60 +608,37 @@ function ValueSection() {
   );
 }
 
-function EcosystemSection() {
+function SalonOwnerCallout() {
+  const benefits = ['صفحه اختصاصی سالن', 'رزرو و تقویم یکپارچه', 'مدیریت کارکنان و خدمات'];
   return (
-    <section className="py-20 lg:py-28">
+    <section className="py-16 lg:py-20">
       <div className="container-editorial">
-        <div className="grid gap-5 lg:grid-cols-2">
-          <div className="relative overflow-hidden rounded-[1.75rem] bg-[#f1e7e0] p-8 sm:p-11">
-            <div className="relative z-10 max-w-md">
-              <span className="mb-12 flex h-12 w-12 items-center justify-center rounded-full bg-white text-[#8b5e50]">
-                <GraduationCap size={23} />
-              </span>
-              <p className="mb-3 text-xs font-semibold text-[#a16e5d]">آکادمی پرنگارین</p>
-              <h2 className="text-3xl font-semibold leading-snug text-[#2d2622]">
-                مهارت بعدی‌ات را از حرفه‌ای‌ها یاد بگیر
-              </h2>
-              <p className="mt-4 text-sm leading-7 text-[#756a64]">
-                دوره‌های تخصصی آرایش و زیبایی را ببین و مسیر حرفه‌ای خودت را توسعه بده.
-              </p>
-              <Link
-                href="/academy"
-                className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-[#7b5145]"
-              >
-                ورود به آکادمی <ArrowLeft size={16} />
-              </Link>
+        <div className="relative overflow-hidden rounded-[1.8rem] border border-[#e7ddd5] bg-[#f2ebe5] px-6 py-9 sm:px-10 lg:flex lg:items-center lg:justify-between lg:gap-12">
+          <div className="absolute -left-16 -top-20 h-56 w-56 rounded-full border border-[#cdaea1]/30" />
+          <div className="relative max-w-xl">
+            <p className="mb-2 type-label text-[#946052]">صاحب سالن یا متخصص هستی؟</p>
+            <h2 className="type-h2 text-[#282124]">مشتری‌های بیشتری تو را پیدا کنند</h2>
+            <p className="mt-3 type-body-sm text-[#756b6e]">
+              حضور حرفه‌ای خودت را در پرنگارین بساز و رزروهای روزانه را منظم‌تر مدیریت کن.
+            </p>
+            <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2">
+              {benefits.map((benefit) => (
+                <span
+                  key={benefit}
+                  className="inline-flex items-center gap-1.5 type-caption text-[#61575a]"
+                >
+                  <Check size={14} className="text-[#8f594d]" />
+                  {benefit}
+                </span>
+              ))}
             </div>
-            <Palette
-              className="absolute -bottom-10 -left-8 h-56 w-56 text-white/45"
-              strokeWidth={0.7}
-            />
           </div>
-
-          <div className="relative overflow-hidden rounded-[1.75rem] bg-[#e9ecee] p-8 sm:p-11">
-            <div className="relative z-10 max-w-md">
-              <span className="mb-12 flex h-12 w-12 items-center justify-center rounded-full bg-white text-[#253342]">
-                <Store size={23} />
-              </span>
-              <p className="mb-3 text-xs font-semibold text-[#607181]">برای صاحبان سالن</p>
-              <h2 className="text-3xl font-semibold leading-snug text-[#1d2832]">
-                سالن خودت را هوشمندتر مدیریت کن
-              </h2>
-              <p className="mt-4 text-sm leading-7 text-[#65727d]">
-                رزرو، خدمات، کارکنان و ارتباط با مشتریان را از یک پنل یکپارچه مدیریت کن.
-              </p>
-              <Link
-                href="/salon-owner/login?returnTo=/dashboard/salons/new"
-                className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-[#253342]"
-              >
-                ثبت سالن در پرنگارین <ArrowLeft size={16} />
-              </Link>
-            </div>
-            <Store
-              className="absolute -bottom-11 -left-8 h-56 w-56 text-white/45"
-              strokeWidth={0.7}
-            />
-          </div>
+          <Link
+            href="/salon-owner/login?returnTo=/dashboard/salons/new"
+            className="relative mt-7 inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#2d383c] px-6 type-button text-white transition hover:-translate-y-0.5 hover:bg-[#20292c] lg:mt-0"
+          >
+            ثبت سالن در پرنگارین <ArrowLeft size={16} />
+          </Link>
         </div>
       </div>
     </section>
@@ -546,23 +649,20 @@ function FinalCallout() {
   return (
     <section className="pb-20">
       <div className="container-editorial">
-        <div className="relative overflow-hidden rounded-[2rem] bg-[#795145] px-7 py-16 text-center sm:px-12 lg:py-20">
-          <div className="absolute -right-20 -top-24 h-72 w-72 rounded-full border border-white/10" />
-          <div className="absolute -bottom-36 -left-20 h-80 w-80 rounded-full border border-[#c8a66a]/20" />
+        <div className="relative overflow-hidden rounded-[2rem] bg-[#8f594d] px-6 py-14 text-center sm:px-12 lg:py-20">
+          <div className="absolute -right-24 -top-28 h-72 w-72 rounded-full border border-white/10" />
+          <div className="absolute -bottom-36 -left-20 h-80 w-80 rounded-full border border-[#efd39e]/20" />
           <div className="relative z-10 mx-auto max-w-2xl">
-            <Sparkles className="mx-auto mb-5 text-[#e3c98f]" size={27} />
-            <h2 className="text-4xl font-semibold leading-tight text-white sm:text-5xl">
-              نوبت بعدی‌ات همین نزدیکی است
-            </h2>
-            <p className="mt-5 text-sm leading-7 text-white/65">
-              چند دقیقه برای خودت وقت بگذار؛ پرنگارین بقیه مسیر را ساده می‌کند.
+            <Sparkles className="mx-auto mb-4 text-[#efd39e]" size={25} />
+            <h2 className="type-h1 text-white">نوبت بعدی‌ات را همین حالا پیدا کن</h2>
+            <p className="mt-4 type-body text-white/70">
+              سالن‌ها و متخصصان را مقایسه کن و زمانی را انتخاب کن که با برنامه تو هماهنگ است.
             </p>
             <Link
               href="/salons"
-              className="mt-9 inline-flex items-center gap-2 rounded-xl bg-[#ead3a6] px-8 py-4 text-sm font-bold text-[#3d2b25] transition hover:-translate-y-0.5"
+              className="mt-7 inline-flex min-h-[52px] items-center gap-2 rounded-xl bg-[#f4dba9] px-7 type-button text-[#3c2b27] transition hover:-translate-y-0.5 hover:bg-[#f7e5c0]"
             >
-              پیدا کردن سالن
-              <ArrowLeft size={17} />
+              مشاهده سالن‌ها <ArrowLeft size={16} />
             </Link>
           </div>
         </div>

@@ -8,10 +8,17 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: {
-    default: 'پرنگارین | رزرو آنلاین آرایشگاه',
+    default: 'پرنگارین | رزرو آنلاین سالن زیبایی و آرایشگاه',
     template: '%s | پرنگارین',
   },
-  description: 'پلتفرم رزرو آنلاین آرایشگاه و سالن زیبایی در ایران',
+  description:
+    'سالن‌ها و متخصصان زیبایی را مقایسه کنید، خدمات و زمان‌های خالی را ببینید و نوبت خود را آنلاین رزرو کنید.',
+  openGraph: {
+    title: 'پرنگارین | انتخاب و رزرو آنلاین خدمات زیبایی',
+    description: 'سالن، متخصص و زمان مناسب خود را پیدا کنید و بدون تماس تلفنی نوبت بگیرید.',
+    locale: 'fa_IR',
+    type: 'website',
+  },
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
@@ -21,7 +28,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#4B244A',
+  themeColor: '#8F594D',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,

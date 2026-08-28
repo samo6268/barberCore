@@ -40,10 +40,13 @@ export function Navbar() {
             style={{ color: 'var(--color-text)' }}
           >
             <Link href="/salons" className="transition-colors hover:text-[#8b5e50]">
-              آرایشگاه‌ها
+              سالن‌ها
             </Link>
-            <Link href="/academy" className="transition-colors hover:text-[#8b5e50]">
-              آکادمی
+            <Link href="/#services" className="transition-colors hover:text-[#8b5e50]">
+              خدمات
+            </Link>
+            <Link href="/#how-it-works" className="transition-colors hover:text-[#8b5e50]">
+              راهنمای رزرو
             </Link>
             <Link
               href="/salon-owner/login?returnTo=/dashboard/salons/new"
@@ -107,14 +110,14 @@ export function Navbar() {
               <>
                 <Link
                   href="/role-selector"
-                  className="px-5 py-2.5 text-body-sm font-medium rounded-md transition-all duration-250 hover:-translate-y-0.5"
+                  className="px-5 py-2.5 text-body-sm font-medium rounded-md transition-all duration-200 hover:-translate-y-0.5"
                   style={{ color: 'var(--color-text)' }}
                 >
                   ورود
                 </Link>
                 <Link
                   href="/salons"
-                  className="rounded-md bg-[#8b5e50] px-5 py-2.5 text-body-sm font-medium text-white transition-all duration-250 hover:-translate-y-0.5 hover:bg-[#6f473c]"
+                  className="rounded-md bg-[#8b5e50] px-5 py-2.5 text-body-sm font-medium text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#6f473c]"
                 >
                   رزرو نوبت
                 </Link>
@@ -151,8 +154,9 @@ export function Navbar() {
 
           <nav className="flex flex-col gap-6">
             {[
-              { href: '/salons', label: 'آرایشگاه‌ها' },
-              { href: '/academy', label: 'آکادمی' },
+              { href: '/salons', label: 'سالن‌ها' },
+              { href: '/#services', label: 'خدمات' },
+              { href: '/#how-it-works', label: 'راهنمای رزرو' },
               { href: '/salon-owner/login?returnTo=/dashboard/salons/new', label: 'ثبت سالن' },
               { href: '/role-selector', label: 'ورود / ثبت‌نام' },
             ].map((item) => (
@@ -160,7 +164,7 @@ export function Navbar() {
                 key={item.href}
                 href={item.href}
                 onClick={() => setMobileOpen(false)}
-                className="font-medium text-display-md border-b pb-4"
+                className="type-h2 border-b pb-4 font-medium"
                 style={{ color: 'var(--bg-ivory)', borderColor: 'rgba(255,255,255,0.15)' }}
               >
                 {item.label}
