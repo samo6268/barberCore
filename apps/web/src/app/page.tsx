@@ -4,25 +4,18 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import type { LucideIcon } from 'lucide-react';
 import {
   ArrowLeft,
   BadgeCheck,
   CalendarCheck2,
   Check,
   Clock3,
-  Crown,
-  Hand,
-  Leaf,
   MapPin,
-  Palette,
   Search,
-  Scissors,
   ShieldCheck,
   Sparkles,
   Star,
   Store,
-  UserRound,
 } from 'lucide-react';
 import { useSearchSalons } from '@/lib/api-hooks';
 
@@ -44,9 +37,8 @@ type ServiceItem = {
   name: string;
   hint: string;
   query: string;
-  icon: LucideIcon;
-  tone: string;
-  iconTone: string;
+  image: string;
+  imageAlt: string;
 };
 
 const CITIES = ['تهران', 'کرج', 'مشهد', 'اصفهان', 'شیراز', 'تبریز'];
@@ -56,49 +48,43 @@ const SERVICES: ServiceItem[] = [
     name: 'کوتاهی و استایل',
     hint: 'کوپ، براشینگ و استایل مو',
     query: 'کوتاهی',
-    icon: Scissors,
-    tone: 'bg-[#f6e9e4]',
-    iconTone: 'bg-[#9a6355] text-white',
+    image: '/images/home/services/haircut.webp',
+    imageAlt: 'کوتاهی و استایل حرفه‌ای مو در سالن زیبایی',
   },
   {
     name: 'رنگ و احیای مو',
     hint: 'رنگ، لایت، کراتین و احیا',
     query: 'رنگ مو',
-    icon: Palette,
-    tone: 'bg-[#eee8f0]',
-    iconTone: 'bg-[#745b78] text-white',
+    image: '/images/home/services/hair-color.webp',
+    imageAlt: 'رنگ و لایت مو توسط متخصص حرفه‌ای',
   },
   {
     name: 'ناخن',
     hint: 'کاشت، ترمیم، ژلیش و پدیکور',
     query: 'ناخن',
-    icon: Hand,
-    tone: 'bg-[#f8eee5]',
-    iconTone: 'bg-[#b07862] text-white',
+    image: '/images/home/services/nails.webp',
+    imageAlt: 'خدمات حرفه‌ای مانیکور و ناخن',
   },
   {
     name: 'میکاپ و عروس',
     hint: 'میکاپ، شینیون و خدمات عروس',
     query: 'میکاپ',
-    icon: Crown,
-    tone: 'bg-[#f5eddb]',
-    iconTone: 'bg-[#9a783f] text-white',
+    image: '/images/home/services/makeup.webp',
+    imageAlt: 'میکاپ حرفه‌ای عروس در سالن زیبایی',
   },
   {
     name: 'پوست و فیشال',
     hint: 'پاکسازی و مراقبت تخصصی پوست',
     query: 'پوست',
-    icon: Leaf,
-    tone: 'bg-[#e9f1e9]',
-    iconTone: 'bg-[#627b63] text-white',
+    image: '/images/home/services/skincare.webp',
+    imageAlt: 'فیشال و مراقبت تخصصی پوست',
   },
   {
     name: 'اصلاح آقایان',
     hint: 'مو، ریش و گریم حرفه‌ای',
     query: 'اصلاح',
-    icon: UserRound,
-    tone: 'bg-[#e9edef]',
-    iconTone: 'bg-[#44555d] text-white',
+    image: '/images/home/services/barber.webp',
+    imageAlt: 'کوتاهی و اصلاح حرفه‌ای آقایان',
   },
 ];
 
@@ -368,26 +354,32 @@ function ServiceDiscovery() {
           title="دنبال چه خدمتی هستی؟"
           description="از میان خدمات پرطرفدار شروع کن و سالن‌ها و متخصصان مرتبط را ببین."
         />
-        <div className="-mx-6 flex snap-x gap-3 overflow-x-auto px-6 pb-3 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-3">
-          {SERVICES.map(({ name, hint, query, icon: Icon, tone, iconTone }) => (
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5">
+          {SERVICES.map(({ name, hint, query, image, imageAlt }) => (
             <Link
               key={name}
               href={`/salons?service=${encodeURIComponent(query)}`}
-              className={`group flex min-w-[270px] snap-start items-center gap-4 rounded-[1.3rem] p-4 transition hover:-translate-y-1 hover:shadow-[0_16px_38px_rgba(58,40,44,0.09)] sm:min-w-0 ${tone}`}
+              className="group overflow-hidden rounded-[1.35rem] border border-[#e9e1db] bg-white transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_45px_rgba(58,40,44,0.12)]"
             >
-              <span
-                className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl shadow-sm ${iconTone}`}
-              >
-                <Icon size={24} strokeWidth={1.7} />
-              </span>
-              <span className="min-w-0 flex-1">
-                <strong className="block type-h4 text-[#292125]">{name}</strong>
-                <span className="mt-0.5 block type-caption text-[#796f72]">{hint}</span>
-              </span>
-              <ArrowLeft
-                size={17}
-                className="shrink-0 text-[#8e8587] transition group-hover:-translate-x-1"
-              />
+              <div className="relative aspect-[4/3] overflow-hidden bg-[#eee7e1]">
+                <Image
+                  src={image}
+                  alt={imageAlt}
+                  fill
+                  sizes="(max-width: 768px) 50vw, 33vw"
+                  className="object-cover transition duration-700 group-hover:scale-[1.04]"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent" />
+              </div>
+              <div className="flex items-center gap-2 p-3.5 sm:p-5">
+                <span className="min-w-0 flex-1">
+                  <strong className="block type-h4 text-[#292125]">{name}</strong>
+                  <span className="mt-0.5 hidden type-caption text-[#796f72] sm:block">{hint}</span>
+                </span>
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#f4ece7] text-[#8f594d] transition group-hover:-translate-x-1 group-hover:bg-[#8f594d] group-hover:text-white">
+                  <ArrowLeft size={16} />
+                </span>
+              </div>
             </Link>
           ))}
         </div>
