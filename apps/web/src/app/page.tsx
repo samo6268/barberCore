@@ -34,16 +34,15 @@ type ServiceItem = {
 const CITIES = ['تهران', 'کرج', 'مشهد', 'اصفهان', 'شیراز', 'تبریز'];
 
 // Source pages and licence are documented in docs/design/homepage-photography.md.
-const HERO_IMAGE =
-  'https://images.pexels.com/photos/3736396/pexels-photo-3736396.jpeg?auto=compress&cs=tinysrgb&w=1600';
+// Local files avoid a runtime dependency on foreign image CDNs.
+const HERO_IMAGE = '/images/home/photography/hero-salon.webp';
 
 const SERVICES: ServiceItem[] = [
   {
     name: 'کوتاهی و استایل',
     hint: 'کوپ، براشینگ و استایل مو',
     query: 'کوتاهی',
-    image:
-      'https://images.pexels.com/photos/3992875/pexels-photo-3992875.jpeg?auto=compress&cs=tinysrgb&w=900',
+    image: '/images/home/photography/haircut.webp',
     imageAlt: 'کوتاهی مو در سالن زیبایی',
     className: 'md:col-span-4',
   },
@@ -51,8 +50,7 @@ const SERVICES: ServiceItem[] = [
     name: 'رنگ و احیای مو',
     hint: 'رنگ، لایت، کراتین و احیا',
     query: 'رنگ مو',
-    image:
-      'https://images.pexels.com/photos/3993323/pexels-photo-3993323.jpeg?auto=compress&cs=tinysrgb&w=900',
+    image: '/images/home/photography/hair-color.webp',
     imageAlt: 'رنگ‌کردن مو توسط متخصص',
     className: 'md:col-span-4',
   },
@@ -60,8 +58,7 @@ const SERVICES: ServiceItem[] = [
     name: 'ناخن',
     hint: 'کاشت، ترمیم، ژلیش و پدیکور',
     query: 'ناخن',
-    image:
-      'https://images.pexels.com/photos/7819722/pexels-photo-7819722.jpeg?auto=compress&cs=tinysrgb&w=900',
+    image: '/images/home/photography/nails.webp',
     imageAlt: 'مانیکور حرفه‌ای در سالن ناخن',
     className: 'md:col-span-4',
   },
@@ -69,8 +66,7 @@ const SERVICES: ServiceItem[] = [
     name: 'میکاپ',
     hint: 'میکاپ روز، مراسم و عروس',
     query: 'میکاپ',
-    image:
-      'https://images.pexels.com/photos/6953627/pexels-photo-6953627.jpeg?auto=compress&cs=tinysrgb&w=900',
+    image: '/images/home/photography/makeup.webp',
     imageAlt: 'اجرای میکاپ در سالن زیبایی',
     className: 'md:col-span-3',
   },
@@ -78,8 +74,7 @@ const SERVICES: ServiceItem[] = [
     name: 'پوست و فیشال',
     hint: 'پاکسازی و مراقبت تخصصی پوست',
     query: 'پوست',
-    image:
-      'https://images.pexels.com/photos/7446675/pexels-photo-7446675.jpeg?auto=compress&cs=tinysrgb&w=1000',
+    image: '/images/home/photography/skincare.webp',
     imageAlt: 'فیشال و مراقبت پوست در فضای اسپا',
     className: 'md:col-span-6',
   },
@@ -87,8 +82,7 @@ const SERVICES: ServiceItem[] = [
     name: 'اصلاح آقایان',
     hint: 'مو، ریش و گریم حرفه‌ای',
     query: 'اصلاح',
-    image:
-      'https://images.pexels.com/photos/17553848/pexels-photo-17553848.jpeg?auto=compress&cs=tinysrgb&w=900',
+    image: '/images/home/photography/barber.webp',
     imageAlt: 'اصلاح حرفه‌ای آقایان در آرایشگاه',
     className: 'md:col-span-3',
   },

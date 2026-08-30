@@ -1,9 +1,11 @@
 # Homepage photography sources
 
 The public homepage uses documentary stock photography rather than generated imagery.
-All selected photos are hosted by Pexels and are permitted for use in websites and apps
-under the [Pexels licence](https://www.pexels.com/license/). Attribution is not required,
-but the source pages are retained here for provenance and future replacement.
+All selected photos come from Pexels and are permitted for use in websites and apps under
+the [Pexels licence](https://www.pexels.com/license/). Optimized WebP copies are bundled in
+`apps/web/public/images/home/photography` so production rendering does not depend on an
+external image CDN. Attribution is not required, but the source pages are retained here
+for provenance and future replacement.
 
 | Use                 | Source                                                                                 |
 | ------------------- | -------------------------------------------------------------------------------------- |
