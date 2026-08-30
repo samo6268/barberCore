@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Search, User, Heart, Calendar, LogOut, LayoutDashboard, Menu, X } from 'lucide-react';
+import { Search, User, Calendar, LogOut, LayoutDashboard, Menu, X } from 'lucide-react';
 import { ScissorsIcon } from '@ui/icons/custom/scissors';
 import { useMe, useLogout } from '@/lib/api-hooks';
 
@@ -22,7 +22,7 @@ export function Navbar() {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-50 border-b border-black/[0.06] bg-[#fffdf9]/90 backdrop-blur-xl">
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-[#e5dfd8] bg-[#fbfaf7]">
         <div className="container-editorial h-20 flex items-center justify-between">
           {/* Logo */}
           <Link
@@ -60,7 +60,7 @@ export function Navbar() {
           <div className="hidden md:flex items-center gap-3">
             <Link
               href="/salons"
-              className="p-2 rounded-lg transition-colors hover:bg-[var(--ui-gray-100)]"
+              className="p-2 transition-colors hover:bg-[var(--ui-gray-100)]"
               style={{ color: 'var(--color-text-muted)' }}
               aria-label="جستجو"
             >
@@ -71,7 +71,7 @@ export function Navbar() {
               <>
                 <Link
                   href="/profile/bookings"
-                  className="p-2 rounded-lg transition-colors hover:bg-[var(--ui-gray-100)]"
+                  className="p-2 transition-colors hover:bg-[var(--ui-gray-100)]"
                   style={{ color: 'var(--color-text-muted)' }}
                   aria-label="رزروها"
                 >
@@ -80,7 +80,7 @@ export function Navbar() {
                 {(user.role === 'SALON_OWNER' || user.role === 'SUPER_ADMIN') && (
                   <Link
                     href="/dashboard"
-                    className="p-2 rounded-lg transition-colors hover:bg-[var(--ui-gray-100)]"
+                    className="p-2 transition-colors hover:bg-[var(--ui-gray-100)]"
                     style={{ color: 'var(--color-text-muted)' }}
                     aria-label="داشبورد"
                   >
@@ -89,7 +89,7 @@ export function Navbar() {
                 )}
                 <Link
                   href="/profile"
-                  className="flex items-center gap-2 px-4 py-2 rounded-md text-body-sm font-medium border border-[var(--ui-gray-200)] hover:bg-[var(--ui-gray-100)] transition-colors"
+                  className="flex items-center gap-2 border border-[var(--ui-gray-200)] px-4 py-2 text-body-sm font-medium transition-colors hover:bg-[var(--ui-gray-100)]"
                   style={{ color: 'var(--color-text)' }}
                 >
                   <User size={16} strokeWidth={1.5} />
@@ -100,7 +100,7 @@ export function Navbar() {
                     logout.mutate();
                     router.push('/');
                   }}
-                  className="p-2 rounded-lg transition-colors hover:bg-[var(--ui-gray-100)]"
+                  className="p-2 transition-colors hover:bg-[var(--ui-gray-100)]"
                   style={{ color: 'var(--color-text-muted)' }}
                 >
                   <LogOut size={20} strokeWidth={1.5} />
@@ -110,14 +110,14 @@ export function Navbar() {
               <>
                 <Link
                   href="/role-selector"
-                  className="px-5 py-2.5 text-body-sm font-medium rounded-md transition-all duration-200 hover:-translate-y-0.5"
+                  className="px-5 py-2.5 text-body-sm font-medium transition-colors hover:text-[#8b5e50]"
                   style={{ color: 'var(--color-text)' }}
                 >
                   ورود
                 </Link>
                 <Link
                   href="/salons"
-                  className="rounded-md bg-[#8b5e50] px-5 py-2.5 text-body-sm font-medium text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#6f473c]"
+                  className="bg-[#805146] px-5 py-2.5 text-body-sm font-medium text-white transition-colors hover:bg-[#684138]"
                 >
                   رزرو نوبت
                 </Link>
@@ -127,7 +127,7 @@ export function Navbar() {
 
           {/* Hamburger — mobile */}
           <button
-            className="md:hidden p-2 rounded-lg"
+            className="p-2 md:hidden"
             style={{ color: 'var(--color-text)' }}
             onClick={() => setMobileOpen(true)}
             aria-label="منو"
@@ -176,7 +176,7 @@ export function Navbar() {
             <Link
               href="/login"
               onClick={() => setMobileOpen(false)}
-              className="block w-full text-center px-8 py-4 rounded-md font-medium text-body transition-all"
+              className="block w-full px-8 py-4 text-center font-medium text-body transition-colors"
               style={{ background: '#ead3a6', color: '#302520' }}
             >
               رزرو نوبت

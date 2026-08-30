@@ -14,6 +14,7 @@ const nextConfig = {
     remotePatterns: [
       { protocol: 'https', hostname: 's3.ir-thr-at1.arvanstorage.ir' },
       { protocol: 'https', hostname: 'cdn.jsdelivr.net' },
+      { protocol: 'https', hostname: 'images.pexels.com' },
     ],
   },
   // RTL + Farsi locale
