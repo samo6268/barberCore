@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { useCreateSalon, useMe } from '@/lib/api-hooks';
 import { useEffect } from 'react';
+import { CheckCircle2, Scissors, Sparkles, UserRound } from 'lucide-react';
 
 const STEPS = ['اطلاعات اصلی', 'آدرس و موقعیت', 'تأیید و ارسال'];
 
@@ -29,7 +30,7 @@ export default function NewSalonPage() {
     if (!form.name) return toast.error('نام سالن را وارد کنید');
     try {
       const salon = await createSalon.mutateAsync(form);
-      toast.success('سالن با موفقیت ثبت شد! 🎉');
+      toast.success('سالن با موفقیت ثبت شد');
       router.push(`/dashboard/salons/${salon.id}`);
     } catch (e: any) {
       toast.error(e?.response?.data?.message || 'خطا در ثبت سالن');
@@ -92,14 +93,14 @@ export default function NewSalonPage() {
                 </label>
                 <div className="flex gap-2">
                   {[
-                    { v: 'MALE', l: '🪒 مردانه' },
-                    { v: 'FEMALE', l: '💅 زنانه' },
-                    { v: 'UNISEX', l: '✂️ عمومی' },
+                    { v: 'MALE', l: 'مردانه', icon: UserRound },
+                    { v: 'FEMALE', l: 'زنانه', icon: Sparkles },
+                    { v: 'UNISEX', l: 'عمومی', icon: Scissors },
                   ].map((opt) => (
                     <button
                       key={opt.v}
                       onClick={() => set('genderType', opt.v)}
-                      className="flex-1 py-2 rounded-xl border text-sm transition-colors"
+                      className="flex flex-1 items-center justify-center gap-2 py-2 rounded-xl border text-sm transition-colors"
                       style={{
                         borderColor:
                           form.genderType === opt.v
@@ -111,7 +112,7 @@ export default function NewSalonPage() {
                           form.genderType === opt.v ? 'var(--color-background)' : 'transparent',
                       }}
                     >
-                      {opt.l}
+                      <opt.icon size={16} strokeWidth={1.7} /> {opt.l}
                     </button>
                   ))}
                 </div>
@@ -204,7 +205,13 @@ export default function NewSalonPage() {
                 className="flex-1 py-3 rounded-xl text-white font-semibold transition-opacity hover:opacity-90 disabled:opacity-50"
                 style={{ background: 'var(--color-primary)' }}
               >
-                {createSalon.isPending ? 'در حال ثبت...' : '✅ ثبت سالن'}
+                {createSalon.isPending ? (
+                  'در حال ثبت...'
+                ) : (
+                  <span className="inline-flex items-center justify-center gap-2">
+                    <CheckCircle2 size={17} /> ثبت سالن
+                  </span>
+                )}
               </button>
             )}
           </div>

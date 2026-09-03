@@ -1,7 +1,7 @@
 'use client';
 import { useCancelBooking, useMyBookings } from '@/lib/api-hooks';
 import { toJalali, formatPrice, formatTime } from '@/lib/utils';
-import { Calendar, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { Calendar, CalendarPlus2, CheckCircle, Clock, Scissors, XCircle } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 
@@ -68,7 +68,10 @@ export default function BookingsPage() {
           </div>
         ) : bookings.length === 0 ? (
           <div className="text-center py-20">
-            <div className="text-5xl mb-4">📅</div>
+            <CalendarPlus2
+              className="mx-auto mb-4 h-12 w-12 text-[var(--ui-gray-300)]"
+              strokeWidth={1.4}
+            />
             <p className="text-lg mb-2" style={{ color: 'var(--color-text)' }}>
               هنوز رزروی ثبت نکرده‌اید
             </p>
@@ -103,10 +106,10 @@ export default function BookingsPage() {
                         />
                       ) : (
                         <div
-                          className="w-12 h-12 rounded-xl flex items-center justify-center text-xl"
+                          className="w-12 h-12 rounded-xl flex items-center justify-center"
                           style={{ background: 'var(--color-background)' }}
                         >
-                          ✂️
+                          <Scissors className="h-5 w-5" style={{ color: 'var(--color-primary)' }} />
                         </div>
                       )}
                       <div>
@@ -114,8 +117,7 @@ export default function BookingsPage() {
                           {b.salon?.name}
                         </h3>
                         <p className="text-xs mt-0.5" style={{ color: 'var(--color-muted)' }}>
-                          {toJalali(b.startsAt)} —{' '}
-                          {formatTime(b.startsAt)}
+                          {toJalali(b.startsAt)} — {formatTime(b.startsAt)}
                         </p>
                       </div>
                     </div>

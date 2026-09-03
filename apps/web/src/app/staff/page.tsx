@@ -8,6 +8,7 @@ import { useStaffDashboard, useUpdateStaffBookingStatus } from '@/lib/api-hooks'
 import { getApiErrorMessage } from '@/lib/api';
 import { formatPrice, iranDateInput, toJalali } from '@/lib/utils';
 import { useStaffPortal } from '@/components/staff/staff-shell';
+import { PersianDatePicker } from '@/components/shared/persian-date-picker';
 import {
   BookingCard,
   EmptyState,
@@ -37,11 +38,11 @@ export default function StaffTodayPage() {
         title={`سلام ${membership.displayName.split(' ')[0]}`}
         description={`${toJalali(date)}؛ برنامه روزانه شما در ${membership.salon.name}`}
         action={
-          <input
-            type="date"
+          <PersianDatePicker
             value={date}
-            onChange={(event) => setDate(event.target.value)}
-            className="rounded-xl border border-[var(--ui-gray-200)] bg-white px-3 py-2 text-sm text-[var(--brand-navy-600)]"
+            onChange={setDate}
+            ariaLabel="تاریخ برنامه روزانه"
+            className="w-full sm:w-64"
           />
         }
       />

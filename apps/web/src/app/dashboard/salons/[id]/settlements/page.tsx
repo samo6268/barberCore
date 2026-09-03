@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { CheckCircle2, CreditCard, FileText, Loader2, Plus, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
+import { PersianDatePicker } from '@/components/shared/persian-date-picker';
 import {
   useCreateSettlement,
   useSalonStaffManagement,
@@ -27,10 +28,12 @@ export default function SettlementsPage() {
   const defaultFrom = iranDateInput(new Date(Date.now() - 29 * 86_400_000));
   const { data: staff = [], isLoading: staffLoading } = useSalonStaffManagement(id);
   const [filters, setFilters] = useState({ staffId: '', status: '' });
-  const { data: settlements = [], isLoading, isError, refetch } = useSettlements(
-    id,
-    Object.fromEntries(Object.entries(filters).filter(([, value]) => value)),
-  );
+  const {
+    data: settlements = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useSettlements(id, Object.fromEntries(Object.entries(filters).filter(([, value]) => value)));
   const [form, setForm] = useState({
     staffId: '',
     from: defaultFrom,
@@ -58,9 +61,7 @@ export default function SettlementsPage() {
   const updateStatus = useUpdateSettlementStatus(id);
 
   const finalPayable = preview
-    ? preview.totals.netPayable +
-      Number(form.bonusAmount || 0) -
-      Number(form.deductionAmount || 0)
+    ? preview.totals.netPayable + Number(form.bonusAmount || 0) - Number(form.deductionAmount || 0)
     : 0;
 
   const create = async () => {
@@ -114,16 +115,23 @@ export default function SettlementsPage() {
     <DashboardLayout salonId={id} activeTab="settlements">
       <div className="space-y-8">
         <div>
-          <h1 className="text-xl font-bold" style={{ color: 'var(--brand-navy-600)' }}>تسویه کارکنان</h1>
+          <h1 className="text-xl font-bold" style={{ color: 'var(--brand-navy-600)' }}>
+            تسویه کارکنان
+          </h1>
           <p className="mt-1 text-sm" style={{ color: 'var(--ui-gray-500)' }}>
             صورتحساب بر اساس رزروهای تکمیل‌شده و قرارداد مالی هر متخصص محاسبه می‌شود.
           </p>
         </div>
 
-        <section className="rounded-2xl border bg-white p-5" style={{ borderColor: 'var(--ui-gray-200)' }}>
+        <section
+          className="rounded-2xl border bg-white p-5"
+          style={{ borderColor: 'var(--ui-gray-200)' }}
+        >
           <div className="mb-5 flex items-center gap-2">
             <Plus size={18} style={{ color: 'var(--brand-plum-600)' }} />
-            <h2 className="font-semibold" style={{ color: 'var(--brand-navy-600)' }}>صورتحساب جدید</h2>
+            <h2 className="font-semibold" style={{ color: 'var(--brand-navy-600)' }}>
+              صورتحساب جدید
+            </h2>
           </div>
           <div className="grid gap-4 md:grid-cols-3">
             <Field label="متخصص">
@@ -137,15 +145,31 @@ export default function SettlementsPage() {
                 className="w-full rounded-xl border bg-white px-3 py-2.5 text-sm"
               >
                 <option value="">انتخاب متخصص</option>
-                {staff.map((member: any) => <option key={member.id} value={member.id}>{member.displayName}</option>)}
+                {staff.map((member: any) => (
+                  <option key={member.id} value={member.id}>
+                    {member.displayName}
+                  </option>
+                ))}
               </select>
             </Field>
-            <Field label="از تاریخ">
-              <input type="date" value={form.from} onChange={(event) => { setForm((current) => ({ ...current, from: event.target.value })); setPreviewEnabled(false); }} className="w-full rounded-xl border px-3 py-2.5 text-sm" />
-            </Field>
-            <Field label="تا تاریخ">
-              <input type="date" value={form.to} onChange={(event) => { setForm((current) => ({ ...current, to: event.target.value })); setPreviewEnabled(false); }} className="w-full rounded-xl border px-3 py-2.5 text-sm" />
-            </Field>
+            <PersianDatePicker
+              label="از تاریخ"
+              value={form.from}
+              max={form.to}
+              onChange={(from) => {
+                setForm((current) => ({ ...current, from }));
+                setPreviewEnabled(false);
+              }}
+            />
+            <PersianDatePicker
+              label="تا تاریخ"
+              value={form.to}
+              min={form.from}
+              onChange={(to) => {
+                setForm((current) => ({ ...current, to }));
+                setPreviewEnabled(false);
+              }}
+            />
           </div>
           <button
             onClick={() => {
@@ -155,42 +179,99 @@ export default function SettlementsPage() {
             className="mt-4 inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white"
             style={{ background: 'var(--brand-plum-600)' }}
           >
-            {previewLoading ? <Loader2 size={16} className="animate-spin" /> : <FileText size={16} />}
+            {previewLoading ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <FileText size={16} />
+            )}
             محاسبه پیش‌نمایش
           </button>
 
           {previewError && (
-            <p className="mt-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">محاسبه صورتحساب انجام نشد. بازه زمانی و قرارداد متخصص را بررسی کنید.</p>
+            <p className="mt-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">
+              محاسبه صورتحساب انجام نشد. بازه زمانی و قرارداد متخصص را بررسی کنید.
+            </p>
           )}
 
           {preview && previewEnabled && (
             <div className="mt-6 border-t pt-6" style={{ borderColor: 'var(--ui-gray-100)' }}>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 <Metric label="فروش خدمات" value={formatPrice(preview.totals.grossRevenue)} />
-                <Metric label="پورسانت خدمات" value={formatPrice(preview.totals.serviceCommission)} />
-                <Metric label="سهم حقوق ثابت" value={formatPrice(preview.totals.baseSalaryAmount)} />
-                <Metric label="قابل پرداخت اولیه" value={formatPrice(preview.totals.netPayable)} accent />
+                <Metric
+                  label="پورسانت خدمات"
+                  value={formatPrice(preview.totals.serviceCommission)}
+                />
+                <Metric
+                  label="سهم حقوق ثابت"
+                  value={formatPrice(preview.totals.baseSalaryAmount)}
+                />
+                <Metric
+                  label="قابل پرداخت اولیه"
+                  value={formatPrice(preview.totals.netPayable)}
+                  accent
+                />
               </div>
 
               <div className="mt-5 grid gap-4 md:grid-cols-2">
                 <Field label="پاداش (ریال)">
-                  <input type="number" min="0" value={form.bonusAmount} onChange={(event) => setForm((current) => ({ ...current, bonusAmount: event.target.value }))} className="w-full rounded-xl border px-3 py-2.5 text-sm" />
+                  <input
+                    type="number"
+                    min="0"
+                    value={form.bonusAmount}
+                    onChange={(event) =>
+                      setForm((current) => ({ ...current, bonusAmount: event.target.value }))
+                    }
+                    className="w-full rounded-xl border px-3 py-2.5 text-sm"
+                  />
                 </Field>
                 <Field label="شرح پاداش">
-                  <input value={form.bonusDescription} onChange={(event) => setForm((current) => ({ ...current, bonusDescription: event.target.value }))} className="w-full rounded-xl border px-3 py-2.5 text-sm" />
+                  <input
+                    value={form.bonusDescription}
+                    onChange={(event) =>
+                      setForm((current) => ({ ...current, bonusDescription: event.target.value }))
+                    }
+                    className="w-full rounded-xl border px-3 py-2.5 text-sm"
+                  />
                 </Field>
                 <Field label="کسورات (ریال)">
-                  <input type="number" min="0" value={form.deductionAmount} onChange={(event) => setForm((current) => ({ ...current, deductionAmount: event.target.value }))} className="w-full rounded-xl border px-3 py-2.5 text-sm" />
+                  <input
+                    type="number"
+                    min="0"
+                    value={form.deductionAmount}
+                    onChange={(event) =>
+                      setForm((current) => ({ ...current, deductionAmount: event.target.value }))
+                    }
+                    className="w-full rounded-xl border px-3 py-2.5 text-sm"
+                  />
                 </Field>
                 <Field label="شرح کسورات">
-                  <input value={form.deductionDescription} onChange={(event) => setForm((current) => ({ ...current, deductionDescription: event.target.value }))} className="w-full rounded-xl border px-3 py-2.5 text-sm" />
+                  <input
+                    value={form.deductionDescription}
+                    onChange={(event) =>
+                      setForm((current) => ({
+                        ...current,
+                        deductionDescription: event.target.value,
+                      }))
+                    }
+                    className="w-full rounded-xl border px-3 py-2.5 text-sm"
+                  />
                 </Field>
               </div>
               <Field label="یادداشت مدیر">
-                <textarea rows={2} value={form.notes} onChange={(event) => setForm((current) => ({ ...current, notes: event.target.value }))} className="w-full rounded-xl border px-3 py-2.5 text-sm" />
+                <textarea
+                  rows={2}
+                  value={form.notes}
+                  onChange={(event) =>
+                    setForm((current) => ({ ...current, notes: event.target.value }))
+                  }
+                  className="w-full rounded-xl border px-3 py-2.5 text-sm"
+                />
               </Field>
 
-              <div className="mt-5 overflow-hidden rounded-xl border" style={{ borderColor: 'var(--ui-gray-200)' }}>
+              <div
+                className="mt-5 overflow-hidden rounded-xl border"
+                style={{ borderColor: 'var(--ui-gray-200)' }}
+              >
                 <table className="w-full text-right text-sm">
                   <thead style={{ background: 'var(--bg-ivory)' }}>
                     <tr>
@@ -202,7 +283,11 @@ export default function SettlementsPage() {
                   </thead>
                   <tbody>
                     {preview.items.map((item: any) => (
-                      <tr key={item.bookingItemId} className="border-t" style={{ borderColor: 'var(--ui-gray-100)' }}>
+                      <tr
+                        key={item.bookingItemId}
+                        className="border-t"
+                        style={{ borderColor: 'var(--ui-gray-100)' }}
+                      >
                         <td className="p-3">{toJalali(item.completedAt)}</td>
                         <td className="p-3">{item.serviceName}</td>
                         <td className="p-3">{formatPrice(item.grossAmount)}</td>
@@ -210,18 +295,34 @@ export default function SettlementsPage() {
                       </tr>
                     ))}
                     {!preview.items.length && (
-                      <tr><td colSpan={4} className="p-5 text-center text-sm text-gray-500">خدمت تکمیل‌شده‌ی تسویه‌نشده‌ای وجود ندارد.</td></tr>
+                      <tr>
+                        <td colSpan={4} className="p-5 text-center text-sm text-gray-500">
+                          خدمت تکمیل‌شده‌ی تسویه‌نشده‌ای وجود ندارد.
+                        </td>
+                      </tr>
                     )}
                   </tbody>
                 </table>
               </div>
 
-              <div className="mt-5 flex flex-col gap-3 rounded-xl p-4 sm:flex-row sm:items-center sm:justify-between" style={{ background: 'var(--brand-plum-50)' }}>
+              <div
+                className="mt-5 flex flex-col gap-3 rounded-xl p-4 sm:flex-row sm:items-center sm:justify-between"
+                style={{ background: 'var(--brand-plum-50)' }}
+              >
                 <div>
-                  <span className="text-xs" style={{ color: 'var(--ui-gray-500)' }}>مبلغ نهایی قابل پرداخت</span>
-                  <p className="text-lg font-bold" style={{ color: 'var(--brand-plum-600)' }}>{formatPrice(finalPayable)}</p>
+                  <span className="text-xs" style={{ color: 'var(--ui-gray-500)' }}>
+                    مبلغ نهایی قابل پرداخت
+                  </span>
+                  <p className="text-lg font-bold" style={{ color: 'var(--brand-plum-600)' }}>
+                    {formatPrice(finalPayable)}
+                  </p>
                 </div>
-                <button onClick={create} disabled={createSettlement.isPending || finalPayable < 0} className="rounded-xl px-6 py-2.5 text-sm font-semibold text-white disabled:opacity-50" style={{ background: 'var(--brand-plum-600)' }}>
+                <button
+                  onClick={create}
+                  disabled={createSettlement.isPending || finalPayable < 0}
+                  className="rounded-xl px-6 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+                  style={{ background: 'var(--brand-plum-600)' }}
+                >
                   {createSettlement.isPending ? 'در حال ثبت...' : 'ایجاد صورتحساب'}
                 </button>
               </div>
@@ -231,60 +332,122 @@ export default function SettlementsPage() {
 
         <section>
           <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <h2 className="font-semibold" style={{ color: 'var(--brand-navy-600)' }}>تاریخچه تسویه‌ها</h2>
+            <h2 className="font-semibold" style={{ color: 'var(--brand-navy-600)' }}>
+              تاریخچه تسویه‌ها
+            </h2>
             <div className="flex gap-2">
-              <select value={filters.staffId} onChange={(event) => setFilters((current) => ({ ...current, staffId: event.target.value }))} className="rounded-lg border bg-white px-3 py-2 text-xs">
+              <select
+                value={filters.staffId}
+                onChange={(event) =>
+                  setFilters((current) => ({ ...current, staffId: event.target.value }))
+                }
+                className="rounded-lg border bg-white px-3 py-2 text-xs"
+              >
                 <option value="">همه کارکنان</option>
-                {staff.map((member: any) => <option key={member.id} value={member.id}>{member.displayName}</option>)}
+                {staff.map((member: any) => (
+                  <option key={member.id} value={member.id}>
+                    {member.displayName}
+                  </option>
+                ))}
               </select>
-              <select value={filters.status} onChange={(event) => setFilters((current) => ({ ...current, status: event.target.value }))} className="rounded-lg border bg-white px-3 py-2 text-xs">
+              <select
+                value={filters.status}
+                onChange={(event) =>
+                  setFilters((current) => ({ ...current, status: event.target.value }))
+                }
+                className="rounded-lg border bg-white px-3 py-2 text-xs"
+              >
                 <option value="">همه وضعیت‌ها</option>
-                {Object.entries(STATUS).map(([value, item]) => <option key={value} value={value}>{item.label}</option>)}
+                {Object.entries(STATUS).map(([value, item]) => (
+                  <option key={value} value={value}>
+                    {item.label}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
 
           {isLoading ? (
-            <div className="flex justify-center py-16"><Loader2 className="animate-spin" /></div>
+            <div className="flex justify-center py-16">
+              <Loader2 className="animate-spin" />
+            </div>
           ) : isError ? (
             <div className="rounded-2xl border bg-white p-8 text-center">
               <p className="text-sm text-red-600">دریافت تسویه‌ها ناموفق بود.</p>
-              <button onClick={() => refetch()} className="mt-3 text-sm underline">تلاش دوباره</button>
+              <button onClick={() => refetch()} className="mt-3 text-sm underline">
+                تلاش دوباره
+              </button>
             </div>
           ) : !settlements.length ? (
-            <div className="rounded-2xl border bg-white p-12 text-center" style={{ borderColor: 'var(--ui-gray-200)' }}>
+            <div
+              className="rounded-2xl border bg-white p-12 text-center"
+              style={{ borderColor: 'var(--ui-gray-200)' }}
+            >
               <FileText className="mx-auto mb-3" style={{ color: 'var(--ui-gray-300)' }} />
-              <p className="text-sm" style={{ color: 'var(--ui-gray-500)' }}>هنوز صورتحسابی ثبت نشده است.</p>
+              <p className="text-sm" style={{ color: 'var(--ui-gray-500)' }}>
+                هنوز صورتحسابی ثبت نشده است.
+              </p>
             </div>
           ) : (
             <div className="grid gap-4">
               {settlements.map((settlement: any) => {
                 const status = STATUS[settlement.status] || STATUS.DRAFT;
                 return (
-                  <article key={settlement.id} className="rounded-2xl border bg-white p-5" style={{ borderColor: 'var(--ui-gray-200)' }}>
+                  <article
+                    key={settlement.id}
+                    className="rounded-2xl border bg-white p-5"
+                    style={{ borderColor: 'var(--ui-gray-200)' }}
+                  >
                     <div className="flex flex-col gap-4 md:flex-row md:items-center">
                       <div className="flex-1">
                         <div className="flex items-center gap-3">
-                          <h3 className="font-semibold" style={{ color: 'var(--brand-navy-600)' }}>{settlement.staff.displayName}</h3>
-                          <span className="rounded-full px-2.5 py-1 text-xs font-medium" style={{ color: status.color, background: status.background }}>{status.label}</span>
+                          <h3 className="font-semibold" style={{ color: 'var(--brand-navy-600)' }}>
+                            {settlement.staff.displayName}
+                          </h3>
+                          <span
+                            className="rounded-full px-2.5 py-1 text-xs font-medium"
+                            style={{ color: status.color, background: status.background }}
+                          >
+                            {status.label}
+                          </span>
                         </div>
                         <p className="mt-2 text-xs" style={{ color: 'var(--ui-gray-500)' }}>
-                          دوره {toJalali(settlement.periodStart)} تا {toJalali(settlement.periodEnd)} · {settlement._count.items} خدمت
+                          دوره {toJalali(settlement.periodStart)} تا{' '}
+                          {toJalali(settlement.periodEnd)} · {settlement._count.items} خدمت
                         </p>
                       </div>
                       <div className="min-w-40">
-                        <span className="text-xs" style={{ color: 'var(--ui-gray-400)' }}>خالص قابل پرداخت</span>
-                        <p className="font-bold" style={{ color: 'var(--brand-plum-600)' }}>{formatPrice(settlement.netPayable)}</p>
+                        <span className="text-xs" style={{ color: 'var(--ui-gray-400)' }}>
+                          خالص قابل پرداخت
+                        </span>
+                        <p className="font-bold" style={{ color: 'var(--brand-plum-600)' }}>
+                          {formatPrice(settlement.netPayable)}
+                        </p>
                       </div>
                       <div className="flex flex-wrap gap-2">
                         {settlement.status === 'DRAFT' && (
                           <>
-                            <button onClick={() => changeStatus(settlement.id, 'APPROVED')} className="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-3 py-2 text-xs font-medium text-blue-700"><CheckCircle2 size={14} /> تأیید</button>
-                            <button onClick={() => changeStatus(settlement.id, 'CANCELLED')} className="inline-flex items-center gap-1 rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-700"><XCircle size={14} /> لغو</button>
+                            <button
+                              onClick={() => changeStatus(settlement.id, 'APPROVED')}
+                              className="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-3 py-2 text-xs font-medium text-blue-700"
+                            >
+                              <CheckCircle2 size={14} /> تأیید
+                            </button>
+                            <button
+                              onClick={() => changeStatus(settlement.id, 'CANCELLED')}
+                              className="inline-flex items-center gap-1 rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-700"
+                            >
+                              <XCircle size={14} /> لغو
+                            </button>
                           </>
                         )}
                         {settlement.status === 'APPROVED' && (
-                          <button onClick={() => setPaying(settlement)} className="inline-flex items-center gap-1 rounded-lg bg-green-50 px-3 py-2 text-xs font-medium text-green-700"><CreditCard size={14} /> ثبت پرداخت</button>
+                          <button
+                            onClick={() => setPaying(settlement)}
+                            className="inline-flex items-center gap-1 rounded-lg bg-green-50 px-3 py-2 text-xs font-medium text-green-700"
+                          >
+                            <CreditCard size={14} /> ثبت پرداخت
+                          </button>
                         )}
                       </div>
                     </div>
@@ -299,11 +462,21 @@ export default function SettlementsPage() {
       {paying && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-md rounded-2xl bg-white p-6">
-            <h3 className="font-bold" style={{ color: 'var(--brand-navy-600)' }}>ثبت پرداخت {paying.staff.displayName}</h3>
-            <p className="mt-1 text-sm" style={{ color: 'var(--ui-gray-500)' }}>{formatPrice(paying.netPayable)}</p>
+            <h3 className="font-bold" style={{ color: 'var(--brand-navy-600)' }}>
+              ثبت پرداخت {paying.staff.displayName}
+            </h3>
+            <p className="mt-1 text-sm" style={{ color: 'var(--ui-gray-500)' }}>
+              {formatPrice(paying.netPayable)}
+            </p>
             <div className="mt-5 space-y-4">
               <Field label="روش پرداخت">
-                <select value={payment.paymentMethod} onChange={(event) => setPayment((current) => ({ ...current, paymentMethod: event.target.value }))} className="w-full rounded-xl border px-3 py-2.5 text-sm">
+                <select
+                  value={payment.paymentMethod}
+                  onChange={(event) =>
+                    setPayment((current) => ({ ...current, paymentMethod: event.target.value }))
+                  }
+                  className="w-full rounded-xl border px-3 py-2.5 text-sm"
+                >
                   <option>کارت به کارت</option>
                   <option>انتقال بانکی</option>
                   <option>نقدی</option>
@@ -311,12 +484,30 @@ export default function SettlementsPage() {
                 </select>
               </Field>
               <Field label="شماره پیگیری">
-                <input value={payment.paymentReference} onChange={(event) => setPayment((current) => ({ ...current, paymentReference: event.target.value }))} className="w-full rounded-xl border px-3 py-2.5 text-sm" />
+                <input
+                  value={payment.paymentReference}
+                  onChange={(event) =>
+                    setPayment((current) => ({ ...current, paymentReference: event.target.value }))
+                  }
+                  className="w-full rounded-xl border px-3 py-2.5 text-sm"
+                />
               </Field>
             </div>
             <div className="mt-6 flex gap-3">
-              <button onClick={markPaid} disabled={updateStatus.isPending} className="rounded-xl px-5 py-2.5 text-sm font-semibold text-white" style={{ background: '#1A7F37' }}>ثبت پرداخت</button>
-              <button onClick={() => setPaying(null)} className="rounded-xl border px-5 py-2.5 text-sm">انصراف</button>
+              <button
+                onClick={markPaid}
+                disabled={updateStatus.isPending}
+                className="rounded-xl px-5 py-2.5 text-sm font-semibold text-white"
+                style={{ background: '#1A7F37' }}
+              >
+                ثبت پرداخت
+              </button>
+              <button
+                onClick={() => setPaying(null)}
+                className="rounded-xl border px-5 py-2.5 text-sm"
+              >
+                انصراف
+              </button>
             </div>
           </div>
         </div>
@@ -328,17 +519,37 @@ export default function SettlementsPage() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="mb-4 block">
-      <span className="mb-1.5 block text-xs font-medium" style={{ color: 'var(--ui-gray-500)' }}>{label}</span>
+      <span className="mb-1.5 block text-xs font-medium" style={{ color: 'var(--ui-gray-500)' }}>
+        {label}
+      </span>
       {children}
     </label>
   );
 }
 
-function Metric({ label, value, accent = false }: { label: string; value: string; accent?: boolean }) {
+function Metric({
+  label,
+  value,
+  accent = false,
+}: {
+  label: string;
+  value: string;
+  accent?: boolean;
+}) {
   return (
-    <div className="rounded-xl p-4" style={{ background: accent ? 'var(--brand-plum-50)' : 'var(--bg-ivory)' }}>
-      <p className="text-xs" style={{ color: 'var(--ui-gray-500)' }}>{label}</p>
-      <p className="mt-1 font-bold" style={{ color: accent ? 'var(--brand-plum-600)' : 'var(--brand-navy-600)' }}>{value}</p>
+    <div
+      className="rounded-xl p-4"
+      style={{ background: accent ? 'var(--brand-plum-50)' : 'var(--bg-ivory)' }}
+    >
+      <p className="text-xs" style={{ color: 'var(--ui-gray-500)' }}>
+        {label}
+      </p>
+      <p
+        className="mt-1 font-bold"
+        style={{ color: accent ? 'var(--brand-plum-600)' : 'var(--brand-navy-600)' }}
+      >
+        {value}
+      </p>
     </div>
   );
 }

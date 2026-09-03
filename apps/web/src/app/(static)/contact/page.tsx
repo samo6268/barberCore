@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Mail, Phone, MapPin, ChevronDown } from 'lucide-react';
+import { CheckCircle2, Mail, Phone, MapPin, ChevronDown } from 'lucide-react';
 
 const FAQS = [
   {
@@ -91,9 +91,11 @@ export default function ContactPage() {
                     textAlign: 'center',
                   }}
                 >
-                  <div style={{ fontSize: 'var(--type-display-lg-size)', marginBottom: '0.75rem' }}>
-                    ✅
-                  </div>
+                  <CheckCircle2
+                    size={42}
+                    strokeWidth={1.6}
+                    style={{ color: '#15803d', margin: '0 auto 0.75rem' }}
+                  />
                   <p className="text-body" style={{ color: '#166534', fontWeight: 600 }}>
                     پیام شما ارسال شد
                   </p>

@@ -4,6 +4,7 @@ import { ThemeProvider } from '@/components/shared/theme-provider';
 import { QueryProvider } from '@/components/shared/query-provider';
 import { ConditionalNav } from '@/components/layout/conditional-nav';
 import { ConditionalFooter } from '@/components/layout/conditional-footer';
+import '@daypicker/react/style.css';
 import './globals.css';
 
 export const metadata: Metadata = {

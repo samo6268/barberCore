@@ -7,7 +7,8 @@ import { Input } from '@ui/components/input';
 import { Badge } from '@ui/components/badge';
 import { Avatar } from '@ui/components/avatar';
 import { Modal } from '@ui/components/modal';
-import { ScissorsIcon, CombIcon, RazorIcon, BrushIcon, HairDryerIcon } from '@ui/icons/custom';
+import { Brush, CalendarDays, Scissors, Sparkles, SprayCan, Wind } from 'lucide-react';
+import { PersianDatePicker } from '@/components/shared/persian-date-picker';
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -24,6 +25,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 export default function DesignSystemPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [inputVal, setInputVal] = useState('');
+  const [bookingDate, setBookingDate] = useState('');
 
   return (
     <main className="min-h-screen" style={{ background: 'var(--color-background)' }}>
@@ -228,14 +230,15 @@ export default function DesignSystemPage() {
         </Section>
 
         {/* Icons */}
-        <Section title="آیکون‌های اختصاصی">
+        <Section title="آیکون‌های رابط — Lucide">
           <div className="flex items-center gap-8">
             {[
-              { Icon: ScissorsIcon, label: 'Scissors' },
-              { Icon: CombIcon, label: 'Comb' },
-              { Icon: RazorIcon, label: 'Razor' },
-              { Icon: BrushIcon, label: 'Brush' },
-              { Icon: HairDryerIcon, label: 'Hair Dryer' },
+              { Icon: Scissors, label: 'خدمات' },
+              { Icon: Brush, label: 'آرایش' },
+              { Icon: SprayCan, label: 'مراقبت' },
+              { Icon: Wind, label: 'حالت مو' },
+              { Icon: Sparkles, label: 'ویژه' },
+              { Icon: CalendarDays, label: 'رزرو' },
             ].map(({ Icon, label }) => (
               <div key={label} className="flex flex-col items-center gap-3">
                 <Icon size={32} style={{ color: 'var(--color-primary)' }} />
@@ -253,7 +256,12 @@ export default function DesignSystemPage() {
           <Modal open={modalOpen} onClose={() => setModalOpen(false)} title="رزرو نوبت">
             <div className="space-y-6">
               <Input label="نام خدمت" />
-              <Input label="تاریخ" type="date" />
+              <PersianDatePicker
+                label="تاریخ"
+                value={bookingDate}
+                onChange={setBookingDate}
+                clearable
+              />
               <div className="flex gap-3 pt-2">
                 <Button className="flex-1">تأیید رزرو</Button>
                 <Button variant="ghost" onClick={() => setModalOpen(false)}>

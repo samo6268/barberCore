@@ -201,7 +201,7 @@ function SalonCard({ salon }: { salon: any }) {
             {salon.logoUrl ? (
               <img src={salon.logoUrl} alt="" className="h-full w-full object-cover" />
             ) : (
-              '✂️'
+              <Scissors size={21} className="text-[var(--brand-plum-600)]" />
             )}
           </div>
           <div className="min-w-0 flex-1">

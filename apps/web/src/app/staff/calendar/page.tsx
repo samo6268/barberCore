@@ -7,6 +7,7 @@ import { useStaffBookings, useUpdateStaffBookingStatus } from '@/lib/api-hooks';
 import { getApiErrorMessage } from '@/lib/api';
 import { iranDateInput, toJalali } from '@/lib/utils';
 import { useStaffPortal } from '@/components/staff/staff-shell';
+import { PersianDatePicker } from '@/components/shared/persian-date-picker';
 import {
   BookingCard,
   EmptyState,
@@ -53,8 +54,8 @@ export default function StaffCalendarPage() {
         description="نمای روزانه یا بازه‌ای از نوبت‌هایی که به شما تخصیص یافته است."
       />
       <div className="mb-6 grid gap-3 rounded-2xl border border-[var(--ui-gray-200)] bg-white p-4 sm:grid-cols-3">
-        <DateField label="از تاریخ" value={from} onChange={setFrom} />
-        <DateField label="تا تاریخ" value={to} onChange={setTo} />
+        <PersianDatePicker label="از تاریخ" value={from} onChange={setFrom} max={to} />
+        <PersianDatePicker label="تا تاریخ" value={to} onChange={setTo} min={from} />
         <label>
           <span className="mb-1.5 flex items-center gap-1 text-xs text-[var(--ui-gray-500)]">
             <Filter size={13} /> وضعیت
@@ -111,27 +112,5 @@ export default function StaffCalendarPage() {
         </div>
       )}
     </div>
-  );
-}
-
-function DateField({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-}) {
-  return (
-    <label>
-      <span className="mb-1.5 block text-xs text-[var(--ui-gray-500)]">{label}</span>
-      <input
-        type="date"
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        className="w-full rounded-xl border border-[var(--ui-gray-200)] px-3 py-2 text-sm"
-      />
-    </label>
   );
 }

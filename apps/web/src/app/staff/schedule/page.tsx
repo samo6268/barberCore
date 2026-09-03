@@ -12,6 +12,7 @@ import {
 import { getApiErrorMessage } from '@/lib/api';
 import { formatTime, toJalali } from '@/lib/utils';
 import { useStaffPortal } from '@/components/staff/staff-shell';
+import { PersianDateTimePicker } from '@/components/shared/persian-date-picker';
 import { EmptyState, StaffPageHeader, StaffPageLoading } from '@/components/staff/staff-ui';
 
 const DAYS = [
@@ -311,24 +312,4 @@ function TimeInput({
   );
 }
 
-function DateTimeField({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-}) {
-  return (
-    <label>
-      <span className="mb-1.5 block text-xs text-[var(--ui-gray-500)]">{label}</span>
-      <input
-        type="datetime-local"
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        className="w-full rounded-xl border border-[var(--ui-gray-200)] px-3 py-2 text-sm"
-      />
-    </label>
-  );
-}
+const DateTimeField = PersianDateTimePicker;

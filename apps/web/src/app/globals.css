@@ -373,3 +373,122 @@
     aspect-ratio: 16/9;
   }
 }
+
+/* ── Persian calendar — shared across marketplace and operations ── */
+.parnegarin-calendar.rdp-root {
+  --rdp-accent-color: var(--brand-plum-600);
+  --rdp-accent-background-color: var(--brand-plum-50);
+  --rdp-day-height: 42px;
+  --rdp-day-width: 42px;
+  --rdp-day_button-height: 38px;
+  --rdp-day_button-width: 38px;
+  --rdp-day_button-border-radius: 12px;
+  --rdp-selected-border: 0;
+  --rdp-today-color: var(--brand-plum-600);
+  width: 100%;
+  color: var(--brand-navy-600);
+  font-family: var(--font-sans);
+}
+
+.parnegarin-calendar .rdp-months,
+.parnegarin-calendar .rdp-month,
+.parnegarin-calendar .rdp-month_grid {
+  width: 100%;
+}
+
+.parnegarin-calendar .rdp-month_grid {
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 1px;
+}
+
+.parnegarin-calendar .rdp-month_caption {
+  align-items: center;
+  justify-content: center;
+  font-size: var(--type-body-size);
+  font-weight: 600;
+}
+
+.parnegarin-calendar .rdp-dropdowns {
+  gap: 0.25rem;
+}
+
+.parnegarin-calendar .rdp-dropdown_root {
+  border-radius: 0.5rem;
+  padding: 0.25rem 0.4rem;
+  transition: background-color 160ms ease;
+}
+
+.parnegarin-calendar .rdp-dropdown_root:hover {
+  background: var(--brand-plum-50);
+}
+
+.parnegarin-calendar .rdp-nav button {
+  border-radius: 0.65rem;
+  color: var(--brand-plum-600);
+  transition:
+    color 160ms ease,
+    background-color 160ms ease;
+}
+
+.parnegarin-calendar .rdp-nav button:hover:not(:disabled) {
+  background: var(--brand-plum-50);
+}
+
+.parnegarin-calendar .rdp-weekday {
+  padding-block: 0.55rem;
+  color: var(--ui-gray-400);
+  font-size: var(--type-caption-size);
+  font-weight: 500;
+}
+
+.parnegarin-calendar .rdp-day_button {
+  margin: auto;
+  font-size: var(--type-body-sm-size);
+  transition:
+    color 140ms ease,
+    background-color 140ms ease,
+    transform 140ms ease;
+}
+
+.parnegarin-calendar .rdp-day_button:hover:not(:disabled) {
+  background: var(--brand-plum-50);
+  color: var(--brand-plum-700);
+  transform: translateY(-1px);
+}
+
+.parnegarin-calendar .rdp-selected .rdp-day_button {
+  border: 0;
+  background: var(--brand-plum-600);
+  color: white;
+  box-shadow: 0 7px 18px rgba(111, 66, 91, 0.2);
+}
+
+.parnegarin-calendar .rdp-today:not(.rdp-selected) .rdp-day_button {
+  border: 1px solid var(--brand-gold-600);
+  background: var(--brand-gold-50);
+  color: var(--brand-navy-600);
+  font-weight: 700;
+}
+
+.parnegarin-calendar .rdp-outside {
+  opacity: 0.28;
+}
+
+.parnegarin-calendar .rdp-disabled {
+  opacity: 0.22;
+  text-decoration: line-through;
+}
+
+.parnegarin-calendar .rdp-chevron {
+  stroke: currentColor;
+}
+
+@media (max-width: 380px) {
+  .parnegarin-calendar.rdp-root {
+    --rdp-day-height: 38px;
+    --rdp-day-width: 38px;
+    --rdp-day_button-height: 35px;
+    --rdp-day_button-width: 35px;
+  }
+}

@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Calendar, Check, ChevronLeft, Clock, UserRound } from 'lucide-react';
 import { useAvailability, useCreateBooking, useSalonBySlug } from '@/lib/api-hooks';
 import { formatPrice, toJalali } from '@/lib/utils';
+import { PersianDatePicker } from '@/components/shared/persian-date-picker';
 
 type TimeSlot = {
   time: string;
@@ -337,26 +338,17 @@ export default function BookPage() {
             <h2 className="font-semibold mb-4 flex items-center gap-2">
               <Calendar className="w-4 h-4" /> ۳. انتخاب تاریخ
             </h2>
-            <div className="flex gap-2 overflow-x-auto pb-2">
-              {dates.map((date) => (
-                <button
-                  key={date}
-                  onClick={() => {
-                    setSelectedDate(date);
-                    setSelectedTime('');
-                  }}
-                  className="flex-none text-center px-4 py-3 rounded-xl border text-sm transition-colors"
-                  style={{
-                    borderColor:
-                      selectedDate === date ? 'var(--color-primary)' : 'var(--color-border)',
-                    background: selectedDate === date ? 'var(--color-primary)' : 'transparent',
-                    color: selectedDate === date ? 'white' : 'var(--color-text)',
-                  }}
-                >
-                  {toJalali(date)}
-                </button>
-              ))}
-            </div>
+            <PersianDatePicker
+              value={selectedDate}
+              onChange={(date) => {
+                setSelectedDate(date);
+                setSelectedTime('');
+              }}
+              min={dates[0]}
+              max={dates[dates.length - 1]}
+              placeholder="روز مناسب را انتخاب کنید"
+              ariaLabel="انتخاب تاریخ رزرو"
+            />
           </section>
         )}
 

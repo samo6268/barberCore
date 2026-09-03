@@ -98,7 +98,7 @@ export default function SalonOverviewPage() {
                   {salon.logoUrl ? (
                     <img src={salon.logoUrl} alt="" className="h-full w-full object-cover" />
                   ) : (
-                    '✂️'
+                    <Scissors size={27} className="text-[var(--brand-plum-600)]" />
                   )}
                 </div>
                 <div>

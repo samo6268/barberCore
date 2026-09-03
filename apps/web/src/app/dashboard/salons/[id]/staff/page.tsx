@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import { toast } from 'sonner';
-import { Plus, Settings2, X } from 'lucide-react';
+import { Plus, Settings2, UserRound, X } from 'lucide-react';
 import {
   useSalonStaffManagement,
   useCreateStaff,
@@ -54,7 +54,10 @@ export default function StaffPage() {
         commissionRate: Number(form.commissionRate || 0),
         fixedServiceAmount: Number(form.fixedServiceAmount || 0),
         monthlySalary: Number(form.monthlySalary || 0),
-        specialties: form.specialties.split('،').map(s => s.trim()).filter(Boolean),
+        specialties: form.specialties
+          .split('،')
+          .map((s) => s.trim())
+          .filter(Boolean),
       });
       toast.success('متخصص اضافه شد');
       setShowForm(false);
@@ -115,33 +118,75 @@ export default function StaffPage() {
     <DashboardLayout salonId={id} activeTab="staff">
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold" style={{ color: 'var(--brand-navy-600)' }}>تیم متخصصین</h2>
-          <button onClick={() => setShowForm(p => !p)}
+          <h2 className="text-xl font-bold" style={{ color: 'var(--brand-navy-600)' }}>
+            تیم متخصصین
+          </h2>
+          <button
+            onClick={() => setShowForm((p) => !p)}
             className="flex items-center gap-2 px-4 py-2 rounded-xl text-white text-sm font-medium"
-            style={{ background: 'var(--brand-plum-600)' }}>
+            style={{ background: 'var(--brand-plum-600)' }}
+          >
             <Plus className="w-4 h-4" /> افزودن متخصص
           </button>
         </div>
 
         {showForm && (
-          <div className="rounded-2xl p-5 border space-y-3" style={{ background: 'white', borderColor: 'var(--ui-gray-200)' }}>
-            <input placeholder="نام متخصص *" value={form.displayName} onChange={e => setForm(p => ({...p, displayName: e.target.value}))}
+          <div
+            className="rounded-2xl p-5 border space-y-3"
+            style={{ background: 'white', borderColor: 'var(--ui-gray-200)' }}
+          >
+            <input
+              placeholder="نام متخصص *"
+              value={form.displayName}
+              onChange={(e) => setForm((p) => ({ ...p, displayName: e.target.value }))}
               className="w-full px-4 py-2 rounded-xl border text-sm outline-none"
-              style={{ borderColor: 'var(--ui-gray-200)', background: 'var(--bg-ivory)', color: 'var(--brand-navy-600)' }} />
-            <input placeholder="شماره موبایل متخصص *" value={form.phone} onChange={e => setForm(p => ({...p, phone: e.target.value}))}
+              style={{
+                borderColor: 'var(--ui-gray-200)',
+                background: 'var(--bg-ivory)',
+                color: 'var(--brand-navy-600)',
+              }}
+            />
+            <input
+              placeholder="شماره موبایل متخصص *"
+              value={form.phone}
+              onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))}
               dir="ltr"
               className="w-full px-4 py-2 rounded-xl border text-sm outline-none"
-              style={{ borderColor: 'var(--ui-gray-200)', background: 'var(--bg-ivory)', color: 'var(--brand-navy-600)' }} />
-            <input placeholder="تخصص‌ها (با ، جدا کنید)" value={form.specialties} onChange={e => setForm(p => ({...p, specialties: e.target.value}))}
+              style={{
+                borderColor: 'var(--ui-gray-200)',
+                background: 'var(--bg-ivory)',
+                color: 'var(--brand-navy-600)',
+              }}
+            />
+            <input
+              placeholder="تخصص‌ها (با ، جدا کنید)"
+              value={form.specialties}
+              onChange={(e) => setForm((p) => ({ ...p, specialties: e.target.value }))}
               className="w-full px-4 py-2 rounded-xl border text-sm outline-none"
-              style={{ borderColor: 'var(--ui-gray-200)', background: 'var(--bg-ivory)', color: 'var(--brand-navy-600)' }} />
-            <textarea placeholder="بیوگرافی (اختیاری)" value={form.bio} onChange={e => setForm(p => ({...p, bio: e.target.value}))} rows={2}
+              style={{
+                borderColor: 'var(--ui-gray-200)',
+                background: 'var(--bg-ivory)',
+                color: 'var(--brand-navy-600)',
+              }}
+            />
+            <textarea
+              placeholder="بیوگرافی (اختیاری)"
+              value={form.bio}
+              onChange={(e) => setForm((p) => ({ ...p, bio: e.target.value }))}
+              rows={2}
               className="w-full px-4 py-2 rounded-xl border text-sm outline-none resize-none"
-              style={{ borderColor: 'var(--ui-gray-200)', background: 'var(--bg-ivory)', color: 'var(--brand-navy-600)' }} />
+              style={{
+                borderColor: 'var(--ui-gray-200)',
+                background: 'var(--bg-ivory)',
+                color: 'var(--brand-navy-600)',
+              }}
+            />
             <div className="grid gap-3 sm:grid-cols-2">
               <select
                 value={form.compensationType}
-                onChange={(event) => setForm((current) => ({ ...current, compensationType: event.target.value }))}
+                onChange={(event) =>
+                  setForm((current) => ({ ...current, compensationType: event.target.value }))
+                }
                 className="rounded-xl border px-4 py-2 text-sm"
                 style={{ borderColor: 'var(--ui-gray-200)', background: 'var(--bg-ivory)' }}
               >
@@ -150,20 +195,47 @@ export default function StaffPage() {
                 <option value="SALARY">حقوق ثابت</option>
                 <option value="SALARY_PLUS_PERCENTAGE">حقوق ثابت + پورسانت</option>
               </select>
-              {(form.compensationType === 'PERCENTAGE' || form.compensationType === 'SALARY_PLUS_PERCENTAGE') && (
-                <input type="number" min="0" max="100" placeholder="درصد پورسانت" value={form.commissionRate}
-                  onChange={(event) => setForm((current) => ({ ...current, commissionRate: event.target.value }))}
-                  className="rounded-xl border px-4 py-2 text-sm" style={{ borderColor: 'var(--ui-gray-200)', background: 'var(--bg-ivory)' }} />
+              {(form.compensationType === 'PERCENTAGE' ||
+                form.compensationType === 'SALARY_PLUS_PERCENTAGE') && (
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  placeholder="درصد پورسانت"
+                  value={form.commissionRate}
+                  onChange={(event) =>
+                    setForm((current) => ({ ...current, commissionRate: event.target.value }))
+                  }
+                  className="rounded-xl border px-4 py-2 text-sm"
+                  style={{ borderColor: 'var(--ui-gray-200)', background: 'var(--bg-ivory)' }}
+                />
               )}
               {form.compensationType === 'FIXED_PER_SERVICE' && (
-                <input type="number" min="0" placeholder="مبلغ هر خدمت (ریال)" value={form.fixedServiceAmount}
-                  onChange={(event) => setForm((current) => ({ ...current, fixedServiceAmount: event.target.value }))}
-                  className="rounded-xl border px-4 py-2 text-sm" style={{ borderColor: 'var(--ui-gray-200)', background: 'var(--bg-ivory)' }} />
+                <input
+                  type="number"
+                  min="0"
+                  placeholder="مبلغ هر خدمت (ریال)"
+                  value={form.fixedServiceAmount}
+                  onChange={(event) =>
+                    setForm((current) => ({ ...current, fixedServiceAmount: event.target.value }))
+                  }
+                  className="rounded-xl border px-4 py-2 text-sm"
+                  style={{ borderColor: 'var(--ui-gray-200)', background: 'var(--bg-ivory)' }}
+                />
               )}
-              {(form.compensationType === 'SALARY' || form.compensationType === 'SALARY_PLUS_PERCENTAGE') && (
-                <input type="number" min="0" placeholder="حقوق ماهانه (ریال)" value={form.monthlySalary}
-                  onChange={(event) => setForm((current) => ({ ...current, monthlySalary: event.target.value }))}
-                  className="rounded-xl border px-4 py-2 text-sm" style={{ borderColor: 'var(--ui-gray-200)', background: 'var(--bg-ivory)' }} />
+              {(form.compensationType === 'SALARY' ||
+                form.compensationType === 'SALARY_PLUS_PERCENTAGE') && (
+                <input
+                  type="number"
+                  min="0"
+                  placeholder="حقوق ماهانه (ریال)"
+                  value={form.monthlySalary}
+                  onChange={(event) =>
+                    setForm((current) => ({ ...current, monthlySalary: event.target.value }))
+                  }
+                  className="rounded-xl border px-4 py-2 text-sm"
+                  style={{ borderColor: 'var(--ui-gray-200)', background: 'var(--bg-ivory)' }}
+                />
               )}
             </div>
             <div>
@@ -177,12 +249,14 @@ export default function StaffPage() {
                     <button
                       key={service.id}
                       type="button"
-                      onClick={() => setForm((current) => ({
-                        ...current,
-                        serviceIds: selected
-                          ? current.serviceIds.filter((item) => item !== service.id)
-                          : [...current.serviceIds, service.id],
-                      }))}
+                      onClick={() =>
+                        setForm((current) => ({
+                          ...current,
+                          serviceIds: selected
+                            ? current.serviceIds.filter((item) => item !== service.id)
+                            : [...current.serviceIds, service.id],
+                        }))
+                      }
                       className="rounded-full border px-3 py-1.5 text-xs"
                       style={{
                         borderColor: selected ? 'var(--brand-plum-600)' : 'var(--ui-gray-200)',
@@ -202,34 +276,87 @@ export default function StaffPage() {
               )}
             </div>
             <div className="flex gap-2">
-              <button onClick={handleCreate} disabled={createStaff.isPending}
-                className="px-6 py-2 rounded-xl text-white text-sm font-medium disabled:opacity-50" style={{ background: 'var(--brand-plum-600)' }}>
+              <button
+                onClick={handleCreate}
+                disabled={createStaff.isPending}
+                className="px-6 py-2 rounded-xl text-white text-sm font-medium disabled:opacity-50"
+                style={{ background: 'var(--brand-plum-600)' }}
+              >
                 {createStaff.isPending ? 'در حال ذخیره...' : 'ذخیره'}
               </button>
-              <button onClick={() => setShowForm(false)} className="px-6 py-2 rounded-xl border text-sm" style={{ borderColor: 'var(--ui-gray-200)', color: 'var(--ui-gray-500)' }}>انصراف</button>
+              <button
+                onClick={() => setShowForm(false)}
+                className="px-6 py-2 rounded-xl border text-sm"
+                style={{ borderColor: 'var(--ui-gray-200)', color: 'var(--ui-gray-500)' }}
+              >
+                انصراف
+              </button>
             </div>
           </div>
         )}
 
         {isLoading ? (
-          <div className="grid grid-cols-2 gap-4">{Array(4).fill(0).map((_, i) => <div key={i} className="h-32 rounded-2xl animate-pulse" style={{ background: 'white' }} />)}</div>
+          <div className="grid grid-cols-2 gap-4">
+            {Array(4)
+              .fill(0)
+              .map((_, i) => (
+                <div
+                  key={i}
+                  className="h-32 rounded-2xl animate-pulse"
+                  style={{ background: 'white' }}
+                />
+              ))}
+          </div>
         ) : !staff?.length ? (
-          <div className="text-center py-16 rounded-2xl border" style={{ background: 'white', borderColor: 'var(--ui-gray-200)' }}>
-            <div className="text-5xl mb-3">👤</div>
+          <div
+            className="text-center py-16 rounded-2xl border"
+            style={{ background: 'white', borderColor: 'var(--ui-gray-200)' }}
+          >
+            <UserRound
+              className="mx-auto mb-3 h-12 w-12 text-[var(--ui-gray-300)]"
+              strokeWidth={1.4}
+            />
             <p style={{ color: 'var(--ui-gray-500)' }}>هنوز متخصصی اضافه نکرده‌اید</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {staff.map((s: any) => (
-              <div key={s.id} className="flex items-center gap-3 p-4 rounded-2xl border" style={{ background: 'white', borderColor: 'var(--ui-gray-200)' }}>
-                <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0" style={{ background: 'var(--bg-ivory)' }}>
-                  {s.avatarUrl ? <img src={s.avatarUrl} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-2xl">👤</div>}
+              <div
+                key={s.id}
+                className="flex items-center gap-3 p-4 rounded-2xl border"
+                style={{ background: 'white', borderColor: 'var(--ui-gray-200)' }}
+              >
+                <div
+                  className="w-14 h-14 rounded-xl overflow-hidden shrink-0"
+                  style={{ background: 'var(--bg-ivory)' }}
+                >
+                  {s.avatarUrl ? (
+                    <img src={s.avatarUrl} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <UserRound size={23} className="text-[var(--ui-gray-400)]" />
+                    </div>
+                  )}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="font-semibold text-sm truncate" style={{ color: 'var(--brand-navy-600)' }}>{s.displayName}</p>
-                  {s.specialties?.length > 0 && <p className="text-xs mt-0.5 truncate" style={{ color: 'var(--ui-gray-500)' }}>{s.specialties.join('، ')}</p>}
-                  <p className="text-xs mt-1" style={{ color: 'var(--ui-gray-500)' }}>{s.services?.length || 0} خدمت</p>
-                  <p className="mt-1 text-xs font-medium" style={{ color: 'var(--brand-plum-600)' }}>
+                  <p
+                    className="font-semibold text-sm truncate"
+                    style={{ color: 'var(--brand-navy-600)' }}
+                  >
+                    {s.displayName}
+                  </p>
+                  {s.specialties?.length > 0 && (
+                    <p className="text-xs mt-0.5 truncate" style={{ color: 'var(--ui-gray-500)' }}>
+                      {s.specialties.join('، ')}
+                    </p>
+                  )}
+                  <p className="text-xs mt-1" style={{ color: 'var(--ui-gray-500)' }}>
+                    {s.services?.length || 0} خدمت
+                  </p>
+                  <p
+                    className="mt-1 text-xs font-medium"
+                    style={{ color: 'var(--brand-plum-600)' }}
+                  >
                     {compensationLabel(s)}
                   </p>
                 </div>
@@ -252,44 +379,96 @@ export default function StaffPage() {
           <div className="max-h-[90vh] w-full max-w-2xl overflow-auto rounded-2xl bg-white p-6">
             <div className="mb-5 flex items-center justify-between">
               <div>
-                <h3 className="font-bold" style={{ color: 'var(--brand-navy-600)' }}>قرارداد مالی {editingStaff.displayName}</h3>
-                <p className="mt-1 text-xs" style={{ color: 'var(--ui-gray-500)' }}>نرخ عمومی و استثناهای هر خدمت را تعیین کنید.</p>
+                <h3 className="font-bold" style={{ color: 'var(--brand-navy-600)' }}>
+                  قرارداد مالی {editingStaff.displayName}
+                </h3>
+                <p className="mt-1 text-xs" style={{ color: 'var(--ui-gray-500)' }}>
+                  نرخ عمومی و استثناهای هر خدمت را تعیین کنید.
+                </p>
               </div>
-              <button onClick={() => setEditingStaff(null)}><X size={20} /></button>
+              <button onClick={() => setEditingStaff(null)}>
+                <X size={20} />
+              </button>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="مدل همکاری">
-                <select value={contract.compensationType} onChange={(event) => setContract((current) => ({ ...current, compensationType: event.target.value }))} className="w-full rounded-xl border px-3 py-2.5 text-sm">
+                <select
+                  value={contract.compensationType}
+                  onChange={(event) =>
+                    setContract((current) => ({ ...current, compensationType: event.target.value }))
+                  }
+                  className="w-full rounded-xl border px-3 py-2.5 text-sm"
+                >
                   <option value="PERCENTAGE">درصد از خدمات</option>
                   <option value="FIXED_PER_SERVICE">مبلغ ثابت هر خدمت</option>
                   <option value="SALARY">حقوق ثابت</option>
                   <option value="SALARY_PLUS_PERCENTAGE">حقوق ثابت + پورسانت</option>
                 </select>
               </Field>
-              {(contract.compensationType === 'PERCENTAGE' || contract.compensationType === 'SALARY_PLUS_PERCENTAGE') && (
+              {(contract.compensationType === 'PERCENTAGE' ||
+                contract.compensationType === 'SALARY_PLUS_PERCENTAGE') && (
                 <Field label="درصد پورسانت عمومی">
-                  <input type="number" min="0" max="100" value={contract.commissionRate} onChange={(event) => setContract((current) => ({ ...current, commissionRate: event.target.value }))} className="w-full rounded-xl border px-3 py-2.5 text-sm" />
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={contract.commissionRate}
+                    onChange={(event) =>
+                      setContract((current) => ({ ...current, commissionRate: event.target.value }))
+                    }
+                    className="w-full rounded-xl border px-3 py-2.5 text-sm"
+                  />
                 </Field>
               )}
               {contract.compensationType === 'FIXED_PER_SERVICE' && (
                 <Field label="مبلغ عمومی هر خدمت (ریال)">
-                  <input type="number" min="0" value={contract.fixedServiceAmount} onChange={(event) => setContract((current) => ({ ...current, fixedServiceAmount: event.target.value }))} className="w-full rounded-xl border px-3 py-2.5 text-sm" />
+                  <input
+                    type="number"
+                    min="0"
+                    value={contract.fixedServiceAmount}
+                    onChange={(event) =>
+                      setContract((current) => ({
+                        ...current,
+                        fixedServiceAmount: event.target.value,
+                      }))
+                    }
+                    className="w-full rounded-xl border px-3 py-2.5 text-sm"
+                  />
                 </Field>
               )}
-              {(contract.compensationType === 'SALARY' || contract.compensationType === 'SALARY_PLUS_PERCENTAGE') && (
+              {(contract.compensationType === 'SALARY' ||
+                contract.compensationType === 'SALARY_PLUS_PERCENTAGE') && (
                 <Field label="حقوق ماهانه (ریال)">
-                  <input type="number" min="0" value={contract.monthlySalary} onChange={(event) => setContract((current) => ({ ...current, monthlySalary: event.target.value }))} className="w-full rounded-xl border px-3 py-2.5 text-sm" />
+                  <input
+                    type="number"
+                    min="0"
+                    value={contract.monthlySalary}
+                    onChange={(event) =>
+                      setContract((current) => ({ ...current, monthlySalary: event.target.value }))
+                    }
+                    className="w-full rounded-xl border px-3 py-2.5 text-sm"
+                  />
                 </Field>
               )}
             </div>
 
-            {(contract.compensationType === 'PERCENTAGE' || contract.compensationType === 'SALARY_PLUS_PERCENTAGE' || contract.compensationType === 'FIXED_PER_SERVICE') && (
+            {(contract.compensationType === 'PERCENTAGE' ||
+              contract.compensationType === 'SALARY_PLUS_PERCENTAGE' ||
+              contract.compensationType === 'FIXED_PER_SERVICE') && (
               <div className="mt-6">
-                <h4 className="mb-3 text-sm font-semibold" style={{ color: 'var(--brand-navy-600)' }}>نرخ اختصاصی خدمات (اختیاری)</h4>
+                <h4
+                  className="mb-3 text-sm font-semibold"
+                  style={{ color: 'var(--brand-navy-600)' }}
+                >
+                  نرخ اختصاصی خدمات (اختیاری)
+                </h4>
                 <div className="space-y-2">
                   {contract.serviceRules.map((rule, index) => (
-                    <div key={rule.serviceId} className="grid grid-cols-3 items-center gap-3 rounded-xl bg-[var(--bg-ivory)] p-3">
+                    <div
+                      key={rule.serviceId}
+                      className="grid grid-cols-3 items-center gap-3 rounded-xl bg-[var(--bg-ivory)] p-3"
+                    >
                       <span className="text-sm">{rule.serviceName}</span>
                       <input
                         type="number"
@@ -298,10 +477,16 @@ export default function StaffPage() {
                         placeholder="درصد اختصاصی"
                         disabled={contract.compensationType === 'FIXED_PER_SERVICE'}
                         value={rule.commissionRate}
-                        onChange={(event) => setContract((current) => ({
-                          ...current,
-                          serviceRules: current.serviceRules.map((item, itemIndex) => itemIndex === index ? { ...item, commissionRate: event.target.value } : item),
-                        }))}
+                        onChange={(event) =>
+                          setContract((current) => ({
+                            ...current,
+                            serviceRules: current.serviceRules.map((item, itemIndex) =>
+                              itemIndex === index
+                                ? { ...item, commissionRate: event.target.value }
+                                : item,
+                            ),
+                          }))
+                        }
                         className="rounded-lg border px-2 py-2 text-xs disabled:opacity-40"
                       />
                       <input
@@ -310,10 +495,16 @@ export default function StaffPage() {
                         placeholder="مبلغ ثابت"
                         disabled={contract.compensationType !== 'FIXED_PER_SERVICE'}
                         value={rule.fixedAmount}
-                        onChange={(event) => setContract((current) => ({
-                          ...current,
-                          serviceRules: current.serviceRules.map((item, itemIndex) => itemIndex === index ? { ...item, fixedAmount: event.target.value } : item),
-                        }))}
+                        onChange={(event) =>
+                          setContract((current) => ({
+                            ...current,
+                            serviceRules: current.serviceRules.map((item, itemIndex) =>
+                              itemIndex === index
+                                ? { ...item, fixedAmount: event.target.value }
+                                : item,
+                            ),
+                          }))
+                        }
                         className="rounded-lg border px-2 py-2 text-xs disabled:opacity-40"
                       />
                     </div>
@@ -323,10 +514,21 @@ export default function StaffPage() {
             )}
 
             <div className="mt-6 flex gap-3">
-              <button onClick={saveContract} disabled={updateCompensation.isPending} className="rounded-xl px-6 py-2.5 text-sm font-semibold text-white disabled:opacity-50" style={{ background: 'var(--brand-plum-600)' }}>
+              <button
+                onClick={saveContract}
+                disabled={updateCompensation.isPending}
+                className="rounded-xl px-6 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+                style={{ background: 'var(--brand-plum-600)' }}
+              >
                 {updateCompensation.isPending ? 'در حال ذخیره...' : 'ذخیره قرارداد'}
               </button>
-              <button onClick={() => setEditingStaff(null)} className="rounded-xl border px-6 py-2.5 text-sm" style={{ borderColor: 'var(--ui-gray-200)' }}>انصراف</button>
+              <button
+                onClick={() => setEditingStaff(null)}
+                className="rounded-xl border px-6 py-2.5 text-sm"
+                style={{ borderColor: 'var(--ui-gray-200)' }}
+              >
+                انصراف
+              </button>
             </div>
           </div>
         </div>
@@ -338,7 +540,9 @@ export default function StaffPage() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label>
-      <span className="mb-1.5 block text-xs font-medium" style={{ color: 'var(--ui-gray-500)' }}>{label}</span>
+      <span className="mb-1.5 block text-xs font-medium" style={{ color: 'var(--ui-gray-500)' }}>
+        {label}
+      </span>
       {children}
     </label>
   );

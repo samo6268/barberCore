@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, X } from 'lucide-react';
+import { Search, SearchX, X } from 'lucide-react';
 import { useSearchSalons } from '@/lib/api-hooks';
 import { SalonCard } from '@/components/salon/salon-card';
 import { Navbar } from '@/components/layout/navbar';
@@ -186,9 +186,11 @@ export function MarketplacePage({ gender }: { gender: 'male' | 'female' }) {
           </div>
         ) : salons.length === 0 ? (
           <div className="text-center py-24">
-            <p className="text-display-md mb-4" style={{ color: 'var(--ui-gray-200)' }}>
-              😕
-            </p>
+            <SearchX
+              className="mx-auto mb-4 h-12 w-12"
+              strokeWidth={1.4}
+              style={{ color: 'var(--ui-gray-300)' }}
+            />
             <p className="text-body" style={{ color: 'var(--color-text-muted)' }}>
               سالنی یافت نشد
             </p>
