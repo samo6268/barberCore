@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Search, User, Calendar, LogOut, LayoutDashboard, Menu, X } from 'lucide-react';
-import { ParnegarinMark } from '@ui/icons/custom';
 import { useMe, useLogout } from '@/lib/api-hooks';
 
 export function Navbar() {
@@ -31,7 +31,14 @@ export function Navbar() {
             style={{ color: '#795145' }}
             aria-label="پرنگارین — صفحه اصلی"
           >
-            <ParnegarinMark size={34} />
+            <Image
+              src="/images/brand/parnegarin-ecosystem-loop.webp"
+              alt=""
+              width={38}
+              height={38}
+              priority
+              className="h-[38px] w-[38px] object-contain"
+            />
             پرنگارین
           </Link>
 
@@ -151,7 +158,13 @@ export function Navbar() {
               className="flex items-center gap-2.5 font-semibold text-h3"
               style={{ color: 'var(--bg-ivory)' }}
             >
-              <ParnegarinMark size={34} />
+              <Image
+                src="/images/brand/parnegarin-ecosystem-loop.webp"
+                alt=""
+                width={38}
+                height={38}
+                className="h-[38px] w-[38px] object-contain"
+              />
               پرنگارین
             </Link>
             <button onClick={() => setMobileOpen(false)} aria-label="بستن منو">

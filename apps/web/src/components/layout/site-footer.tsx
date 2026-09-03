@@ -1,5 +1,5 @@
+import Image from 'next/image';
 import Link from 'next/link';
-import { ParnegarinMark } from '@ui/icons/custom';
 
 const ABOUT_LINKS = [
   { label: 'درباره ما', href: '/about' },
@@ -31,7 +31,13 @@ export function SiteFooter() {
               className="flex items-center gap-2 font-semibold text-lg mb-3"
               style={{ color: 'var(--brand-gold-400)' }}
             >
-              <ParnegarinMark size={32} />
+              <Image
+                src="/images/brand/parnegarin-ecosystem-loop.webp"
+                alt=""
+                width={38}
+                height={38}
+                className="h-[38px] w-[38px] object-contain"
+              />
               پرنگارین
             </div>
             <p className="text-sm leading-relaxed" style={{ color: 'var(--brand-navy-200)' }}>

@@ -6,6 +6,7 @@ import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, BadgeCheck, CalendarDays, MapPin, Search, Star, Store } from 'lucide-react';
 import { useSearchSalons } from '@/lib/api-hooks';
+import { SERVICE_CATEGORIES } from '@/lib/service-catalog';
 
 type GenderFilter = 'FEMALE' | 'MALE' | 'UNISEX';
 
@@ -22,63 +23,12 @@ type FeaturedSalon = {
   minPrice?: number | null;
 };
 
-type ServiceItem = {
-  name: string;
-  hint: string;
-  query: string;
-  image: string;
-  imageAlt: string;
-};
-
 const CITIES = ['تهران', 'کرج', 'مشهد', 'اصفهان', 'شیراز', 'تبریز'];
 
 // Keep homepage art direction in one locally bundled, warm salon-photo family.
 const HERO_IMAGE = '/images/hero/parnegarin-home-v2.webp';
 
-const SERVICES: ServiceItem[] = [
-  {
-    name: 'کوتاهی و استایل',
-    hint: 'کوپ، براشینگ و استایل مو',
-    query: 'کوتاهی',
-    image: '/images/home/services/haircut.webp',
-    imageAlt: 'کوتاهی مو در سالن زیبایی',
-  },
-  {
-    name: 'رنگ و احیای مو',
-    hint: 'رنگ، لایت، کراتین و احیا',
-    query: 'رنگ مو',
-    image: '/images/home/services/hair-color.webp',
-    imageAlt: 'رنگ‌کردن مو توسط متخصص',
-  },
-  {
-    name: 'ناخن',
-    hint: 'کاشت، ترمیم، ژلیش و پدیکور',
-    query: 'ناخن',
-    image: '/images/home/services/nails.webp',
-    imageAlt: 'مانیکور حرفه‌ای در سالن ناخن',
-  },
-  {
-    name: 'میکاپ',
-    hint: 'میکاپ روز، مراسم و عروس',
-    query: 'میکاپ',
-    image: '/images/home/services/makeup.webp',
-    imageAlt: 'اجرای میکاپ در سالن زیبایی',
-  },
-  {
-    name: 'پوست و فیشال',
-    hint: 'پاکسازی و مراقبت تخصصی پوست',
-    query: 'پوست',
-    image: '/images/home/services/skincare.webp',
-    imageAlt: 'فیشال و مراقبت پوست در فضای اسپا',
-  },
-  {
-    name: 'اصلاح آقایان',
-    hint: 'مو، ریش و گریم حرفه‌ای',
-    query: 'اصلاح',
-    image: '/images/home/services/barber.webp',
-    imageAlt: 'اصلاح حرفه‌ای آقایان در آرایشگاه',
-  },
-];
+const SERVICES = SERVICE_CATEGORIES;
 
 const QUICK_SEARCHES = [
   { label: 'رنگ و لایت', query: 'رنگ مو' },
@@ -291,12 +241,8 @@ function ServiceDiscovery() {
           description="خدمت را انتخاب کن تا سالن‌ها، متخصصان و قیمت‌های مرتبط را ببینی."
         />
         <div className="grid grid-cols-2 items-stretch gap-x-3 gap-y-7 md:grid-cols-3 md:gap-x-5 md:gap-y-9">
-          {SERVICES.map(({ name, hint, query, image, imageAlt }) => (
-            <Link
-              key={name}
-              href={`/salons?service=${encodeURIComponent(query)}`}
-              className="group flex h-full flex-col"
-            >
+          {SERVICES.map(({ slug, name, hint, image, imageAlt }) => (
+            <Link key={name} href={`/services/${slug}`} className="group flex h-full flex-col">
               <div className="relative aspect-[4/3] overflow-hidden bg-[#e8e1da]">
                 <Image
                   src={image}

@@ -1,8 +1,8 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { Scissors, User, GraduationCap, ShieldCheck, ArrowLeft, BadgeCheck } from 'lucide-react';
-import { ScissorsIcon } from '@ui/icons/custom';
 import { HERO_IMAGES, SALON_IMAGES } from '@/lib/images';
 
 const ROLES = [
@@ -82,7 +82,13 @@ export default function RoleSelectorPage() {
         />
         <div className="relative z-10 flex flex-col h-full p-14 justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <ScissorsIcon size={20} style={{ color: 'var(--brand-gold-400)' }} />
+            <Image
+              src="/images/brand/parnegarin-ecosystem-loop.webp"
+              alt=""
+              width={38}
+              height={38}
+              className="h-[38px] w-[38px] object-contain"
+            />
             <span className="font-semibold text-xl" style={{ color: 'var(--brand-gold-400)' }}>
               پرنگارین
             </span>
@@ -116,7 +122,13 @@ export default function RoleSelectorPage() {
       <div className="flex-1 flex flex-col items-center justify-center p-8 lg:p-16">
         {/* Mobile logo */}
         <div className="lg:hidden flex items-center gap-2 mb-10">
-          <ScissorsIcon size={18} style={{ color: 'var(--brand-plum-600)' }} />
+          <Image
+            src="/images/brand/parnegarin-ecosystem-loop.webp"
+            alt=""
+            width={36}
+            height={36}
+            className="h-9 w-9 object-contain"
+          />
           <span className="font-semibold text-lg" style={{ color: 'var(--brand-plum-600)' }}>
             پرنگارین
           </span>
