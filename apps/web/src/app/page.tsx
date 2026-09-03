@@ -28,63 +28,55 @@ type ServiceItem = {
   query: string;
   image: string;
   imageAlt: string;
-  className: string;
 };
 
 const CITIES = ['تهران', 'کرج', 'مشهد', 'اصفهان', 'شیراز', 'تبریز'];
 
-// Source pages and licence are documented in docs/design/homepage-photography.md.
-// Local files avoid a runtime dependency on foreign image CDNs.
-const HERO_IMAGE = '/images/home/photography/hero-salon.webp';
+// Keep homepage art direction in one locally bundled, warm salon-photo family.
+const HERO_IMAGE = '/images/hero/parnegarin-home-v2.webp';
 
 const SERVICES: ServiceItem[] = [
   {
     name: 'کوتاهی و استایل',
     hint: 'کوپ، براشینگ و استایل مو',
     query: 'کوتاهی',
-    image: '/images/home/photography/haircut.webp',
+    image: '/images/home/services/haircut.webp',
     imageAlt: 'کوتاهی مو در سالن زیبایی',
-    className: 'md:col-span-4',
   },
   {
     name: 'رنگ و احیای مو',
     hint: 'رنگ، لایت، کراتین و احیا',
     query: 'رنگ مو',
-    image: '/images/home/photography/hair-color.webp',
+    image: '/images/home/services/hair-color.webp',
     imageAlt: 'رنگ‌کردن مو توسط متخصص',
-    className: 'md:col-span-4',
   },
   {
     name: 'ناخن',
     hint: 'کاشت، ترمیم، ژلیش و پدیکور',
     query: 'ناخن',
-    image: '/images/home/photography/nails.webp',
+    image: '/images/home/services/nails.webp',
     imageAlt: 'مانیکور حرفه‌ای در سالن ناخن',
-    className: 'md:col-span-4',
   },
   {
     name: 'میکاپ',
     hint: 'میکاپ روز، مراسم و عروس',
     query: 'میکاپ',
-    image: '/images/home/photography/makeup.webp',
+    image: '/images/home/services/makeup.webp',
     imageAlt: 'اجرای میکاپ در سالن زیبایی',
-    className: 'md:col-span-3',
   },
   {
     name: 'پوست و فیشال',
     hint: 'پاکسازی و مراقبت تخصصی پوست',
     query: 'پوست',
-    image: '/images/home/photography/skincare.webp',
+    image: '/images/home/services/skincare.webp',
     imageAlt: 'فیشال و مراقبت پوست در فضای اسپا',
-    className: 'md:col-span-6',
   },
   {
     name: 'اصلاح آقایان',
     hint: 'مو، ریش و گریم حرفه‌ای',
     query: 'اصلاح',
-    image: '/images/home/photography/barber.webp',
+    image: '/images/home/services/barber.webp',
     imageAlt: 'اصلاح حرفه‌ای آقایان در آرایشگاه',
-    className: 'md:col-span-3',
   },
 ];
 
@@ -234,10 +226,10 @@ function Hero() {
         </div>
 
         <div className="order-1 lg:order-2">
-          <div className="relative aspect-[5/4] overflow-hidden bg-[#e8e1da] lg:aspect-[4/4.55]">
+          <div className="relative aspect-[5/4] overflow-hidden bg-[#e8e1da]">
             <Image
               src={HERO_IMAGE}
-              alt="نمای داخلی یک سالن زیبایی حرفه‌ای"
+              alt="متخصص در حال ارائه خدمات مو در سالن زیبایی"
               fill
               priority
               sizes="(max-width: 1024px) 100vw, 52vw"
@@ -298,12 +290,12 @@ function ServiceDiscovery() {
           title="دنبال چه خدمتی هستی؟"
           description="خدمت را انتخاب کن تا سالن‌ها، متخصصان و قیمت‌های مرتبط را ببینی."
         />
-        <div className="grid grid-cols-2 gap-x-3 gap-y-7 md:grid-cols-12 md:gap-x-5 md:gap-y-9">
-          {SERVICES.map(({ name, hint, query, image, imageAlt, className }) => (
+        <div className="grid grid-cols-2 items-stretch gap-x-3 gap-y-7 md:grid-cols-3 md:gap-x-5 md:gap-y-9">
+          {SERVICES.map(({ name, hint, query, image, imageAlt }) => (
             <Link
               key={name}
               href={`/salons?service=${encodeURIComponent(query)}`}
-              className={`group ${className}`}
+              className="group flex h-full flex-col"
             >
               <div className="relative aspect-[4/3] overflow-hidden bg-[#e8e1da]">
                 <Image
@@ -314,7 +306,7 @@ function ServiceDiscovery() {
                   className="object-cover transition duration-500 group-hover:scale-[1.025]"
                 />
               </div>
-              <div className="mt-3 flex items-start justify-between gap-2 border-t border-[#ded7d0] pt-3">
+              <div className="mt-3 flex min-h-[70px] flex-1 items-start justify-between gap-2 border-t border-[#ded7d0] pt-3">
                 <span className="min-w-0">
                   <strong className="block type-h4 text-[#2b2527]">{name}</strong>
                   <span className="mt-0.5 hidden type-caption text-[#817a7c] sm:block">{hint}</span>

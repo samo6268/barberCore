@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ScissorsIcon } from '@ui/icons/custom';
+import { ParnegarinMark } from '@ui/icons/custom';
 
 const ABOUT_LINKS = [
   { label: 'درباره ما', href: '/about' },
@@ -31,7 +31,7 @@ export function SiteFooter() {
               className="flex items-center gap-2 font-semibold text-lg mb-3"
               style={{ color: 'var(--brand-gold-400)' }}
             >
-              <ScissorsIcon size={20} />
+              <ParnegarinMark size={32} />
               پرنگارین
             </div>
             <p className="text-sm leading-relaxed" style={{ color: 'var(--brand-navy-200)' }}>

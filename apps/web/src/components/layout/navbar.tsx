@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Search, User, Calendar, LogOut, LayoutDashboard, Menu, X } from 'lucide-react';
-import { ScissorsIcon } from '@ui/icons/custom/scissors';
+import { ParnegarinMark } from '@ui/icons/custom';
 import { useMe, useLogout } from '@/lib/api-hooks';
 
 export function Navbar() {
@@ -27,10 +27,11 @@ export function Navbar() {
           {/* Logo */}
           <Link
             href="/"
-            className="flex items-center gap-2 font-semibold text-h3"
+            className="flex items-center gap-2.5 font-semibold text-h3"
             style={{ color: '#795145' }}
+            aria-label="پرنگارین — صفحه اصلی"
           >
-            <ScissorsIcon size={22} />
+            <ParnegarinMark size={34} />
             پرنگارین
           </Link>
 
@@ -144,9 +145,15 @@ export function Navbar() {
           style={{ background: '#30393d', color: 'var(--bg-ivory)' }}
         >
           <div className="flex justify-between items-center mb-12">
-            <span className="font-semibold text-h3" style={{ color: 'var(--bg-ivory)' }}>
+            <Link
+              href="/"
+              onClick={() => setMobileOpen(false)}
+              className="flex items-center gap-2.5 font-semibold text-h3"
+              style={{ color: 'var(--bg-ivory)' }}
+            >
+              <ParnegarinMark size={34} />
               پرنگارین
-            </span>
+            </Link>
             <button onClick={() => setMobileOpen(false)} aria-label="بستن منو">
               <X size={28} strokeWidth={1.5} />
             </button>
