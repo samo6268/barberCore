@@ -1,5 +1,6 @@
 /* ── Design tokens must come before Tailwind directives ── */
 @import '../../../../packages/ui/src/tokens.css';
+@import 'leaflet/dist/leaflet.css';
 
 @tailwind base;
 @tailwind components;

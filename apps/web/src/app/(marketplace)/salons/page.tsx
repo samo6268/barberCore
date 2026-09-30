@@ -2,11 +2,18 @@
 
 import { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { CalendarClock, CheckCircle, Heart, MapPin, Search, SlidersHorizontal, Star, X } from 'lucide-react';
+import dynamic from 'next/dynamic';
+import { CalendarClock, CheckCircle, Heart, Map, MapPin, Search, SlidersHorizontal, Star, X } from 'lucide-react';
 import { useMyFavorites, useSearchSalons, useToggleFavorite } from '@/lib/api-hooks';
 import { SALON_IMAGES } from '@/lib/images';
 import { formatPrice } from '@/lib/utils';
 import { trackEvent } from '@/lib/analytics';
+import { IRAN_CITY_COORDINATES } from '@/components/marketplace/map-location';
+
+const MapAreaPicker = dynamic(
+  () => import('@/components/marketplace/map-area-picker').then((module) => module.MapAreaPicker),
+  { ssr: false, loading: () => <div className="h-[340px] animate-pulse rounded-2xl bg-[#e7e1db] sm:h-[390px]" /> },
+);
 
 type SalonSummary = {
   id: string;
@@ -60,6 +67,9 @@ export default function SalonsPage() {
   const [sort, setSort] = useState<'rating' | 'reviews'>('rating');
   const [page, setPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
+  const [showMap, setShowMap] = useState(false);
+  const [mapCenter, setMapCenter] = useState<[number, number]>(IRAN_CITY_COORDINATES['تهران']);
+  const [radiusKm, setRadiusKm] = useState(3);
   const deferredSearch = useDeferredValue(search);
 
   useEffect(() => {
@@ -69,6 +79,9 @@ export default function SalonsPage() {
     const initialService = params.get('service');
     const initialGender = params.get('gender');
     const initialNeighborhood = params.get('neighborhood');
+    const initialLat = Number(params.get('lat'));
+    const initialLng = Number(params.get('lng'));
+    const initialRadius = Number(params.get('radiusKm'));
 
     if (initialSearch) setSearch(initialSearch);
     if (initialCity) {
@@ -78,12 +91,17 @@ export default function SalonsPage() {
     if (initialService && SERVICES.includes(initialService)) setService(initialService);
     if (initialGender === 'FEMALE' || initialGender === 'MALE') setGender(initialGender);
     if (initialNeighborhood) setNeighborhood(initialNeighborhood);
+    if (Number.isFinite(initialLat) && Number.isFinite(initialLng)) {
+      setMapCenter([initialLat, initialLng]);
+      setShowMap(true);
+    }
+    if (Number.isFinite(initialRadius) && initialRadius > 0) setRadiusKm(Math.min(10, Math.max(1, initialRadius)));
   }, []);
 
   const queryParams = useMemo(() => {
     const params: Record<string, string> = {
       page: String(page),
-      limit: '9',
+      limit: showMap ? '50' : '9',
       sort,
     };
     if (deferredSearch.trim()) params.q = deferredSearch.trim();
@@ -97,8 +115,13 @@ export default function SalonsPage() {
       if (max) params.maxPrice = max;
     }
     if (minRating !== 'همه امتیازها') params.minRating = minRating;
+    if (showMap && city !== 'همه شهرها') {
+      params.lat = String(mapCenter[0]);
+      params.lng = String(mapCenter[1]);
+      params.radiusKm = String(radiusKm);
+    }
     return params;
-  }, [city, deferredSearch, gender, minRating, neighborhood, page, priceRange, service, sort]);
+  }, [city, deferredSearch, gender, mapCenter, minRating, neighborhood, page, priceRange, radiusKm, service, showMap, sort]);
 
   const { data, isLoading, isFetching, isError, refetch } = useSearchSalons(queryParams);
   const salons = (data?.data ?? []) as SalonSummary[];
@@ -111,6 +134,7 @@ export default function SalonsPage() {
     Boolean(neighborhood.trim()),
     priceRange !== 'همه قیمت‌ها',
     minRating !== 'همه امتیازها',
+    showMap,
   ].filter(Boolean).length;
 
   const resetFilters = () => {
@@ -122,6 +146,9 @@ export default function SalonsPage() {
     setPriceRange('همه قیمت‌ها');
     setMinRating('همه امتیازها');
     setSort('rating');
+    setShowMap(false);
+    setMapCenter(IRAN_CITY_COORDINATES['تهران']);
+    setRadiusKm(3);
     setPage(1);
   };
 
@@ -195,6 +222,26 @@ export default function SalonsPage() {
                 </span>
               )}
             </button>
+            <button
+              onClick={() => {
+                if (city === 'همه شهرها') {
+                  setShowFilters(true);
+                  return;
+                }
+                setShowMap((current) => !current);
+                setPage(1);
+              }}
+              disabled={city === 'همه شهرها'}
+              className="flex items-center justify-center gap-2 rounded-xl border-2 px-5 py-3 text-sm font-medium transition-all disabled:cursor-not-allowed disabled:opacity-50"
+              style={{
+                borderColor: showMap ? 'var(--brand-plum-600)' : 'var(--ui-gray-200)',
+                color: showMap ? 'var(--brand-plum-600)' : 'var(--brand-navy-600)',
+                background: showMap ? 'var(--brand-plum-50)' : 'white',
+              }}
+            >
+              <Map size={16} />
+              انتخاب روی نقشه
+            </button>
           </div>
 
           {showFilters && (
@@ -208,6 +255,11 @@ export default function SalonsPage() {
                 options={CITIES}
                 onChange={(value) => {
                   setCity(value);
+                  if (value !== 'همه شهرها') {
+                    setMapCenter(IRAN_CITY_COORDINATES[value] ?? IRAN_CITY_COORDINATES['تهران']);
+                  } else {
+                    setShowMap(false);
+                  }
                   setPage(1);
                 }}
               />
@@ -321,6 +373,49 @@ export default function SalonsPage() {
                 </button>
               )}
             </div>
+          )}
+          {showMap && city !== 'همه شهرها' && (
+            <section className="mt-4 overflow-hidden rounded-2xl border border-[#e5dbd3] bg-[#fffaf5] p-4 sm:p-5">
+              <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p className="text-xs font-semibold text-[#8b5e50]">جست‌وجوی محلی‌تر</p>
+                  <h2 className="mt-1 text-lg font-semibold text-[#332c2f]">محدوده موردنظرت را روی نقشه انتخاب کن</h2>
+                  <p className="mt-1 text-xs leading-6 text-[#817a7c]">مرکز دایره را جابه‌جا کن تا سالن‌های همان اطراف را ببینی.</p>
+                </div>
+                <label className="flex items-center gap-3 text-xs text-[#71686a]">
+                  شعاع جست‌وجو
+                  <input
+                    type="range"
+                    min="1"
+                    max="10"
+                    step="1"
+                    value={radiusKm}
+                    onChange={(event) => {
+                      const value = Number(event.target.value);
+                      setRadiusKm(value);
+                      setPage(1);
+                      trackEvent('filter_applied', { filter: 'map_radius', value });
+                    }}
+                    className="accent-[#8b5e50]"
+                  />
+                  <strong className="min-w-14 text-[#684138]">{radiusKm.toLocaleString('fa-IR')} کیلومتر</strong>
+                </label>
+              </div>
+              <MapAreaPicker
+                city={city}
+                center={mapCenter}
+                radiusKm={radiusKm}
+                onChange={(center) => {
+                  setMapCenter(center);
+                  setPage(1);
+                  trackEvent('map_area_selected', { city, lat: center[0], lng: center[1], radiusKm });
+                }}
+            />
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs text-[#817a7c]">
+                <span>نتایج فقط از سالن‌هایی می‌آیند که مختصات ثبت‌شده در این محدوده دارند.</span>
+                <button type="button" onClick={() => setShowMap(false)} className="font-semibold text-[#805146]">بستن نقشه</button>
+              </div>
+            </section>
           )}
         </div>
       </div>

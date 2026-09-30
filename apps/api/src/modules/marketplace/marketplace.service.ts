@@ -17,6 +17,7 @@ export interface SearchQuery {
   limit?: number;
   lat?: number;
   lng?: number;
+  radiusKm?: number;
 }
 
 @Injectable()
@@ -25,6 +26,9 @@ export class MarketplaceService {
 
   async searchSalons(query: SearchQuery) {
     const { q, city, neighborhood, gender, service, minPrice, maxPrice, minRating, sort = 'rating' } = query;
+    const lat = query.lat == null ? undefined : Number(query.lat);
+    const lng = query.lng == null ? undefined : Number(query.lng);
+    const radiusKm = Math.min(50, Math.max(0.5, Number(query.radiusKm) || 5));
     const page = Math.max(1, Number(query.page) || 1);
     const limit = Math.min(50, Math.max(1, Number(query.limit) || 20));
     const skip = (page - 1) * limit;
@@ -34,6 +38,12 @@ export class MarketplaceService {
     if (gender) where['genderType'] = { in: [gender, GenderType.UNISEX] };
     if (neighborhood) where['address'] = { contains: neighborhood, mode: 'insensitive' };
     if (minRating) where['rating'] = { gte: Number(minRating) };
+    if (lat != null && lng != null && Number.isFinite(lat) && Number.isFinite(lng)) {
+      const latitudeDelta = radiusKm / 111;
+      const longitudeDelta = radiusKm / (111 * Math.max(0.2, Math.cos((lat * Math.PI) / 180)));
+      where['latitude'] = { gte: lat - latitudeDelta, lte: lat + latitudeDelta };
+      where['longitude'] = { gte: lng - longitudeDelta, lte: lng + longitudeDelta };
+    }
     if (service || minPrice || maxPrice) {
       const serviceWhere: Record<string, unknown> = { isActive: true, isOnlineBookable: true };
       if (service) serviceWhere.name = { contains: service, mode: 'insensitive' };
@@ -91,22 +101,44 @@ export class MarketplaceService {
           sort === 'reviews'
             ? [{ reviewCount: 'desc' }, { rating: 'desc' }]
             : [{ rating: 'desc' }, { reviewCount: 'desc' }],
-        skip,
-        take: limit,
+        skip: lat != null && lng != null ? 0 : skip,
+        take: lat != null && lng != null ? 500 : limit,
       }),
       this.prisma.salon.count({ where }),
     ]);
 
-    const salons = data.map(({ advertisements, services, ...salon }) => ({
-      ...salon,
-      services,
-      featured: advertisements.length > 0,
-      minPrice: services.length
-        ? Math.min(...services.map((item) => item.discountPrice ?? item.price))
-        : null,
-    }));
+    const salons = data
+      .map(({ advertisements, services, ...salon }) => {
+        const distanceKm = lat != null && lng != null && salon.latitude != null && salon.longitude != null
+          ? this.distanceInKm(lat, lng, salon.latitude, salon.longitude)
+          : null;
+        return {
+          ...salon,
+          services,
+          featured: advertisements.length > 0,
+          distanceKm: distanceKm == null ? null : Number(distanceKm.toFixed(1)),
+          minPrice: services.length
+            ? Math.min(...services.map((item) => item.discountPrice ?? item.price))
+            : null,
+        };
+      })
+      .filter((salon) => salon.distanceKm == null || salon.distanceKm <= radiusKm);
 
-    return paginate(salons, total, Number(page), Number(limit));
+    if (lat != null && lng != null) salons.sort((a, b) => (a.distanceKm ?? 999) - (b.distanceKm ?? 999));
+
+    const filteredTotal = lat != null && lng != null ? salons.length : total;
+    return paginate(salons, filteredTotal, Number(page), Number(limit));
+  }
+
+  private distanceInKm(lat1: number, lng1: number, lat2: number, lng2: number) {
+    const earthRadius = 6371;
+    const toRadians = (value: number) => (value * Math.PI) / 180;
+    const dLat = toRadians(lat2 - lat1);
+    const dLng = toRadians(lng2 - lng1);
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) * Math.sin(dLng / 2) ** 2;
+    return earthRadius * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   }
 
   async getSalonBySlug(slug: string) {

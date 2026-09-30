@@ -26,6 +26,9 @@ export class MarketplaceController {
       sort?: 'rating' | 'reviews';
       page?: number;
       limit?: number;
+      lat?: number;
+      lng?: number;
+      radiusKm?: number;
     },
   ) {
     return this.service.searchSalons(query);

@@ -5,6 +5,7 @@ export type MarketplaceEvent =
   | 'salon_card_opened'
   | 'salon_favorited'
   | 'filter_applied'
+  | 'map_area_selected'
   | 'booking_started'
   | 'booking_date_selected'
   | 'booking_time_selected'
