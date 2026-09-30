@@ -17,8 +17,12 @@ export class MarketplaceController {
     query: {
       q?: string;
       city?: string;
+      neighborhood?: string;
       gender?: GenderType;
       service?: string;
+      minPrice?: number;
+      maxPrice?: number;
+      minRating?: number;
       sort?: 'rating' | 'reviews';
       page?: number;
       limit?: number;

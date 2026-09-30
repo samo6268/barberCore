@@ -1,12 +1,14 @@
 'use client';
 
-import { useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { CheckCircle, Clock, MapPin, Phone, Star, UserRound } from 'lucide-react';
-import { useSalonBySlug } from '@/lib/api-hooks';
+import { useMemo, useState } from 'react';
+import { CheckCircle, Clock, Heart, MapPin, Phone, Star, UserRound } from 'lucide-react';
+import { useMyFavorites, useSalonBySlug, useToggleFavorite } from '@/lib/api-hooks';
 import { SALON_IMAGES } from '@/lib/images';
 import { formatPrice } from '@/lib/utils';
+import { MobileBookingBar, TrustStrip } from '@/components/marketplace/marketplace-ui';
+import { trackEvent } from '@/lib/analytics';
 
 const DAY_LABELS: Record<string, string> = {
   SATURDAY: 'شنبه',
@@ -21,6 +23,9 @@ const DAY_LABELS: Record<string, string> = {
 export default function SalonDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const { data: salon, isLoading, isError, refetch } = useSalonBySlug(slug);
+  const [reviewFilter, setReviewFilter] = useState<'all' | 'recent'>('all');
+  const toggleFavorite = useToggleFavorite();
+  const { data: favorites = [] } = useMyFavorites();
 
   const gallery = useMemo(() => {
     if (!salon) return [SALON_IMAGES[0]];
@@ -84,6 +89,8 @@ export default function SalonDetailPage() {
   }
 
   const salonHours = (salon.workingHours ?? []).filter((item: any) => !item.staffId);
+  const isFavorite = favorites.some((item: any) => item.salonId === salon.id || item.salon?.id === salon.id);
+  const reviews = (salon.reviews ?? []).filter((review: any) => review.isVisible !== false);
 
   return (
     <main className="min-h-screen" style={{ background: 'var(--bg-ivory)' }}>
@@ -124,7 +131,24 @@ export default function SalonDetailPage() {
             </span>
           </div>
         </div>
+        <button
+          type="button"
+          aria-label={isFavorite ? 'حذف از علاقه‌مندی‌ها' : 'افزودن به علاقه‌مندی‌ها'}
+          onClick={() => {
+            if (!localStorage.getItem('access_token')) {
+              window.location.href = `/login?returnTo=${encodeURIComponent(`/salons/${slug}`)}`;
+              return;
+            }
+            toggleFavorite.mutate(salon.id);
+            trackEvent('salon_favorited', { salonId: salon.id, favorited: !isFavorite });
+          }}
+          className="absolute left-5 top-24 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-[#684138] shadow-lg backdrop-blur"
+        >
+          <Heart size={19} className={isFavorite ? 'fill-[#9a6658]' : ''} />
+        </button>
       </section>
+
+      <TrustStrip />
 
       <section className="container-editorial py-12 lg:py-16 grid lg:grid-cols-3 gap-10 lg:gap-12">
         <div className="lg:col-span-2 space-y-12">
@@ -251,6 +275,34 @@ export default function SalonDetailPage() {
               </div>
             </section>
           )}
+
+          <section className="rounded-2xl border border-[var(--ui-gray-200)] bg-white p-6 sm:p-8">
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="eyebrow">نظر مشتریان</p>
+                <div className="mt-2 flex items-center gap-3">
+                  <span className="text-3xl font-semibold text-[var(--brand-navy-600)]">{Number(salon.rating || 0).toLocaleString('fa-IR', { maximumFractionDigits: 1 })}</span>
+                  <span className="flex items-center gap-1 text-sm text-[#7b6e68]"><Star size={16} className="fill-[#b38a45] text-[#b38a45]" /> از {Number(salon.reviewCount || 0).toLocaleString('fa-IR')} نظر ثبت‌شده</span>
+                </div>
+              </div>
+              <div className="flex rounded-xl bg-[#faf7f3] p-1 text-xs">
+                <button type="button" onClick={() => setReviewFilter('all')} className={`rounded-lg px-3 py-2 ${reviewFilter === 'all' ? 'bg-white text-[#684138] shadow-sm' : 'text-[#897d78]'}`}>همه نظرها</button>
+                <button type="button" onClick={() => setReviewFilter('recent')} className={`rounded-lg px-3 py-2 ${reviewFilter === 'recent' ? 'bg-white text-[#684138] shadow-sm' : 'text-[#897d78]'}`}>جدیدترین</button>
+              </div>
+            </div>
+            <div className="mt-6 space-y-4">
+              {(reviewFilter === 'recent' ? reviews.slice(0, 3) : reviews).slice(0, 5).map((review: any) => (
+                <article key={review.id} className="border-t border-[#eee8e2] pt-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <strong className="text-sm text-[#332c2f]">{[review.customer?.firstName, review.customer?.lastName].filter(Boolean).join(' ') || 'مشتری پرنگارین'}</strong>
+                    <span className="flex items-center gap-1 text-xs text-[#7b6e68]"><Star size={13} className="fill-[#b38a45] text-[#b38a45]" /> {Number(review.rating).toLocaleString('fa-IR')}</span>
+                  </div>
+                  {review.comment && <p className="mt-2 text-sm leading-7 text-[#71686a]">{review.comment}</p>}
+                </article>
+              ))}
+              {!reviews.length && <p className="text-sm text-[#817a7c]">هنوز نظری ثبت نشده؛ اولین تجربه‌ات را بعد از رزرو با دیگران به اشتراک بگذار.</p>}
+            </div>
+          </section>
         </div>
 
         <aside>
@@ -328,6 +380,7 @@ export default function SalonDetailPage() {
           </div>
         </aside>
       </section>
+      <MobileBookingBar href={`/salons/${slug}/book`} label="مشاهده زمان‌های آزاد" />
     </main>
   );
 }

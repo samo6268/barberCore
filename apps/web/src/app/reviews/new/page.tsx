@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Star } from 'lucide-react';
 import { toast } from 'sonner';
 import { useSubmitReview } from '@/lib/api-hooks';
+import { trackEvent } from '@/lib/analytics';
 
 function ReviewForm() {
   const router = useRouter();
@@ -20,6 +21,7 @@ function ReviewForm() {
     if (!rating) return toast.error('امتیاز را انتخاب کنید');
     try {
       await submitReview.mutateAsync({ bookingId, rating, comment });
+      trackEvent('review_submitted', { rating });
       toast.success('نظر شما ثبت شد');
       router.push('/profile/bookings');
     } catch (error: any) {

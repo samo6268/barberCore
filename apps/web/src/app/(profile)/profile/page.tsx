@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Calendar, Edit2, Mail, Phone, Save, User, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useMe, useUpdateProfile } from '@/lib/api-hooks';
+import { ReferralCard } from '@/components/marketplace/marketplace-ui';
 
 const ROLE_LABELS: Record<string, string> = {
   CUSTOMER: 'مشتری',
@@ -161,6 +162,9 @@ export default function ProfilePage() {
           </span>
           <Calendar size={22} className="text-[#8b5e50]" />
         </Link>
+        <div className="mt-5">
+          <ReferralCard />
+        </div>
       </div>
     </main>
   );

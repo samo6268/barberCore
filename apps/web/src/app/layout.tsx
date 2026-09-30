@@ -32,12 +32,11 @@ export const viewport: Viewport = {
   themeColor: '#8F594D',
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fa" dir="rtl" data-theme="female" suppressHydrationWarning>
+    <html lang="fa" dir="rtl" data-theme="neutral" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
       </head>
@@ -51,7 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           } as React.CSSProperties
         }
       >
-        <ThemeProvider attribute="data-theme" defaultTheme="female" enableSystem={false}>
+        <ThemeProvider attribute="data-theme" defaultTheme="neutral" enableSystem={false}>
           <QueryProvider>
             <ConditionalNav />
             {children}

@@ -105,8 +105,9 @@
   --ui-gray-900: #1e1c1a;
 }
 
-/* ── Female Theme (default — FEMALE & UNISEX salons) ─────── */
+/* ── Neutral Marketplace Theme ──────────────────────────── */
 :root,
+[data-theme='neutral'],
 [data-theme='female'] {
   --color-primary: var(--brand-plum-600);
   --color-primary-hover: var(--brand-plum-800);

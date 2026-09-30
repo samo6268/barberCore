@@ -37,6 +37,18 @@ api.interceptors.response.use(
     const original = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
     if (error.response?.status === 401 && !original._retry) {
+      const refreshToken = typeof window !== 'undefined' ? localStorage.getItem('refresh_token') : null;
+      const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
+      const protectedPrefixes = ['/profile', '/dashboard', '/staff', '/reviews/new'];
+      const isProtectedPath = protectedPrefixes.some((prefix) => currentPath === prefix || currentPath.startsWith(`${prefix}/`));
+
+      // Public marketplace requests must not throw the visitor into login when
+      // the optional session has expired (or does not exist yet).
+      if (!refreshToken) {
+        if (isProtectedPath) window.location.href = currentPath.startsWith('/staff') ? '/staff/login' : '/login';
+        return Promise.reject(error);
+      }
+
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
@@ -50,7 +62,6 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const refreshToken = localStorage.getItem('refresh_token');
         const { data } = await axios.post(`${API_URL}/auth/refresh`, { refreshToken });
         const { accessToken } = data.data;
         localStorage.setItem('access_token', accessToken);
@@ -61,9 +72,9 @@ api.interceptors.response.use(
         processQueue(err, null);
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
-        window.location.href = window.location.pathname.startsWith('/staff')
-          ? '/staff/login'
-          : '/login';
+        if (isProtectedPath) {
+          window.location.href = currentPath.startsWith('/staff') ? '/staff/login' : '/login';
+        }
         return Promise.reject(err);
       } finally {
         isRefreshing = false;

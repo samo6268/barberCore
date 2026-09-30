@@ -2,10 +2,11 @@
 
 import { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { CheckCircle, MapPin, Search, SlidersHorizontal, Star, X } from 'lucide-react';
-import { useSearchSalons } from '@/lib/api-hooks';
+import { CalendarClock, CheckCircle, Heart, MapPin, Search, SlidersHorizontal, Star, X } from 'lucide-react';
+import { useMyFavorites, useSearchSalons, useToggleFavorite } from '@/lib/api-hooks';
 import { SALON_IMAGES } from '@/lib/images';
 import { formatPrice } from '@/lib/utils';
+import { trackEvent } from '@/lib/analytics';
 
 type SalonSummary = {
   id: string;
@@ -21,6 +22,8 @@ type SalonSummary = {
   isVerified: boolean;
   featured: boolean;
   minPrice: number | null;
+  distanceKm?: number | null;
+  nextAvailableAt?: string | null;
   services: Array<{
     id: string;
     name: string;
@@ -51,6 +54,9 @@ export default function SalonsPage() {
   const [city, setCity] = useState('همه شهرها');
   const [gender, setGender] = useState<'ALL' | 'FEMALE' | 'MALE'>('ALL');
   const [service, setService] = useState('همه خدمات');
+  const [neighborhood, setNeighborhood] = useState('');
+  const [priceRange, setPriceRange] = useState('همه قیمت‌ها');
+  const [minRating, setMinRating] = useState('همه امتیازها');
   const [sort, setSort] = useState<'rating' | 'reviews'>('rating');
   const [page, setPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
@@ -62,6 +68,7 @@ export default function SalonsPage() {
     const initialCity = params.get('city');
     const initialService = params.get('service');
     const initialGender = params.get('gender');
+    const initialNeighborhood = params.get('neighborhood');
 
     if (initialSearch) setSearch(initialSearch);
     if (initialCity) {
@@ -70,6 +77,7 @@ export default function SalonsPage() {
     }
     if (initialService && SERVICES.includes(initialService)) setService(initialService);
     if (initialGender === 'FEMALE' || initialGender === 'MALE') setGender(initialGender);
+    if (initialNeighborhood) setNeighborhood(initialNeighborhood);
   }, []);
 
   const queryParams = useMemo(() => {
@@ -82,8 +90,15 @@ export default function SalonsPage() {
     if (city !== 'همه شهرها') params.city = city;
     if (gender !== 'ALL') params.gender = gender;
     if (service !== 'همه خدمات') params.service = service;
+    if (neighborhood.trim()) params.neighborhood = neighborhood.trim();
+    if (priceRange !== 'همه قیمت‌ها') {
+      const [min, max] = priceRange.split('-');
+      if (min) params.minPrice = min;
+      if (max) params.maxPrice = max;
+    }
+    if (minRating !== 'همه امتیازها') params.minRating = minRating;
     return params;
-  }, [city, deferredSearch, gender, page, service, sort]);
+  }, [city, deferredSearch, gender, minRating, neighborhood, page, priceRange, service, sort]);
 
   const { data, isLoading, isFetching, isError, refetch } = useSearchSalons(queryParams);
   const salons = (data?.data ?? []) as SalonSummary[];
@@ -93,6 +108,9 @@ export default function SalonsPage() {
     city !== 'همه شهرها',
     gender !== 'ALL',
     service !== 'همه خدمات',
+    Boolean(neighborhood.trim()),
+    priceRange !== 'همه قیمت‌ها',
+    minRating !== 'همه امتیازها',
   ].filter(Boolean).length;
 
   const resetFilters = () => {
@@ -100,6 +118,9 @@ export default function SalonsPage() {
     setCity('همه شهرها');
     setGender('ALL');
     setService('همه خدمات');
+    setNeighborhood('');
+    setPriceRange('همه قیمت‌ها');
+    setMinRating('همه امتیازها');
     setSort('rating');
     setPage(1);
   };
@@ -234,6 +255,22 @@ export default function SalonsPage() {
                   setPage(1);
                 }}
               />
+              <label className="block">
+                <span className="mb-2 block text-xs font-medium" style={{ color: 'var(--ui-gray-500)' }}>
+                  محله
+                </span>
+                <input
+                  value={neighborhood}
+                  onChange={(event) => {
+                    setNeighborhood(event.target.value);
+                    setPage(1);
+                    trackEvent('filter_applied', { filter: 'neighborhood' });
+                  }}
+                  placeholder="مثلاً سعادت‌آباد"
+                  className="w-full rounded-xl bg-white px-3 py-2.5 text-sm outline-none"
+                  style={{ border: '1px solid var(--ui-gray-200)', color: 'var(--brand-navy-600)' }}
+                />
+              </label>
               <FilterSelect
                 label="مرتب‌سازی"
                 value={sort}
@@ -244,6 +281,33 @@ export default function SalonsPage() {
                 onChange={(value) => {
                   setSort(value as typeof sort);
                   setPage(1);
+                }}
+              />
+              <FilterSelect
+                label="بازه قیمت"
+                value={priceRange}
+                options={['همه قیمت‌ها', '0-500000', '500000-1000000', '1000000-2000000', '2000000-']}
+                labels={{
+                  '0-500000': 'تا ۵۰۰ هزار تومان',
+                  '500000-1000000': '۵۰۰ هزار تا ۱ میلیون',
+                  '1000000-2000000': '۱ تا ۲ میلیون',
+                  '2000000-': 'بیشتر از ۲ میلیون',
+                }}
+                onChange={(value) => {
+                  setPriceRange(value);
+                  setPage(1);
+                  trackEvent('filter_applied', { filter: 'price' });
+                }}
+              />
+              <FilterSelect
+                label="حداقل امتیاز"
+                value={minRating}
+                options={['همه امتیازها', '3.5', '4', '4.5']}
+                labels={{ '3.5': '۳.۵ به بالا', '4': '۴ به بالا', '4.5': '۴.۵ به بالا' }}
+                onChange={(value) => {
+                  setMinRating(value);
+                  setPage(1);
+                  trackEvent('filter_applied', { filter: 'rating', value });
                 }}
               />
 
@@ -314,7 +378,7 @@ export default function SalonsPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {salons.map((salon, index) => (
-              <SalonCard
+                <SalonCard
                 key={salon.id}
                 salon={salon}
                 fallbackImage={SALON_IMAGES[index % SALON_IMAGES.length]}
@@ -407,16 +471,18 @@ function SalonCard({ salon, fallbackImage }: { salon: SalonSummary; fallbackImag
   const image = salon.coverImageUrl || salon.logoUrl || fallbackImage;
   const genderLabel =
     salon.genderType === 'FEMALE' ? 'زنانه' : salon.genderType === 'MALE' ? 'مردانه' : 'خانوادگی';
+  const toggleFavorite = useToggleFavorite();
+  const { data: favorites = [] } = useMyFavorites();
+  const isFavorite = favorites.some((item: any) => item.salonId === salon.id || item.salon?.id === salon.id);
 
   return (
-    <Link href={`/salons/${salon.slug}`} className="group block">
-      <article
-        className="rounded-2xl overflow-hidden border transition-all duration-300 group-hover:shadow-xl group-hover:-translate-y-1"
-        style={{
-          background: 'white',
-          borderColor: salon.featured ? 'var(--brand-gold-300)' : 'var(--ui-gray-200)',
-        }}
-      >
+    <article
+      className="group overflow-hidden rounded-2xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+      style={{
+        background: 'white',
+        borderColor: salon.featured ? 'var(--brand-gold-300)' : 'var(--ui-gray-200)',
+      }}
+    >
         <div className="relative aspect-[4/3] overflow-hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -438,6 +504,21 @@ function SalonCard({ salon, fallbackImage }: { salon: SalonSummary; fallbackImag
               {genderLabel}
             </span>
           </div>
+          <button
+            type="button"
+            aria-label={isFavorite ? 'حذف از علاقه‌مندی‌ها' : 'افزودن به علاقه‌مندی‌ها'}
+            onClick={() => {
+              if (!localStorage.getItem('access_token')) {
+                window.location.href = `/login?returnTo=${encodeURIComponent(`/salons/${salon.slug}`)}`;
+                return;
+              }
+              toggleFavorite.mutate(salon.id);
+              trackEvent('salon_favorited', { salonId: salon.id, favorited: !isFavorite });
+            }}
+            className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-[#684138] shadow-sm backdrop-blur transition hover:bg-white"
+          >
+            <Heart size={16} className={isFavorite ? 'fill-[#9a6658]' : ''} />
+          </button>
           <div className="absolute bottom-3 left-3 flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/55">
             <Star size={11} className="fill-[var(--brand-gold-400)] text-[var(--brand-gold-400)]" />
             <span className="text-xs font-semibold text-white">
@@ -450,7 +531,12 @@ function SalonCard({ salon, fallbackImage }: { salon: SalonSummary; fallbackImag
         </div>
 
         <div className="p-4">
-          <div className="flex items-start justify-between gap-3 mb-3">
+          <Link
+            href={`/salons/${salon.slug}`}
+            onClick={() => trackEvent('salon_card_opened', { salonId: salon.id, source: 'search_results' })}
+            className="block"
+          >
+          <div className="mb-3 flex items-start justify-between gap-3">
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 mb-1">
                 <h2
@@ -487,7 +573,14 @@ function SalonCard({ salon, fallbackImage }: { salon: SalonSummary; fallbackImag
             </div>
           </div>
 
-          <div className="flex gap-1.5 flex-wrap min-h-6">
+          <div className="flex items-center justify-between gap-3 border-t border-[#eee8e2] pt-3 text-xs text-[#756d70]">
+            <span className="inline-flex items-center gap-1.5">
+              <CalendarClock size={14} className="text-[#8b5e50]" />
+              {salon.nextAvailableAt || 'زمان‌های آزاد امروز'}
+            </span>
+            <span>{salon.distanceKm != null ? `${salon.distanceKm.toLocaleString('fa-IR')} کیلومتر` : 'نزدیک شما'}</span>
+          </div>
+          <div className="mt-3 flex min-h-6 flex-wrap gap-1.5">
             {salon.services.map((service) => (
               <span
                 key={service.id}
@@ -502,8 +595,8 @@ function SalonCard({ salon, fallbackImage }: { salon: SalonSummary; fallbackImag
               </span>
             ))}
           </div>
+          </Link>
         </div>
-      </article>
-    </Link>
+    </article>
   );
 }

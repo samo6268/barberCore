@@ -2,11 +2,19 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, BadgeCheck, CalendarDays, MapPin, Search, Star, Store } from 'lucide-react';
 import { useSearchSalons } from '@/lib/api-hooks';
 import { SERVICE_CATEGORIES } from '@/lib/service-catalog';
+import { trackEvent } from '@/lib/analytics';
+import {
+  AvailabilityPill,
+  CommunityProof,
+  MobileBookingBar,
+  PersonalisedHint,
+  TrustStrip,
+} from '@/components/marketplace/marketplace-ui';
 
 type GenderFilter = 'FEMALE' | 'MALE' | 'UNISEX';
 
@@ -38,13 +46,21 @@ const QUICK_SEARCHES = [
 ];
 
 export default function HomePage() {
+  useEffect(() => {
+    trackEvent('marketplace_viewed', { surface: 'homepage' });
+  }, []);
+
   return (
-    <main data-typography="marketplace" className="overflow-hidden bg-[#fbfaf7]">
+    <main data-typography="marketplace" className="overflow-hidden bg-[#fbfaf7] pb-16 md:pb-0">
       <Hero />
+      <TrustStrip />
       <ServiceDiscovery />
+      <PersonalisedSection />
       <FeaturedSalons />
+      <CampaignSection />
       <BookingSteps />
       <SalonOwnerCallout />
+      <MobileBookingBar />
     </main>
   );
 }
@@ -54,6 +70,7 @@ function Hero() {
   const [service, setService] = useState('');
   const [city, setCity] = useState('');
   const [gender, setGender] = useState<GenderFilter>('UNISEX');
+  const [availability, setAvailability] = useState('any');
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
@@ -61,6 +78,16 @@ function Hero() {
     if (service.trim()) params.set('service', service.trim());
     if (city.trim()) params.set('city', city.trim());
     if (gender !== 'UNISEX') params.set('gender', gender);
+    if (availability !== 'any') params.set('availability', availability);
+    trackEvent('hero_search_submitted', {
+      service: service.trim() || null,
+      city: city.trim() || null,
+      gender,
+      availability,
+    });
+    if (typeof window !== 'undefined' && city.trim()) {
+      window.localStorage.setItem('parnegarin:city', city.trim());
+    }
     const query = params.toString();
     router.push(query ? `/salons?${query}` : '/salons');
   };
@@ -74,8 +101,8 @@ function Hero() {
             رزرو آنلاین خدمات زیبایی
           </div>
           <h1 className="max-w-[620px] type-display-lg text-[#221d1f]">
-            سالن مناسب را پیدا کن،
-            <span className="block">وقتت را آنلاین بگیر.</span>
+            وقت خالیِ سالن مناسب را پیدا کن،
+            <span className="block text-[#805146]">همین امروز رزرو کن.</span>
           </h1>
           <p className="mt-5 max-w-xl type-body-lg text-[#6f686a]">
             خدمت و شهرت را انتخاب کن؛ قیمت‌ها، نظرها و زمان‌های خالی را یک‌جا ببین.
@@ -155,6 +182,30 @@ function Hero() {
                 جست‌وجو <ArrowLeft size={17} />
               </button>
             </div>
+
+            <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-[#eee8e2] pt-3">
+              <span className="type-caption text-[#8d8587]">زمان ترجیحی:</span>
+              {[
+                ['any', 'هر زمان'],
+                ['today', 'امروز'],
+                ['tomorrow', 'فردا'],
+                ['week', 'این هفته'],
+              ].map(([value, label]) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setAvailability(value)}
+                  className={`rounded-full border px-3 py-1.5 type-caption transition ${
+                    availability === value
+                      ? 'border-[#805146] bg-[#f5ece7] text-[#805146]'
+                      : 'border-[#e8e1db] text-[#817a7c] hover:border-[#bca69d]'
+                  }`}
+                  aria-pressed={availability === value}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           </form>
 
           <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2">
@@ -166,6 +217,7 @@ function Hero() {
                 onClick={() => {
                   setService(item.query);
                   if (item.gender) setGender(item.gender);
+                  trackEvent('service_selected', { service: item.query, source: 'hero_quick_search' });
                 }}
                 className="border-b border-[#c9b3aa] pb-0.5 text-caption text-[#655d60] transition hover:border-[#805146] hover:text-[#805146]"
               >
@@ -176,7 +228,7 @@ function Hero() {
         </div>
 
         <div className="order-1 lg:order-2">
-          <div className="relative aspect-[5/4] overflow-hidden bg-[#e8e1da]">
+          <div className="relative aspect-[5/4] overflow-hidden rounded-[2rem] bg-[#e8e1da] shadow-[0_24px_60px_rgba(55,39,42,0.14)]">
             <Image
               src={HERO_IMAGE}
               alt="متخصص در حال ارائه خدمات مو در سالن زیبایی"
@@ -185,8 +237,12 @@ function Hero() {
               sizes="(max-width: 1024px) 100vw, 52vw"
               className="object-cover"
             />
+            <div className="absolute bottom-5 right-5 max-w-[230px] rounded-2xl border border-white/35 bg-white/90 p-4 shadow-lg backdrop-blur-sm">
+              <div className="flex items-center gap-2 type-caption text-[#267044]"><CalendarDays size={15} /> زمان‌های آزاد امروز</div>
+              <strong className="mt-1 block type-label text-[#2e282a]">قبل از رزرو، ساعت مناسب را ببین</strong>
+            </div>
           </div>
-          <div className="grid grid-cols-3 border-x border-b border-[#ded7d0] bg-white">
+          <div className="mt-3 grid grid-cols-3 rounded-2xl border border-[#ded7d0] bg-white">
             {['مقایسه خدمات', 'دیدن زمان خالی', 'رزرو بدون تماس'].map((item, index) => (
               <div
                 key={item}
@@ -242,7 +298,12 @@ function ServiceDiscovery() {
         />
         <div className="grid grid-cols-2 items-stretch gap-x-3 gap-y-7 md:grid-cols-3 md:gap-x-5 md:gap-y-9">
           {SERVICES.map(({ slug, name, hint, image, imageAlt }) => (
-            <Link key={name} href={`/services/${slug}`} className="group flex h-full flex-col">
+                <Link
+                  key={name}
+                  href={`/services/${slug}`}
+                  onClick={() => trackEvent('service_selected', { service: slug, source: 'homepage_grid' })}
+                  className="group flex h-full flex-col"
+                >
               <div className="relative aspect-[4/3] overflow-hidden bg-[#e8e1da]">
                 <Image
                   src={image}
@@ -261,6 +322,80 @@ function ServiceDiscovery() {
                   size={17}
                   className="mt-1 shrink-0 text-[#805146] transition group-hover:-translate-x-1"
                 />
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PersonalisedSection() {
+  const [city, setCity] = useState('');
+  const [recentService, setRecentService] = useState('');
+
+  useEffect(() => {
+    const savedCity = window.localStorage.getItem('parnegarin:city');
+    if (savedCity) setCity(savedCity);
+    try {
+      const events = JSON.parse(window.localStorage.getItem('parnegarin:funnel-events') || '[]');
+      const lastService = [...events].reverse().find((item: any) => item?.name === 'service_selected')?.properties?.service;
+      if (typeof lastService === 'string') setRecentService(lastService);
+    } catch {
+      // A broken local queue must never affect the homepage.
+    }
+  }, []);
+
+  return (
+    <section className="border-y border-[#e8e1db] bg-[#fffaf5] py-8 lg:py-10">
+      <div className="container-editorial grid gap-5 lg:grid-cols-[1fr_1.35fr] lg:items-center">
+        <PersonalisedHint city={city || undefined} />
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-[#eadfd6] bg-white p-4 sm:p-5">
+          <div>
+            <p className="type-label text-[#332c2f]">برای شروع سریع‌تر</p>
+            <p className="mt-1 type-caption text-[#817a7c]">
+              {recentService
+                ? `پیشنهادهای مرتبط با ${recentService} و انتخاب‌های اخیرت را ببین.`
+                : 'سالن‌های محبوب و نزدیک را بر اساس انتخاب‌های اخیرت ببین.'}
+            </p>
+          </div>
+          <Link href={`/salons${city || recentService ? `?${new URLSearchParams({ ...(city ? { city } : {}), ...(recentService ? { service: recentService } : {}) }).toString()}` : ''}`} className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-[#f4ece7] px-4 type-button text-[#805146]">
+            پیشنهادهای من <ArrowLeft size={15} />
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CampaignSection() {
+  const campaigns = [
+    { title: 'برای یک تغییر تازه', text: 'کوتاهی و استایل مو', href: '/services/haircut', image: '/images/home/services/haircut.webp' },
+    { title: 'آماده یک قرار مهمی؟', text: 'میکاپ و خدمات پوست', href: '/services/makeup', image: '/images/home/services/makeup.webp' },
+    { title: 'استایل دقیق آقایان', text: 'اصلاح و گریم', href: '/services/barber', image: '/images/home/services/barber.webp' },
+  ];
+
+  return (
+    <section className="py-16 lg:py-24">
+      <div className="container-editorial">
+        <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="mb-2 type-label text-[#85594e]">انتخاب‌های این هفته</p>
+            <h2 className="type-h1 text-[#221d1f]">برای حال خوب بعدی‌ات</h2>
+          </div>
+          <CommunityProof />
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          {campaigns.map((campaign) => (
+            <Link key={campaign.href} href={campaign.href} className="group relative min-h-[220px] overflow-hidden rounded-2xl bg-[#30393d]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={campaign.image} alt="" className="absolute inset-0 h-full w-full object-cover opacity-65 transition duration-500 group-hover:scale-105 group-hover:opacity-80" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#1d2527] via-[#1d2527]/20 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-5 text-white">
+                <p className="type-caption text-[#ead3a6]">{campaign.text}</p>
+                <h3 className="mt-1 type-h3 text-white">{campaign.title}</h3>
+                <span className="mt-3 inline-flex items-center gap-2 type-caption text-white/75">دیدن گزینه‌ها <ArrowLeft size={14} /></span>
               </div>
             </Link>
           ))}
@@ -308,6 +443,7 @@ function FeaturedSalons() {
             {salons.map((salon) => (
               <Link
                 href={`/salons/${salon.slug}`}
+                onClick={() => trackEvent('salon_card_opened', { salonId: salon.id, source: 'homepage_featured' })}
                 key={salon.id}
                 className="group border border-[#ddd6cf] bg-white transition hover:border-[#bca69d]"
               >
@@ -353,16 +489,19 @@ function FeaturedSalons() {
                   </div>
 
                   <div className="mt-5 flex min-h-7 items-center justify-between border-t border-[#ebe5df] pt-4">
-                    {salon.minPrice != null ? (
-                      <span className="type-caption text-[#777073]">
-                        شروع قیمت از{' '}
-                        <strong className="text-label text-[#332c2f]">
-                          {salon.minPrice.toLocaleString('fa-IR')} تومان
-                        </strong>
-                      </span>
-                    ) : (
-                      <span className="type-caption text-[#8d8587]">خدمات و زمان‌های خالی</span>
-                    )}
+                    <span className="flex flex-col items-start gap-2 type-caption text-[#777073]">
+                      <AvailabilityPill />
+                      {salon.minPrice != null ? (
+                        <span>
+                          شروع قیمت از{' '}
+                          <strong className="text-label text-[#332c2f]">
+                            {salon.minPrice.toLocaleString('fa-IR')} تومان
+                          </strong>
+                        </span>
+                      ) : (
+                        <span>خدمات و زمان‌های خالی</span>
+                      )}
+                    </span>
                     <ArrowLeft
                       size={17}
                       className="shrink-0 text-[#805146] transition group-hover:-translate-x-1"

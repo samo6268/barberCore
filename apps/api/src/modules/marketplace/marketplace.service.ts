@@ -6,8 +6,12 @@ import { paginate } from '../../common/dto/pagination.dto';
 export interface SearchQuery {
   q?: string;
   city?: string;
+  neighborhood?: string;
   gender?: GenderType;
   service?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  minRating?: number;
   sort?: 'rating' | 'reviews';
   page?: number;
   limit?: number;
@@ -20,7 +24,7 @@ export class MarketplaceService {
   constructor(private prisma: PrismaService) {}
 
   async searchSalons(query: SearchQuery) {
-    const { q, city, gender, service, sort = 'rating' } = query;
+    const { q, city, neighborhood, gender, service, minPrice, maxPrice, minRating, sort = 'rating' } = query;
     const page = Math.max(1, Number(query.page) || 1);
     const limit = Math.min(50, Math.max(1, Number(query.limit) || 20));
     const skip = (page - 1) * limit;
@@ -28,20 +32,25 @@ export class MarketplaceService {
     const where: Record<string, unknown> = { status: SalonStatus.ACTIVE, deletedAt: null };
     if (city) where['city'] = { contains: city, mode: 'insensitive' };
     if (gender) where['genderType'] = { in: [gender, GenderType.UNISEX] };
-    if (service) {
-      where['services'] = {
-        some: {
-          name: { contains: service, mode: 'insensitive' },
-          isActive: true,
-          isOnlineBookable: true,
-        },
-      };
+    if (neighborhood) where['address'] = { contains: neighborhood, mode: 'insensitive' };
+    if (minRating) where['rating'] = { gte: Number(minRating) };
+    if (service || minPrice || maxPrice) {
+      const serviceWhere: Record<string, unknown> = { isActive: true, isOnlineBookable: true };
+      if (service) serviceWhere.name = { contains: service, mode: 'insensitive' };
+      if (minPrice || maxPrice) {
+        serviceWhere.price = {
+          ...(minPrice ? { gte: Number(minPrice) } : {}),
+          ...(maxPrice ? { lte: Number(maxPrice) } : {}),
+        };
+      }
+      where['services'] = { some: serviceWhere };
     }
     if (q)
       where['OR'] = [
         { name: { contains: q, mode: 'insensitive' } },
         { description: { contains: q, mode: 'insensitive' } },
         { city: { contains: q, mode: 'insensitive' } },
+        { address: { contains: q, mode: 'insensitive' } },
       ];
 
     const [data, total] = await Promise.all([

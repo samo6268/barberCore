@@ -16,6 +16,8 @@ import {
 } from 'lucide-react';
 import { useSearchSalons } from '@/lib/api-hooks';
 import type { ServiceCategory } from '@/lib/service-catalog';
+import { AvailabilityPill } from '@/components/marketplace/marketplace-ui';
+import { trackEvent } from '@/lib/analytics';
 
 type SalonSummary = {
   id: string;
@@ -74,6 +76,7 @@ export function ServiceLanding({ service }: { service: ServiceCategory }) {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
                 href={salonsHref}
+                onClick={() => trackEvent('service_selected', { service: service.slug, source: 'service_hero' })}
                 className="inline-flex min-h-12 items-center justify-center gap-2 bg-[#d6b276] px-6 type-button text-[#292523] transition hover:bg-[#e2c58f]"
               >
                 دیدن سالن‌ها و زمان‌های خالی <ArrowLeft size={17} />
@@ -139,6 +142,7 @@ export function ServiceLanding({ service }: { service: ServiceCategory }) {
               <Link
                 key={item}
                 href={`${salonsHref}&q=${encodeURIComponent(item)}`}
+                onClick={() => trackEvent('service_selected', { service: service.slug, query: item, source: 'service_popular' })}
                 className="group inline-flex min-h-12 items-center gap-3 border border-[#d9d0c8] bg-white px-5 type-button text-[#3f383a] transition hover:border-[#9b6a5d] hover:text-[#805146]"
               >
                 <Sparkles size={15} className="text-[#b28a4b]" />
@@ -178,6 +182,7 @@ export function ServiceLanding({ service }: { service: ServiceCategory }) {
                 <Link
                   key={salon.id}
                   href={`/salons/${salon.slug}`}
+                  onClick={() => trackEvent('salon_card_opened', { salonId: salon.id, source: `service_${service.slug}` })}
                   className="group border border-[#ddd6cf] bg-white transition hover:border-[#bca69d]"
                 >
                   <div className="relative aspect-[4/3] overflow-hidden bg-[#d8cbc3]">
@@ -214,7 +219,8 @@ export function ServiceLanding({ service }: { service: ServiceCategory }) {
                       )}
                     </div>
                     <div className="mt-5 flex items-center justify-between border-t border-[#ebe5df] pt-4">
-                      <span className="type-caption text-[#777073]">
+                      <span className="flex flex-col items-start gap-2 type-caption text-[#777073]">
+                        <AvailabilityPill />
                         {salon.minPrice != null
                           ? `شروع از ${salon.minPrice.toLocaleString('fa-IR')} تومان`
                           : 'مشاهده خدمات و زمان‌ها'}

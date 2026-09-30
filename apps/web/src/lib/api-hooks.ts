@@ -100,6 +100,23 @@ export const useSalonBySlug = (slug: string) =>
     retry: false,
   });
 
+export const useMyFavorites = () =>
+  useQuery({
+    queryKey: ['favorites'],
+    queryFn: () => api.get('/marketplace/favorites').then((r) => r.data.data),
+    enabled: typeof window !== 'undefined' && Boolean(localStorage.getItem('access_token')),
+    retry: false,
+  });
+
+export const useToggleFavorite = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (salonId: string) =>
+      api.post(`/marketplace/favorites/${salonId}`).then((r) => r.data.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['favorites'] }),
+  });
+};
+
 // ── Availability ────────────────────────────────────
 export const useAvailability = (params: {
   salonId: string;

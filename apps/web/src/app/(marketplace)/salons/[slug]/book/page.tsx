@@ -3,10 +3,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { Calendar, Check, ChevronLeft, Clock, UserRound } from 'lucide-react';
+import { Calendar, CalendarCheck, Check, ChevronLeft, Clock, UserRound } from 'lucide-react';
 import { useAvailability, useCreateBooking, useSalonBySlug } from '@/lib/api-hooks';
 import { formatPrice, toJalali } from '@/lib/utils';
 import { PersianDatePicker } from '@/components/shared/persian-date-picker';
+import { MobileBookingBar } from '@/components/marketplace/marketplace-ui';
+import { trackEvent } from '@/lib/analytics';
 
 type TimeSlot = {
   time: string;
@@ -43,6 +45,7 @@ export default function BookPage() {
   const draftKey = `booking-draft:${slug}`;
 
   useEffect(() => {
+    trackEvent('booking_started', { salonSlug: slug });
     setHasAccessToken(Boolean(localStorage.getItem('access_token')));
     try {
       const savedDraft = sessionStorage.getItem(draftKey);
@@ -99,6 +102,7 @@ export default function BookPage() {
     0,
   );
   const selectedSlot = (slots as TimeSlot[]).find((slot) => slot.time === selectedTime);
+  const firstAvailableSlot = (slots as TimeSlot[]).find((slot) => slot.available);
   const resolvedStaffId = selectedStaff || selectedSlot?.staffId;
   const resolvedStaff = (salon?.staffProfiles ?? []).find(
     (member: any) => member.id === resolvedStaffId,
@@ -123,6 +127,7 @@ export default function BookPage() {
   };
 
   const continueToLogin = () => {
+    trackEvent('booking_login_requested', { salonSlug: slug });
     sessionStorage.setItem(
       draftKey,
       JSON.stringify({
@@ -164,6 +169,7 @@ export default function BookPage() {
         },
       });
       sessionStorage.removeItem(draftKey);
+      trackEvent('booking_completed', { salonSlug: slug, date: selectedDate, time: selectedTime, totalPrice });
       toast.success('رزرو با موفقیت ثبت شد');
       router.push('/profile/bookings');
     } catch (error: any) {
@@ -343,6 +349,7 @@ export default function BookPage() {
               onChange={(date) => {
                 setSelectedDate(date);
                 setSelectedTime('');
+                trackEvent('booking_date_selected', { salonSlug: slug, date });
               }}
               min={dates[0]}
               max={dates[dates.length - 1]}
@@ -375,11 +382,29 @@ export default function BookPage() {
                 دریافت زمان‌های آزاد ممکن نشد. دوباره تلاش کنید.
               </p>
             ) : (
-              <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+              <>
+                {firstAvailableSlot && !selectedTime && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedTime(firstAvailableSlot.time);
+                      trackEvent('booking_time_selected', { salonSlug: slug, time: firstAvailableSlot.time, source: 'next_available' });
+                    }}
+                    className="mb-4 flex w-full items-center justify-between gap-3 rounded-xl border border-[#d5b9a8] bg-[#fff8f2] px-4 py-3 text-right"
+                  >
+                    <span className="flex items-center gap-2 text-sm font-medium text-[#684138]"><CalendarCheck size={17} /> اولین نوبت آزاد</span>
+                    <span className="rounded-lg bg-white px-3 py-1.5 text-sm font-semibold text-[#684138]" dir="ltr">{firstAvailableSlot.time}</span>
+                  </button>
+                )}
+                <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
                 {(slots as TimeSlot[]).map((slot) => (
                   <button
                     key={`${slot.time}-${slot.staffId ?? 'salon'}`}
-                    onClick={() => slot.available && setSelectedTime(slot.time)}
+                    onClick={() => {
+                      if (!slot.available) return;
+                      setSelectedTime(slot.time);
+                      trackEvent('booking_time_selected', { salonSlug: slug, time: slot.time, source: 'slot_grid' });
+                    }}
                     disabled={!slot.available}
                     className="py-2 rounded-xl text-sm border transition-colors"
                     style={{
@@ -412,13 +437,15 @@ export default function BookPage() {
                     در این تاریخ ظرفیت خالی وجود ندارد
                   </p>
                 )}
-              </div>
+                </div>
+              </>
             )}
           </section>
         )}
 
         {selectedTime && selectedSlot?.available && (
           <section
+            id="booking-summary"
             className="rounded-2xl p-5 sm:p-6 border"
             style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}
           >
@@ -471,6 +498,12 @@ export default function BookPage() {
           </section>
         )}
       </div>
+      {selectedTime && selectedSlot?.available && (
+        <MobileBookingBar
+          href="#booking-summary"
+          label={hasAccessToken ? 'تأیید و ثبت رزرو' : 'ورود و تکمیل رزرو'}
+        />
+      )}
     </div>
   );
 }
