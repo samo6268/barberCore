@@ -138,7 +138,7 @@ function Hero() {
               ))}
             </fieldset>
 
-            <div className="grid sm:grid-cols-[1.15fr_0.85fr_auto]">
+            <div className="grid sm:grid-cols-[1fr_1.45fr_auto]">
               <label className="flex min-w-0 items-center gap-3 px-3 py-3 sm:border-l sm:border-[#e8e1db]">
                 <Search size={19} className="shrink-0 text-[#8f594d]" />
                 <span className="min-w-0 flex-1">
