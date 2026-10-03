@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Circle, MapContainer, TileLayer, useMap, useMapEvents } from 'react-leaflet';
 import type { LatLngExpression } from 'leaflet';
 
@@ -30,6 +30,48 @@ function MapClickHandler({ onChange }: { onChange: (center: [number, number]) =>
   return null;
 }
 
+type TileProvider = {
+  id: string;
+  attribution: string;
+  url: string;
+  subdomains?: string[];
+};
+
+const TILE_PROVIDERS: TileProvider[] = [
+  {
+    id: 'osm-de',
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    subdomains: ['a', 'b', 'c'],
+    url: 'https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png',
+  },
+  {
+    id: 'esri-street',
+    attribution:
+      'Tiles &copy; Esri — Source: Esri, DeLorme, NAVTEQ, USGS, and the GIS User Community',
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+  },
+];
+
+function MapTiles() {
+  const [providerIndex, setProviderIndex] = useState(0);
+  const provider = TILE_PROVIDERS[providerIndex];
+
+  return (
+    <TileLayer
+      key={provider.id}
+      attribution={provider.attribution}
+      {...('subdomains' in provider ? { subdomains: provider.subdomains } : {})}
+      url={provider.url}
+      eventHandlers={{
+        tileerror: () => {
+          setProviderIndex((current) => Math.min(current + 1, TILE_PROVIDERS.length - 1));
+        },
+      }}
+    />
+  );
+}
+
 export function MapAreaPicker({ city, center, radiusKm, onChange }: MapAreaPickerProps) {
   const position: LatLngExpression = center;
 
@@ -42,11 +84,7 @@ export function MapAreaPicker({ city, center, radiusKm, onChange }: MapAreaPicke
         className="h-[340px] w-full sm:h-[390px]"
         aria-label={`انتخاب محدوده در ${city}`}
       >
-        <TileLayer
-          attribution='&copy; <a href="https://carto.com/attributions">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          subdomains={['a', 'b', 'c', 'd']}
-          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-        />
+        <MapTiles />
         <Circle
           center={position}
           radius={radiusKm * 1000}
