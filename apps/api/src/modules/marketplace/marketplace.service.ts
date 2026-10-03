@@ -5,6 +5,7 @@ import { paginate } from '../../common/dto/pagination.dto';
 
 export interface SearchQuery {
   q?: string;
+  province?: string;
   city?: string;
   neighborhood?: string;
   gender?: GenderType;
@@ -25,7 +26,7 @@ export class MarketplaceService {
   constructor(private prisma: PrismaService) {}
 
   async searchSalons(query: SearchQuery) {
-    const { q, city, neighborhood, gender, service, minPrice, maxPrice, minRating, sort = 'rating' } = query;
+    const { q, province, city, neighborhood, gender, service, minPrice, maxPrice, minRating, sort = 'rating' } = query;
     const lat = query.lat == null ? undefined : Number(query.lat);
     const lng = query.lng == null ? undefined : Number(query.lng);
     const radiusKm = Math.min(50, Math.max(0.5, Number(query.radiusKm) || 5));
@@ -34,6 +35,7 @@ export class MarketplaceService {
     const skip = (page - 1) * limit;
 
     const where: Record<string, unknown> = { status: SalonStatus.ACTIVE, deletedAt: null };
+    if (province) where['province'] = { contains: province, mode: 'insensitive' };
     if (city) where['city'] = { contains: city, mode: 'insensitive' };
     if (gender) where['genderType'] = { in: [gender, GenderType.UNISEX] };
     if (neighborhood) where['address'] = { contains: neighborhood, mode: 'insensitive' };

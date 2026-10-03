@@ -1,10 +1,18 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { toast } from 'sonner';
 import { useCreateSalon, useMe } from '@/lib/api-hooks';
 import { useEffect } from 'react';
 import { CheckCircle2, Scissors, Sparkles, UserRound } from 'lucide-react';
+import { ProvinceCitySelect } from '@/components/shared/province-city-select';
+import { getIranCityCoordinates } from '@/lib/iran-locations';
+
+const MapAreaPicker = dynamic(
+  () => import('@/components/marketplace/map-area-picker').then((module) => module.MapAreaPicker),
+  { ssr: false, loading: () => <div className="h-[300px] animate-pulse rounded-2xl bg-[#eee8e2]" /> },
+);
 
 const STEPS = ['اطلاعات اصلی', 'آدرس و موقعیت', 'تأیید و ارسال'];
 
@@ -22,12 +30,20 @@ export default function NewSalonPage() {
     province: '',
     address: '',
     instagramHandle: '',
+    latitude: null as number | null,
+    longitude: null as number | null,
   });
+  const [locationCenter, setLocationCenter] = useState<[number, number]>([35.7219, 51.3347]);
+  const [locationSelected, setLocationSelected] = useState(false);
 
   const set = (k: string, v: string) => setForm((p) => ({ ...p, [k]: v }));
 
   const handleSubmit = async () => {
     if (!form.name) return toast.error('نام سالن را وارد کنید');
+    if (!form.province || !form.city) return toast.error('استان و شهر سالن را انتخاب کنید');
+    if (!locationSelected || form.latitude == null || form.longitude == null) {
+      return toast.error('موقعیت تقریبی سالن را روی نقشه مشخص کنید');
+    }
     try {
       const salon = await createSalon.mutateAsync(form);
       toast.success('سالن با موفقیت ثبت شد');
@@ -136,18 +152,52 @@ export default function NewSalonPage() {
 
           {step === 1 && (
             <>
-              <Field
-                label="شهر"
-                value={form.city}
-                onChange={(v: string) => set('city', v)}
-                placeholder="مثال: تهران"
+              <ProvinceCitySelect
+                province={form.province}
+                city={form.city}
+                onProvinceChange={(value) => set('province', value)}
+                onCityChange={(value) => {
+                  set('city', value);
+                  setLocationSelected(false);
+                  const coordinates = value
+                    ? getIranCityCoordinates(value, form.province)
+                    : undefined;
+                  if (coordinates) {
+                    setLocationCenter(coordinates);
+                    setForm((current) => ({
+                      ...current,
+                      latitude: coordinates[0],
+                      longitude: coordinates[1],
+                    }));
+                  }
+                }}
               />
-              <Field
-                label="استان"
-                value={form.province}
-                onChange={(v: string) => set('province', v)}
-                placeholder="مثال: تهران"
-              />
+              {form.city && (
+                <div className="space-y-2">
+                  <div>
+                    <p className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>
+                      موقعیت تقریبی سالن روی نقشه
+                    </p>
+                    <p className="mt-1 text-xs" style={{ color: 'var(--color-muted)' }}>
+                      نقطه‌ای نزدیک سالن را انتخاب کنید؛ لازم نیست آدرس دقیق یا موقعیت منزل ثبت شود.
+                    </p>
+                  </div>
+                  <MapAreaPicker
+                    city={form.city}
+                    center={locationCenter}
+                    radiusKm={1}
+                    onChange={(center) => {
+                      setLocationSelected(true);
+                      setLocationCenter(center);
+                      setForm((current) => ({
+                        ...current,
+                        latitude: center[0],
+                        longitude: center[1],
+                      }));
+                    }}
+                  />
+                </div>
+              )}
               <Field
                 label="آدرس کامل"
                 value={form.address}

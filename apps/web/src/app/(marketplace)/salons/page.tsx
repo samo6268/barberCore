@@ -8,7 +8,8 @@ import { useMyFavorites, useSearchSalons, useToggleFavorite } from '@/lib/api-ho
 import { SALON_IMAGES } from '@/lib/images';
 import { formatPrice } from '@/lib/utils';
 import { trackEvent } from '@/lib/analytics';
-import { IRAN_CITY_COORDINATES } from '@/components/marketplace/map-location';
+import { getIranCityCoordinates, getIranProvinceForCity, IRAN_CITY_COORDINATES } from '@/lib/iran-locations';
+import { ProvinceCitySelect } from '@/components/shared/province-city-select';
 
 const MapAreaPicker = dynamic(
   () => import('@/components/marketplace/map-area-picker').then((module) => module.MapAreaPicker),
@@ -39,7 +40,6 @@ type SalonSummary = {
   }>;
 };
 
-const CITIES = ['همه شهرها', 'تهران', 'سمنان', 'اصفهان', 'مشهد', 'شیراز', 'تبریز', 'کرج'];
 const SERVICES = [
   'همه خدمات',
   'کوتاهی',
@@ -58,6 +58,7 @@ const SORT_OPTIONS = [
 
 export default function SalonsPage() {
   const [search, setSearch] = useState('');
+  const [province, setProvince] = useState('');
   const [city, setCity] = useState('همه شهرها');
   const [gender, setGender] = useState<'ALL' | 'FEMALE' | 'MALE'>('ALL');
   const [service, setService] = useState('همه خدمات');
@@ -75,6 +76,7 @@ export default function SalonsPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const initialSearch = params.get('q');
+    const initialProvince = params.get('province');
     const initialCity = params.get('city');
     const initialService = params.get('service');
     const initialGender = params.get('gender');
@@ -84,9 +86,15 @@ export default function SalonsPage() {
     const initialRadius = Number(params.get('radiusKm'));
 
     if (initialSearch) setSearch(initialSearch);
+    const resolvedProvince = initialProvince ?? (initialCity ? getIranProvinceForCity(initialCity) : undefined);
+    if (resolvedProvince) setProvince(resolvedProvince);
     if (initialCity) {
-      if (CITIES.includes(initialCity)) setCity(initialCity);
-      else if (!initialSearch) setSearch(initialCity);
+      setCity(initialCity);
+      setMapCenter(
+        getIranCityCoordinates(initialCity, resolvedProvince) ?? IRAN_CITY_COORDINATES['تهران'],
+      );
+    } else if (!initialSearch) {
+      setSearch('');
     }
     if (initialService && SERVICES.includes(initialService)) setService(initialService);
     if (initialGender === 'FEMALE' || initialGender === 'MALE') setGender(initialGender);
@@ -105,7 +113,6 @@ export default function SalonsPage() {
       sort,
     };
     if (deferredSearch.trim()) params.q = deferredSearch.trim();
-    if (city !== 'همه شهرها') params.city = city;
     if (gender !== 'ALL') params.gender = gender;
     if (service !== 'همه خدمات') params.service = service;
     if (neighborhood.trim()) params.neighborhood = neighborhood.trim();
@@ -115,19 +122,22 @@ export default function SalonsPage() {
       if (max) params.maxPrice = max;
     }
     if (minRating !== 'همه امتیازها') params.minRating = minRating;
+    if (province) params.province = province;
+    if (city !== 'همه شهرها') params.city = city;
     if (showMap && city !== 'همه شهرها') {
       params.lat = String(mapCenter[0]);
       params.lng = String(mapCenter[1]);
       params.radiusKm = String(radiusKm);
     }
     return params;
-  }, [city, deferredSearch, gender, mapCenter, minRating, neighborhood, page, priceRange, radiusKm, service, showMap, sort]);
+  }, [city, deferredSearch, gender, mapCenter, minRating, neighborhood, page, priceRange, province, radiusKm, service, showMap, sort]);
 
   const { data, isLoading, isFetching, isError, refetch } = useSearchSalons(queryParams);
   const salons = (data?.data ?? []) as SalonSummary[];
   const meta = data?.meta;
   const totalPages = meta?.totalPages ?? 1;
   const activeFilterCount = [
+    province !== '',
     city !== 'همه شهرها',
     gender !== 'ALL',
     service !== 'همه خدمات',
@@ -139,6 +149,7 @@ export default function SalonsPage() {
 
   const resetFilters = () => {
     setSearch('');
+    setProvince('');
     setCity('همه شهرها');
     setGender('ALL');
     setService('همه خدمات');
@@ -249,19 +260,30 @@ export default function SalonsPage() {
               className="mt-4 p-5 rounded-2xl border grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
               style={{ background: 'var(--bg-ivory)', borderColor: 'var(--ui-gray-200)' }}
             >
-              <FilterSelect
-                label="شهر"
-                value={city}
-                options={CITIES}
-                onChange={(value) => {
-                  setCity(value);
-                  if (value !== 'همه شهرها') {
-                    setMapCenter(IRAN_CITY_COORDINATES[value] ?? IRAN_CITY_COORDINATES['تهران']);
+              <ProvinceCitySelect
+                includeAll
+                allLabel="همه استان‌ها"
+                province={province}
+                city={city === 'همه شهرها' ? '' : city}
+                onProvinceChange={(value) => {
+                  setProvince(value);
+                  setCity('همه شهرها');
+                  setShowMap(false);
+                  setPage(1);
+                }}
+                onCityChange={(value) => {
+                  setCity(value || 'همه شهرها');
+                  if (value) {
+                    setMapCenter(
+                      getIranCityCoordinates(value, province) ?? IRAN_CITY_COORDINATES['تهران'],
+                    );
                   } else {
                     setShowMap(false);
                   }
                   setPage(1);
                 }}
+                className="sm:col-span-2 lg:col-span-2"
+                compact
               />
 
               <div>

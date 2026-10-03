@@ -16,6 +16,7 @@ export class MarketplaceController {
     @Query()
     query: {
       q?: string;
+      province?: string;
       city?: string;
       neighborhood?: string;
       gender?: GenderType;

@@ -2,7 +2,15 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ProvinceCitySelect } from '@/components/shared/province-city-select';
+import { getIranCityCoordinates } from '@/lib/iran-locations';
+
+const MapAreaPicker = dynamic(
+  () => import('@/components/marketplace/map-area-picker').then((module) => module.MapAreaPicker),
+  { ssr: false, loading: () => <div style={{ height: 300, borderRadius: '1rem', background: '#eee8e2' }} /> },
+);
 
 const STEPS = ['اطلاعات سالن', 'اطلاعات مالک', 'ساعت کاری', 'انتخاب پلن'];
 
@@ -85,8 +93,11 @@ export default function NewSalonPage() {
   // Step 1
   const [salonName, setSalonName] = useState('');
   const [salonType, setSalonType] = useState('');
+  const [province, setProvince] = useState('');
   const [city, setCity] = useState('');
   const [address, setAddress] = useState('');
+  const [locationCenter, setLocationCenter] = useState<[number, number]>([35.7219, 51.3347]);
+  const [locationSelected, setLocationSelected] = useState(false);
 
   // Step 2
   const [ownerName, setOwnerName] = useState('');
@@ -106,8 +117,10 @@ export default function NewSalonPage() {
     if (step === 0) {
       if (!salonName) errs.push('نام سالن الزامی است');
       if (!salonType) errs.push('نوع سالن الزامی است');
+      if (!province) errs.push('استان الزامی است');
       if (!city) errs.push('شهر الزامی است');
       if (!address) errs.push('آدرس الزامی است');
+      if (!locationSelected) errs.push('موقعیت تقریبی سالن را روی نقشه مشخص کنید');
     }
     if (step === 1) {
       if (!ownerName) errs.push('نام مالک الزامی است');
@@ -266,15 +279,20 @@ export default function NewSalonPage() {
                   ))}
                 </div>
               </div>
-              <div>
-                <label style={labelStyle}>شهر</label>
-                <input
-                  style={inputStyle}
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  placeholder="مثال: تهران"
-                />
-              </div>
+              <ProvinceCitySelect
+                province={province}
+                city={city}
+                onProvinceChange={(value) => {
+                  setProvince(value);
+                  setCity('');
+                }}
+                onCityChange={(value) => {
+                  setCity(value);
+                  setLocationSelected(false);
+                  const coordinates = value ? getIranCityCoordinates(value, province) : undefined;
+                  if (coordinates) setLocationCenter(coordinates);
+                }}
+              />
               <div>
                 <label style={labelStyle}>آدرس کامل</label>
                 <textarea
@@ -285,6 +303,23 @@ export default function NewSalonPage() {
                   placeholder="خیابان، کوچه، پلاک..."
                 />
               </div>
+              {city && (
+                <div>
+                  <p style={{ ...labelStyle, marginBottom: '0.25rem' }}>موقعیت تقریبی سالن روی نقشه</p>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginBottom: '0.75rem' }}>
+                    نقطه‌ای نزدیک سالن را انتخاب کنید؛ ثبت موقعیت دقیق لازم نیست.
+                  </p>
+                  <MapAreaPicker
+                    city={city}
+                    center={locationCenter}
+                    radiusKm={1}
+                    onChange={(center) => {
+                      setLocationSelected(true);
+                      setLocationCenter(center);
+                    }}
+                  />
+                </div>
+              )}
             </div>
           )}
 

@@ -5,16 +5,19 @@ import { Search, SearchX, X } from 'lucide-react';
 import { useSearchSalons } from '@/lib/api-hooks';
 import { SalonCard } from '@/components/salon/salon-card';
 import { Navbar } from '@/components/layout/navbar';
+import { ProvinceCitySelect } from '@/components/shared/province-city-select';
 
-const CITIES = ['تهران', 'اصفهان', 'مشهد', 'شیراز', 'تبریز', 'کرج', 'اهواز'];
 const CATEGORIES = ['مو', 'رنگ', 'ناخن', 'آرایش', 'صورت', 'عروس', 'تخصصی'];
+type MarketplaceSearch = { q: string; province: string; city: string; service: string; gender: string };
 
 export function MarketplacePage({ gender }: { gender: 'male' | 'female' }) {
   const [q, setQ] = useState('');
+  const [province, setProvince] = useState('');
   const [city, setCity] = useState('');
   const [activeCategory, setActiveCategory] = useState('');
-  const [search, setSearch] = useState({
+  const [search, setSearch] = useState<MarketplaceSearch>({
     q: '',
+    province: '',
     city: '',
     service: '',
     gender: gender === 'male' ? 'MALE' : 'FEMALE',
@@ -26,6 +29,7 @@ export function MarketplacePage({ gender }: { gender: 'male' | 'female' }) {
   const doSearch = () =>
     setSearch({
       q,
+      province,
       city,
       service: activeCategory,
       gender: gender === 'male' ? 'MALE' : 'FEMALE',
@@ -80,19 +84,15 @@ export function MarketplacePage({ gender }: { gender: 'male' | 'female' }) {
                 style={{ color: 'var(--color-text)' }}
               />
             </div>
-            <select
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              className="px-4 py-4 rounded-md border-2 bg-white text-body outline-none"
-              style={{ borderColor: 'var(--ui-gray-200)', color: 'var(--color-text)' }}
-            >
-              <option value="">همه شهرها</option>
-              {CITIES.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
+            <ProvinceCitySelect
+              compact
+              includeAll
+              province={province}
+              city={city}
+              onProvinceChange={setProvince}
+              onCityChange={setCity}
+              className="min-w-[280px] flex-1"
+            />
             <button
               onClick={doSearch}
               className="px-8 py-4 rounded-md font-medium text-body transition-all duration-[250ms] hover:-translate-y-0.5"
@@ -140,13 +140,14 @@ export function MarketplacePage({ gender }: { gender: 'male' | 'female' }) {
           <p className="text-body" style={{ color: 'var(--color-text-muted)' }}>
             {isLoading ? 'در حال جستجو...' : `${salons.length} سالن یافت شد`}
           </p>
-          {(search.q || search.city || search.service) && (
+          {(search.q || search.province || search.city || search.service) && (
             <button
               onClick={() => {
                 setQ('');
+                setProvince('');
                 setCity('');
                 setActiveCategory('');
-                setSearch({ q: '', city: '', service: '', gender: search.gender });
+                setSearch({ q: '', province: '', city: '', service: '', gender: search.gender });
               }}
               className="flex items-center gap-1 text-body-sm transition-colors"
               style={{ color: 'var(--color-accent)' }}

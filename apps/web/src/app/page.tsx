@@ -8,6 +8,7 @@ import { ArrowLeft, BadgeCheck, CalendarDays, MapPin, Search, Star, Store } from
 import { useSearchSalons } from '@/lib/api-hooks';
 import { SERVICE_CATEGORIES } from '@/lib/service-catalog';
 import { trackEvent } from '@/lib/analytics';
+import { ProvinceCitySelect } from '@/components/shared/province-city-select';
 import {
   AvailabilityPill,
   CommunityProof,
@@ -30,8 +31,6 @@ type FeaturedSalon = {
   isVerified?: boolean;
   minPrice?: number | null;
 };
-
-const CITIES = ['تهران', 'کرج', 'مشهد', 'اصفهان', 'شیراز', 'تبریز'];
 
 // Keep homepage art direction in one locally bundled, warm salon-photo family.
 const HERO_IMAGE = '/images/hero/parnegarin-home-v2.webp';
@@ -68,6 +67,7 @@ export default function HomePage() {
 function Hero() {
   const router = useRouter();
   const [service, setService] = useState('');
+  const [province, setProvince] = useState('');
   const [city, setCity] = useState('');
   const [gender, setGender] = useState<GenderFilter>('UNISEX');
   const [availability, setAvailability] = useState('any');
@@ -76,11 +76,13 @@ function Hero() {
     event.preventDefault();
     const params = new URLSearchParams();
     if (service.trim()) params.set('service', service.trim());
+    if (province.trim()) params.set('province', province.trim());
     if (city.trim()) params.set('city', city.trim());
     if (gender !== 'UNISEX') params.set('gender', gender);
     if (availability !== 'any') params.set('availability', availability);
     trackEvent('hero_search_submitted', {
       service: service.trim() || null,
+      province: province.trim() || null,
       city: city.trim() || null,
       gender,
       availability,
@@ -156,24 +158,15 @@ function Hero() {
                 </span>
               </label>
 
-              <label className="flex min-w-0 items-center gap-3 border-t border-[#e8e1db] px-3 py-3 sm:border-0">
-                <MapPin size={19} className="shrink-0 text-[#8f594d]" />
-                <span className="min-w-0 flex-1">
-                  <span className="block text-caption text-[#8d8587]">شهر</span>
-                  <input
-                    value={city}
-                    onChange={(event) => setCity(event.target.value)}
-                    list="home-cities"
-                    className="mt-0.5 w-full bg-transparent text-label text-[#2d2729] outline-none placeholder:font-normal placeholder:text-[#958e90]"
-                    placeholder="مثلاً تهران"
-                  />
-                  <datalist id="home-cities">
-                    {CITIES.map((item) => (
-                      <option key={item} value={item} />
-                    ))}
-                  </datalist>
-                </span>
-              </label>
+              <div className="min-w-0 border-t border-[#e8e1db] px-3 py-3 sm:border-0">
+                <ProvinceCitySelect
+                  compact
+                  province={province}
+                  city={city}
+                  onProvinceChange={setProvince}
+                  onCityChange={setCity}
+                />
+              </div>
 
               <button
                 type="submit"
