@@ -105,7 +105,11 @@ function Hero() {
     <section className="relative isolate overflow-visible bg-[#191312] pt-20 text-[#fff7ef]">
       <div className="absolute inset-0 -z-10 overflow-hidden">
 <<<<<<< ours
+<<<<<<< ours
         <div className="absolute inset-y-0 left-0 w-full lg:w-[62%]">
+=======
+        <div className="absolute inset-y-0 left-0 w-full lg:w-[55%]">
+>>>>>>> theirs
 =======
         <div className="absolute inset-y-0 left-0 w-full lg:w-[55%]">
 >>>>>>> theirs
