@@ -104,15 +104,19 @@ function Hero() {
   return (
     <section className="relative isolate overflow-visible bg-[#191312] pt-20 text-[#fff7ef]">
       <div className="absolute inset-0 -z-10 overflow-hidden">
+<<<<<<< ours
         <div className="absolute inset-y-0 left-0 w-full lg:w-[62%]">
+=======
+        <div className="absolute inset-y-0 left-0 w-full lg:w-[55%]">
+>>>>>>> theirs
           <Image src={HERO_IMAGE} alt="متخصص در حال سشوار و استایل موی مشتری در سالن" fill priority sizes="(max-width: 1024px) 100vw, 62vw" className="object-cover object-center" />
         </div>
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(25,19,18,.08)_0%,rgba(25,19,18,.35)_38%,#191312_72%,#191312_100%)]" />
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#191312] to-transparent" />
       </div>
 
-      <div className="container-editorial relative flex min-h-[670px] flex-col justify-center pb-36 pt-16 lg:min-h-[700px] lg:pb-40 lg:pt-20">
-        <div className="ms-auto max-w-[600px] text-right">
+      <div className="container-editorial relative flex min-h-[590px] flex-col justify-center pb-32 pt-16 lg:min-h-[620px] lg:pb-36 lg:pt-20">
+        <div className="me-auto max-w-[560px] text-right">
           <div className="mb-6 inline-flex items-center gap-3 rounded-full border border-[#c58b69]/35 bg-[#251a17]/70 px-4 py-2 type-label text-[#d9a57f] backdrop-blur-sm">
             <span className="h-2 w-2 rounded-full bg-[#d9a57f]" aria-hidden="true" />
             زیبایی، مراقبت و آرامش برای همه
