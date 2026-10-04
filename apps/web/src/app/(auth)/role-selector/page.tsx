@@ -154,14 +154,14 @@ export default function RoleSelectorPage() {
                   href={role.href}
                   className="group flex items-center gap-4 p-5 rounded-2xl border-2 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
                   style={{
-                    background: 'white',
-                    borderColor: 'var(--ui-gray-200)',
+                    background: 'var(--color-surface)',
+                    borderColor: 'var(--color-border)',
                   }}
                   onMouseEnter={(e) => {
                     (e.currentTarget as HTMLElement).style.borderColor = role.color;
                   }}
                   onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.borderColor = 'var(--ui-gray-200)';
+                    (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)';
                   }}
                 >
                   <div

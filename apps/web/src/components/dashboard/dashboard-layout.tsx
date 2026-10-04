@@ -54,8 +54,8 @@ export function DashboardLayout({
   const hrefFor = (href: string) => `/dashboard/salons/${salonId}${href ? `/${href}` : ''}`;
 
   return (
-    <div data-typography="management" className="flex min-h-screen flex-col bg-[var(--bg-ivory)]">
-      <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-[var(--ui-gray-200)] bg-white px-4 sm:px-6">
+    <div data-typography="management" className="flex min-h-screen flex-col bg-[var(--color-background)]">
+      <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-[var(--color-border)] bg-[rgba(29,23,21,0.94)] px-4 backdrop-blur-xl sm:px-6">
         <div className="flex min-w-0 items-center gap-2 sm:gap-3">
           <Link
             href="/dashboard"
@@ -63,8 +63,8 @@ export function DashboardLayout({
           >
             <ChevronRight size={16} /> داشبورد
           </Link>
-          <span className="text-[var(--ui-gray-200)]">/</span>
-          <span className="truncate text-xs font-semibold text-[var(--brand-navy-600)] sm:text-sm">
+          <span className="text-[var(--color-border)]">/</span>
+          <span className="truncate text-xs font-semibold text-[var(--color-text)] sm:text-sm">
             {resolvedName}
           </span>
         </div>
@@ -81,7 +81,7 @@ export function DashboardLayout({
         </div>
       </header>
 
-      <div className="border-b border-[var(--ui-gray-200)] bg-white lg:hidden">
+      <div className="border-b border-[var(--color-border)] bg-[var(--color-surface)] lg:hidden">
         <nav className="flex gap-1 overflow-x-auto px-3 py-2">
           {TABS.map((tab) => {
             const Icon = tab.icon;
@@ -100,7 +100,7 @@ export function DashboardLayout({
       </div>
 
       <div className="flex flex-1">
-        <aside className="hidden w-56 shrink-0 flex-col border-l border-[var(--ui-gray-200)] bg-white lg:flex">
+        <aside className="hidden w-56 shrink-0 flex-col border-l border-[var(--color-border)] bg-[var(--color-surface)] lg:flex">
           <nav className="flex-1 space-y-1 px-3 py-4">
             {TABS.map((tab) => {
               const Icon = tab.icon;

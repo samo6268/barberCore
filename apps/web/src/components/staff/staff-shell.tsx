@@ -120,8 +120,8 @@ export function StaffShell({ children }: { children: React.ReactNode }) {
 
   return (
     <StaffPortalContext.Provider value={value}>
-      <div data-typography="staff" className="min-h-screen bg-[var(--bg-ivory)] pb-20 lg:pb-0">
-        <header className="sticky top-0 z-40 border-b border-[var(--ui-gray-200)] bg-white/95 backdrop-blur">
+      <div data-typography="staff" className="min-h-screen bg-[var(--color-background)] pb-20 lg:pb-0">
+        <header className="sticky top-0 z-40 border-b border-[var(--color-border)] bg-[rgba(29,23,21,0.94)] backdrop-blur-xl">
           <div className="mx-auto flex h-16 max-w-[1500px] items-center justify-between px-4 lg:px-7">
             <div className="flex min-w-0 items-center gap-3">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[var(--brand-plum-50)]">
@@ -176,7 +176,7 @@ export function StaffShell({ children }: { children: React.ReactNode }) {
         </header>
 
         <div className="mx-auto flex max-w-[1500px]">
-          <aside className="sticky top-16 hidden h-[calc(100vh-4rem)] w-60 shrink-0 border-l border-[var(--ui-gray-200)] bg-white p-4 lg:flex lg:flex-col">
+          <aside className="sticky top-16 hidden h-[calc(100vh-4rem)] w-60 shrink-0 border-l border-[var(--color-border)] bg-[var(--color-surface)] p-4 lg:flex lg:flex-col">
             <nav className="space-y-1">
               {NAV_ITEMS.map((item) => {
                 const Icon = item.icon;
@@ -197,7 +197,7 @@ export function StaffShell({ children }: { children: React.ReactNode }) {
                 );
               })}
             </nav>
-            <div className="mt-auto rounded-2xl bg-[var(--brand-navy-600)] p-4 text-white">
+            <div className="mt-auto rounded-2xl bg-[#241b18] p-4 text-white">
               <p className="text-xs font-semibold text-[var(--brand-gold-300)]">
                 پنل عملیات روزانه
               </p>
@@ -210,7 +210,7 @@ export function StaffShell({ children }: { children: React.ReactNode }) {
           <main className="min-w-0 flex-1 p-4 sm:p-6 lg:p-8">{children}</main>
         </div>
 
-        <nav className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-6 border-t border-[var(--ui-gray-200)] bg-white px-1 pb-[max(.4rem,env(safe-area-inset-bottom))] pt-2 lg:hidden">
+        <nav className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-6 border-t border-[var(--color-border)] bg-[var(--color-surface)] px-1 pb-[max(.4rem,env(safe-area-inset-bottom))] pt-2 lg:hidden">
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
             const active = item.exact ? pathname === item.href : pathname.startsWith(item.href);

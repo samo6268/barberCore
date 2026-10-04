@@ -132,7 +132,7 @@ export default function SalonOwnerLoginPage() {
           type="submit"
           disabled={login.isPending}
           className="w-full py-3.5 rounded-xl font-semibold text-white transition-all hover:-translate-y-0.5 disabled:opacity-50 mt-2"
-          style={{ background: 'var(--brand-navy-600)' }}
+          style={{ background: '#241b18' }}
         >
           {login.isPending ? 'در حال ورود...' : 'ورود به داشبورد'}
         </button>

@@ -116,7 +116,7 @@ export default function DashboardPage() {
             <button
               onClick={() => refetch()}
               className="mt-4 rounded-xl px-5 py-2.5 text-sm font-medium text-white"
-              style={{ background: 'var(--brand-navy-600)' }}
+              style={{ background: '#241b18' }}
             >
               تلاش دوباره
             </button>
@@ -142,7 +142,7 @@ export default function DashboardPage() {
             <Link
               href="/dashboard/salons/new"
               className="mt-5 inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white"
-              style={{ background: 'var(--brand-navy-600)' }}
+              style={{ background: '#241b18' }}
             >
               <Plus size={15} /> ثبت سالن
             </Link>

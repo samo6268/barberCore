@@ -50,23 +50,23 @@ export function ServiceLanding({ service }: { service: ServiceCategory }) {
   }));
 
   return (
-    <main data-typography="marketplace" className="min-h-screen bg-[#fbfaf7] pt-20">
-      <section className="border-b border-[#e3dcd5]">
+    <main data-typography="marketplace" className="min-h-screen bg-[var(--color-background)] pt-20">
+      <section className="border-b border-[var(--color-border)]">
         <div className="container-editorial py-5">
           <nav
-            className="flex items-center gap-2 type-caption text-[#817a7c]"
+            className="flex items-center gap-2 type-caption text-[var(--color-text-muted)]"
             aria-label="مسیر صفحه"
           >
-            <Link href="/" className="transition hover:text-[#805146]">
+            <Link href="/" className="transition hover:text-[var(--brand-plum-500)]">
               صفحه اصلی
             </Link>
             <ChevronLeft size={13} />
-            <span className="text-[#3a3336]">{service.name}</span>
+            <span className="text-[var(--color-text)]">{service.name}</span>
           </nav>
         </div>
 
         <div className="container-editorial grid items-stretch pb-10 lg:grid-cols-[0.88fr_1.12fr] lg:pb-16">
-          <div className="flex flex-col justify-center bg-[#30393d] px-6 py-10 text-white sm:px-10 lg:px-14 lg:py-16">
+          <div className="flex flex-col justify-center bg-[#241b18] px-6 py-10 text-white sm:px-10 lg:px-14 lg:py-16">
             <p className="mb-4 flex items-center gap-3 type-label text-[#d9bd88]">
               <span className="h-px w-8 bg-[#d9bd88]" aria-hidden="true" />
               {service.eyebrow}
@@ -77,7 +77,7 @@ export function ServiceLanding({ service }: { service: ServiceCategory }) {
               <Link
                 href={salonsHref}
                 onClick={() => trackEvent('service_selected', { service: service.slug, source: 'service_hero' })}
-                className="inline-flex min-h-12 items-center justify-center gap-2 bg-[#d6b276] px-6 type-button text-[#292523] transition hover:bg-[#e2c58f]"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[var(--brand-plum-500)] px-6 type-button text-white transition hover:bg-[var(--brand-plum-700)]"
               >
                 دیدن سالن‌ها و زمان‌های خالی <ArrowLeft size={17} />
               </Link>
@@ -90,7 +90,7 @@ export function ServiceLanding({ service }: { service: ServiceCategory }) {
             </div>
           </div>
 
-          <div className="relative min-h-[360px] overflow-hidden bg-[#ded6cf] lg:min-h-[560px]">
+          <div className="relative min-h-[360px] overflow-hidden border border-[var(--color-border)] bg-[var(--color-surface-raised)] lg:min-h-[560px]">
             <Image
               src={service.image}
               alt={service.imageAlt}
@@ -100,9 +100,9 @@ export function ServiceLanding({ service }: { service: ServiceCategory }) {
               className="object-cover transition duration-700 hover:scale-[1.015]"
             />
             <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/40 to-transparent" />
-            <div className="absolute bottom-5 right-5 border border-white/45 bg-[#fbfaf7]/95 px-4 py-3 backdrop-blur-sm">
-              <span className="block type-caption text-[#817a7c]">رزرو آنلاین در پرنگارین</span>
-              <strong className="mt-0.5 block type-label text-[#2e282a]">
+            <div className="absolute bottom-5 right-5 rounded-xl border border-white/20 bg-[#241b18]/90 px-4 py-3 backdrop-blur-sm">
+              <span className="block type-caption text-[var(--color-text-muted)]">رزرو آنلاین در پرنگارین</span>
+              <strong className="mt-0.5 block type-label text-white">
                 قیمت و زمان خالی، قبل از انتخاب
               </strong>
             </div>
@@ -110,7 +110,7 @@ export function ServiceLanding({ service }: { service: ServiceCategory }) {
         </div>
       </section>
 
-      <section className="border-b border-[#e3dcd5] bg-white">
+      <section className="border-b border-[var(--color-border)] bg-[var(--color-surface)]">
         <div className="container-editorial grid grid-cols-1 divide-y divide-[#e9e3dd] sm:grid-cols-3 sm:divide-x sm:divide-y-0 sm:divide-x-reverse">
           {[
             { icon: SearchCheck, title: 'مقایسه آگاهانه', text: 'نمونه‌کار، امتیاز و قیمت' },
@@ -118,10 +118,10 @@ export function ServiceLanding({ service }: { service: ServiceCategory }) {
             { icon: CalendarCheck, title: 'رزرو ساده', text: 'انتخاب روز و ساعت بدون تماس' },
           ].map(({ icon: Icon, title, text }) => (
             <div key={title} className="flex items-center gap-4 px-4 py-6 sm:justify-center">
-              <Icon size={22} strokeWidth={1.6} className="shrink-0 text-[#8a5b4e]" />
+              <Icon size={22} strokeWidth={1.6} className="shrink-0 text-[var(--brand-plum-500)]" />
               <span>
-                <strong className="block type-label text-[#302a2c]">{title}</strong>
-                <span className="mt-0.5 block type-caption text-[#817a7c]">{text}</span>
+                <strong className="block type-label text-[var(--color-text)]">{title}</strong>
+                <span className="mt-0.5 block type-caption text-[var(--color-text-muted)]">{text}</span>
               </span>
             </div>
           ))}
@@ -131,9 +131,9 @@ export function ServiceLanding({ service }: { service: ServiceCategory }) {
       <section id="popular-services" className="scroll-mt-28 py-16 lg:py-24">
         <div className="container-editorial grid gap-10 lg:grid-cols-[0.72fr_1.28fr] lg:gap-16">
           <div>
-            <p className="mb-3 type-label text-[#85594e]">انتخاب دقیق‌تر</p>
-            <h2 className="type-h1 text-[#221d1f]">در این دسته چه چیزی می‌خواهی؟</h2>
-            <p className="mt-3 max-w-md type-body text-[#756f71]">
+            <p className="mb-3 type-label text-[var(--brand-plum-500)]">انتخاب دقیق‌تر</p>
+            <h2 className="type-h1 text-[var(--color-text)]">در این دسته چه چیزی می‌خواهی؟</h2>
+            <p className="mt-3 max-w-md type-body text-[var(--color-text-muted)]">
               یکی از خدمات محبوب را انتخاب کن یا همه سالن‌های ارائه‌دهنده این دسته را ببین.
             </p>
           </div>
@@ -143,7 +143,7 @@ export function ServiceLanding({ service }: { service: ServiceCategory }) {
                 key={item}
                 href={`${salonsHref}&q=${encodeURIComponent(item)}`}
                 onClick={() => trackEvent('service_selected', { service: service.slug, query: item, source: 'service_popular' })}
-                className="group inline-flex min-h-12 items-center gap-3 border border-[#d9d0c8] bg-white px-5 type-button text-[#3f383a] transition hover:border-[#9b6a5d] hover:text-[#805146]"
+                className="group inline-flex min-h-12 items-center gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-5 type-button text-[var(--color-text)] transition hover:border-[var(--brand-plum-500)] hover:text-[var(--brand-plum-500)]"
               >
                 <Sparkles size={15} className="text-[#b28a4b]" />
                 {item}
@@ -154,17 +154,17 @@ export function ServiceLanding({ service }: { service: ServiceCategory }) {
         </div>
       </section>
 
-      <section className="border-y border-[#e1dad3] bg-[#f1eee9] py-16 lg:py-24">
+      <section className="border-y border-[var(--color-border)] bg-[var(--color-surface-raised)] py-16 lg:py-24">
         <div className="container-editorial">
           <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="mb-3 type-label text-[#85594e]">پیشنهاد برای شروع</p>
-              <h2 className="type-h1 text-[#221d1f]">سالن‌های برتر {service.name}</h2>
-              <p className="mt-2 type-body text-[#756f71]">براساس امتیاز کاربران و خدمات فعال</p>
+              <p className="mb-3 type-label text-[var(--brand-plum-500)]">پیشنهاد برای شروع</p>
+              <h2 className="type-h1 text-[var(--color-text)]">سالن‌های برتر {service.name}</h2>
+              <p className="mt-2 type-body text-[var(--color-text-muted)]">براساس امتیاز کاربران و خدمات فعال</p>
             </div>
             <Link
               href={salonsHref}
-              className="inline-flex w-fit items-center gap-2 border-b border-[#bca69d] pb-1 type-button text-[#765047]"
+              className="inline-flex w-fit items-center gap-2 border-b border-[var(--brand-plum-300)] pb-1 type-button text-[var(--brand-plum-500)]"
             >
               مشاهده همه سالن‌ها <ArrowLeft size={16} />
             </Link>
@@ -173,7 +173,7 @@ export function ServiceLanding({ service }: { service: ServiceCategory }) {
           {isLoading ? (
             <div className="grid gap-5 md:grid-cols-3">
               {Array.from({ length: 3 }, (_, index) => (
-                <div key={index} className="h-[390px] animate-pulse bg-white" />
+                <div key={index} className="h-[390px] animate-pulse rounded-2xl bg-[var(--color-surface)]" />
               ))}
             </div>
           ) : salons.length > 0 ? (
@@ -183,9 +183,9 @@ export function ServiceLanding({ service }: { service: ServiceCategory }) {
                   key={salon.id}
                   href={`/salons/${salon.slug}`}
                   onClick={() => trackEvent('salon_card_opened', { salonId: salon.id, source: `service_${service.slug}` })}
-                  className="group border border-[#ddd6cf] bg-white transition hover:border-[#bca69d]"
+                  className="group overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] transition hover:border-[var(--brand-plum-400)]"
                 >
-                  <div className="relative aspect-[4/3] overflow-hidden bg-[#d8cbc3]">
+                  <div className="relative aspect-[4/3] overflow-hidden bg-[var(--color-surface-raised)]">
                     {salon.coverImageUrl ? (
                       <img
                         src={salon.coverImageUrl}
@@ -206,8 +206,8 @@ export function ServiceLanding({ service }: { service: ServiceCategory }) {
                   <div className="p-5">
                     <div className="flex items-start justify-between gap-3">
                       <span>
-                        <strong className="block type-h3 text-[#292326]">{salon.name}</strong>
-                        <span className="mt-1 flex items-center gap-1.5 type-caption text-[#7f787a]">
+                        <strong className="block type-h3 text-[var(--color-text)]">{salon.name}</strong>
+                        <span className="mt-1 flex items-center gap-1.5 type-caption text-[var(--color-text-muted)]">
                           <MapPin size={14} /> {salon.city || 'نشانی در صفحه سالن'}
                         </span>
                       </span>
@@ -218,8 +218,8 @@ export function ServiceLanding({ service }: { service: ServiceCategory }) {
                         </span>
                       )}
                     </div>
-                    <div className="mt-5 flex items-center justify-between border-t border-[#ebe5df] pt-4">
-                      <span className="flex flex-col items-start gap-2 type-caption text-[#777073]">
+                    <div className="mt-5 flex items-center justify-between border-t border-[var(--color-border)] pt-4">
+                      <span className="flex flex-col items-start gap-2 type-caption text-[var(--color-text-muted)]">
                         <AvailabilityPill />
                         {salon.minPrice != null
                           ? `شروع از ${salon.minPrice.toLocaleString('fa-IR')} تومان`
@@ -227,7 +227,7 @@ export function ServiceLanding({ service }: { service: ServiceCategory }) {
                       </span>
                       <ArrowLeft
                         size={17}
-                        className="text-[#805146] transition group-hover:-translate-x-1"
+                        className="text-[var(--brand-plum-500)] transition group-hover:-translate-x-1"
                       />
                     </div>
                   </div>

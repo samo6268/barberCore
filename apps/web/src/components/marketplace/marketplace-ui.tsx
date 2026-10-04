@@ -12,16 +12,16 @@ export function TrustStrip() {
   ];
 
   return (
-    <section aria-label="مزیت‌های پرنگارین" className="border-b border-[#e8e1db] bg-white">
+    <section aria-label="مزیت‌های پرنگارین" className="border-b border-[var(--color-border)] bg-[var(--color-surface)]">
       <div className="container-editorial grid gap-0 sm:grid-cols-3 sm:divide-x sm:divide-x-reverse sm:divide-[#eee8e2]">
         {items.map(({ icon: Icon, title, text }) => (
-          <div key={title} className="flex items-center gap-3 border-b border-[#eee8e2] px-1 py-4 last:border-b-0 sm:justify-center sm:border-b-0 sm:py-5">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#f4ece7] text-[#805146]">
+          <div key={title} className="flex items-center gap-3 border-b border-[var(--color-border)] px-1 py-4 last:border-b-0 sm:justify-center sm:border-b-0 sm:py-5">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--brand-plum-50)] text-[var(--brand-plum-500)]">
               <Icon size={17} strokeWidth={1.8} />
             </span>
             <span>
-              <strong className="block type-label text-[#332c2f]">{title}</strong>
-              <span className="mt-0.5 block type-caption text-[#817a7c]">{text}</span>
+              <strong className="block type-label text-[var(--color-text)]">{title}</strong>
+              <span className="mt-0.5 block type-caption text-[var(--color-text-muted)]">{text}</span>
             </span>
           </div>
         ))}
@@ -32,11 +32,11 @@ export function TrustStrip() {
 
 export function MobileBookingBar({ label = 'پیدا کردن نوبت', href = '/salons' }: { label?: string; href?: string }) {
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#ded6cf] bg-white/95 p-3 shadow-[0_-10px_30px_rgba(44,34,37,0.12)] backdrop-blur md:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--color-border)] bg-[rgba(29,23,21,0.94)] p-3 shadow-[0_-10px_30px_rgba(0,0,0,0.3)] backdrop-blur md:hidden">
       <Link
         href={href}
         onClick={() => trackEvent('hero_search_submitted', { source: 'mobile_sticky_cta' })}
-        className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#805146] px-5 type-button text-white"
+        className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[var(--color-primary)] px-5 type-button text-white"
       >
         <Sparkles size={16} /> {label} <ArrowLeft size={16} />
       </Link>
@@ -54,13 +54,13 @@ export function AvailabilityPill({ label = 'مشاهده زمان‌های خا�
 
 export function PersonalisedHint({ city }: { city?: string }) {
   return (
-    <div className="flex items-start gap-3 rounded-2xl border border-[#eadfd6] bg-[#fffaf5] p-4">
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#f2e5dc] text-[#805146]">
+    <div className="flex items-start gap-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-4">
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--brand-plum-50)] text-[var(--brand-plum-500)]">
         <MapPin size={17} />
       </span>
       <div>
-        <p className="type-label text-[#332c2f]">پیشنهاد نزدیک به تو</p>
-        <p className="mt-1 type-caption text-[#817a7c]">
+        <p className="type-label text-[var(--color-text)]">پیشنهاد نزدیک به تو</p>
+        <p className="mt-1 type-caption text-[var(--color-text-muted)]">
           {city ? `سالن‌های منتخب ${city} را بر اساس امتیاز و زمان خالی ببین.` : 'شهر را انتخاب کن تا پیشنهادهای نزدیک‌تر را ببینی.'}
         </p>
       </div>

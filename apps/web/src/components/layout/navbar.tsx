@@ -22,13 +22,13 @@ export function Navbar() {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-50 border-b border-[#e5dfd8] bg-[#fbfaf7]">
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-[var(--color-border)] bg-[rgba(29,23,21,0.9)] backdrop-blur-xl">
         <div className="container-editorial h-20 flex items-center justify-between">
           {/* Logo */}
           <Link
             href="/"
             className="flex items-center gap-2.5 font-semibold text-h3"
-            style={{ color: '#795145' }}
+            style={{ color: 'var(--brand-plum-500)' }}
             aria-label="پرنگارین — صفحه اصلی"
           >
             <Image
@@ -44,21 +44,21 @@ export function Navbar() {
 
           {/* Center nav — desktop */}
           <nav
-            className="hidden md:flex items-center gap-8 text-body-sm font-medium"
-            style={{ color: 'var(--color-text)' }}
+            className="hidden items-center gap-8 text-body-sm font-medium md:flex"
+            style={{ color: 'var(--color-text-muted)' }}
           >
-            <Link href="/salons" className="transition-colors hover:text-[#8b5e50]">
+            <Link href="/salons" className="transition-colors hover:text-[var(--brand-plum-500)]">
               سالن‌ها
             </Link>
-            <Link href="/#services" className="transition-colors hover:text-[#8b5e50]">
+            <Link href="/#services" className="transition-colors hover:text-[var(--brand-plum-500)]">
               خدمات
             </Link>
-            <Link href="/#how-it-works" className="transition-colors hover:text-[#8b5e50]">
+            <Link href="/#how-it-works" className="transition-colors hover:text-[var(--brand-plum-500)]">
               راهنمای رزرو
             </Link>
             <Link
               href="/salon-owner/login?returnTo=/dashboard/salons/new"
-              className="transition-colors hover:text-[#8b5e50]"
+              className="transition-colors hover:text-[var(--brand-plum-500)]"
             >
               ثبت سالن
             </Link>
@@ -68,7 +68,7 @@ export function Navbar() {
           <div className="hidden md:flex items-center gap-3">
             <Link
               href="/salons"
-              className="p-2 transition-colors hover:bg-[var(--ui-gray-100)]"
+              className="rounded-xl p-2 transition-colors hover:bg-[var(--ui-gray-100)]"
               style={{ color: 'var(--color-text-muted)' }}
               aria-label="جستجو"
             >
@@ -79,7 +79,7 @@ export function Navbar() {
               <>
                 <Link
                   href="/profile/bookings"
-                  className="p-2 transition-colors hover:bg-[var(--ui-gray-100)]"
+                  className="rounded-xl p-2 transition-colors hover:bg-[var(--ui-gray-100)]"
                   style={{ color: 'var(--color-text-muted)' }}
                   aria-label="رزروها"
                 >
@@ -88,7 +88,7 @@ export function Navbar() {
                 {(user.role === 'SALON_OWNER' || user.role === 'SUPER_ADMIN') && (
                   <Link
                     href="/dashboard"
-                    className="p-2 transition-colors hover:bg-[var(--ui-gray-100)]"
+                    className="rounded-xl p-2 transition-colors hover:bg-[var(--ui-gray-100)]"
                     style={{ color: 'var(--color-text-muted)' }}
                     aria-label="داشبورد"
                   >
@@ -97,7 +97,7 @@ export function Navbar() {
                 )}
                 <Link
                   href="/profile"
-                  className="flex items-center gap-2 border border-[var(--ui-gray-200)] px-4 py-2 text-body-sm font-medium transition-colors hover:bg-[var(--ui-gray-100)]"
+                  className="flex items-center gap-2 rounded-xl border border-[var(--color-border)] px-4 py-2 text-body-sm font-medium transition-colors hover:bg-[var(--ui-gray-100)]"
                   style={{ color: 'var(--color-text)' }}
                 >
                   <User size={16} strokeWidth={1.5} />
@@ -108,7 +108,7 @@ export function Navbar() {
                     logout.mutate();
                     router.push('/');
                   }}
-                  className="p-2 transition-colors hover:bg-[var(--ui-gray-100)]"
+                  className="rounded-xl p-2 transition-colors hover:bg-[var(--ui-gray-100)]"
                   style={{ color: 'var(--color-text-muted)' }}
                 >
                   <LogOut size={20} strokeWidth={1.5} />
@@ -118,14 +118,14 @@ export function Navbar() {
               <>
                 <Link
                   href="/role-selector"
-                  className="px-5 py-2.5 text-body-sm font-medium transition-colors hover:text-[#8b5e50]"
+                  className="rounded-xl px-5 py-2.5 text-body-sm font-medium transition-colors hover:text-[var(--brand-plum-500)]"
                   style={{ color: 'var(--color-text)' }}
                 >
                   ورود
                 </Link>
                 <Link
                   href="/salons"
-                  className="bg-[#805146] px-5 py-2.5 text-body-sm font-medium text-white transition-colors hover:bg-[#684138]"
+                  className="rounded-xl bg-[var(--color-primary)] px-5 py-2.5 text-body-sm font-medium text-white transition-colors hover:bg-[var(--color-primary-hover)]"
                 >
                   رزرو نوبت
                 </Link>

@@ -115,7 +115,7 @@ export default function ReportsPage() {
               onClick={() => window.print()}
               disabled={!report}
               className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm text-white disabled:opacity-50"
-              style={{ background: 'var(--brand-navy-600)' }}
+              style={{ background: '#241b18' }}
             >
               <Printer size={16} /> چاپ / PDF
             </button>

@@ -68,7 +68,7 @@ export default function SalonOverviewPage() {
           <p className="text-sm text-[var(--ui-gray-500)]">اطلاعات مدیریتی سالن دریافت نشد.</p>
           <button
             onClick={() => refetch()}
-            className="mx-auto mt-5 flex items-center gap-2 rounded-xl bg-[var(--brand-navy-600)] px-5 py-2.5 text-sm text-white"
+            className="mx-auto mt-5 flex items-center gap-2 rounded-xl bg-[#241b18] px-5 py-2.5 text-sm text-white"
           >
             <RefreshCw size={15} /> تلاش دوباره
           </button>
@@ -84,7 +84,7 @@ export default function SalonOverviewPage() {
   return (
     <DashboardLayout salonId={id} activeTab="overview" salonName={salon.name} plan={plan}>
       <div className="mx-auto max-w-[1500px] space-y-6">
-        <section className="relative min-h-[280px] overflow-hidden rounded-3xl bg-[var(--brand-navy-600)] shadow-lg shadow-slate-900/10">
+        <section className="relative min-h-[280px] overflow-hidden rounded-3xl bg-[#241b18] shadow-lg shadow-black/20">
           <img
             src={cover}
             alt={`فضای ${salon.name}`}

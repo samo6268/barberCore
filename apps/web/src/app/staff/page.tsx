@@ -54,7 +54,7 @@ export default function StaffTodayPage() {
           <p className="text-sm text-red-600">دریافت برنامه روزانه انجام نشد.</p>
           <button
             onClick={() => refetch()}
-            className="mx-auto mt-4 flex items-center gap-2 rounded-xl bg-[var(--brand-navy-600)] px-4 py-2 text-xs text-white"
+            className="mx-auto mt-4 flex items-center gap-2 rounded-xl bg-[#241b18] px-4 py-2 text-xs text-white"
           >
             <RefreshCw size={14} /> تلاش دوباره
           </button>

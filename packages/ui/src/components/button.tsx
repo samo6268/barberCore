@@ -16,11 +16,11 @@ const variantClasses: Record<Variant, string> = {
     'hover:-translate-y-1 hover:bg-[var(--color-primary-hover)] ' +
     'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]',
   secondary:
-    'bg-transparent border-2 border-[var(--brand-gold-600)] text-[var(--color-primary)] ' +
-    'hover:-translate-y-1 hover:bg-[var(--brand-gold-50)] ' +
+    'bg-transparent border border-[var(--brand-gold-600)] text-[var(--brand-gold-300)] ' +
+    'hover:-translate-y-1 hover:bg-[rgba(216,183,106,0.12)] ' +
     'focus-visible:ring-2 focus-visible:ring-[var(--brand-gold-600)]',
   ghost:
-    'bg-transparent text-[var(--brand-navy-600)] ' +
+    'bg-transparent text-[var(--color-text-muted)] ' +
     'hover:-translate-y-1 hover:bg-[var(--ui-gray-100)] ' +
     'focus-visible:ring-2 focus-visible:ring-[var(--ui-gray-400)]',
 };
@@ -43,7 +43,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={disabled || loading}
         className={[
           'inline-flex items-center justify-center gap-2',
-          'rounded-md font-semibold',
+          'rounded-xl font-semibold',
           'transition-all duration-[250ms] ease-out',
           'outline-none focus-visible:outline-none focus-visible:ring-offset-2',
           'disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none',

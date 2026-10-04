@@ -7,9 +7,9 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const variantClasses: Record<CardVariant, string> = {
-  default: 'bg-white border border-[var(--ui-gray-200)]',
-  elevated: 'bg-[var(--bg-ivory-soft)] border-0',
-  featured: 'bg-[var(--brand-gold-50)] border border-[var(--brand-gold-200)]',
+  default: 'bg-[var(--color-surface)] border border-[var(--color-border)]',
+  elevated: 'bg-[var(--bg-ivory-soft)] border border-[var(--color-border)]',
+  featured: 'bg-[var(--brand-plum-50)] border border-[var(--brand-plum-200)]',
 };
 
 const variantPadding: Record<CardVariant, string> = {
@@ -22,7 +22,7 @@ export function Card({ variant = 'default', className = '', children, ...props }
   return (
     <div
       className={[
-        'rounded-2xl overflow-hidden',
+        'rounded-2xl overflow-hidden shadow-[0_18px_45px_rgba(0,0,0,0.16)]',
         variantClasses[variant],
         variantPadding[variant],
         className,

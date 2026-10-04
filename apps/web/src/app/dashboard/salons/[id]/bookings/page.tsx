@@ -86,7 +86,7 @@ export default function SalonBookingsPage() {
             <button
               onClick={() => refetch()}
               className="mt-4 rounded-xl px-5 py-2.5 text-sm font-medium text-white"
-              style={{ background: 'var(--brand-navy-600)' }}
+              style={{ background: '#241b18' }}
             >
               تلاش دوباره
             </button>

@@ -23,7 +23,7 @@ export const SERVICE_CATEGORIES: ServiceCategory[] = [
     description:
       'نمونه‌کارها، قیمت و زمان‌های خالی متخصصان را مقایسه کن و برای تغییری که می‌خواهی با اطمینان وقت بگیر.',
     query: 'کوتاهی',
-    image: '/images/home/services/haircut.webp',
+    image: '/images/photography/parnegarin/womens-salon.webp',
     imageAlt: 'متخصص در حال کوتاهی و استایل موی مشتری',
     popular: ['کوپ ژورنالی', 'براشینگ', 'اصلاح نوک مو', 'استایل مجلسی', 'کوتاهی کودک'],
     guide: [
@@ -41,7 +41,7 @@ export const SERVICE_CATEGORIES: ServiceCategory[] = [
     description:
       'از مشاوره رنگ تا انتخاب متخصص، هزینه و زمان اجرا را شفاف ببین و مناسب‌ترین گزینه را رزرو کن.',
     query: 'رنگ مو',
-    image: '/images/home/services/hair-color.webp',
+    image: '/images/photography/parnegarin/hair-color.webp',
     imageAlt: 'متخصص در حال اجرای رنگ مو در سالن زیبایی',
     popular: ['رنگ کامل', 'هایلایت', 'بالیاژ', 'کراتین', 'احیای مو', 'رنگ ریشه'],
     guide: [
@@ -68,7 +68,7 @@ export const SERVICE_CATEGORIES: ServiceCategory[] = [
     description:
       'از مدل‌های مینیمال تا طراحی‌های مناسب مراسم، ناخن‌کار حرفه‌ای را با بررسی نمونه‌کار و قیمت انتخاب کن.',
     query: 'ناخن',
-    image: '/images/home/services/nails.webp',
+    image: '/images/photography/parnegarin/nails.webp',
     imageAlt: 'متخصص ناخن در حال ارائه خدمات مانیکور',
     popular: ['مانیکور', 'پدیکور', 'کاشت ناخن', 'ترمیم', 'ژلیش', 'طراحی ناخن'],
     guide: [
@@ -92,7 +92,7 @@ export const SERVICE_CATEGORIES: ServiceCategory[] = [
     description:
       'سبک میکاپ، نمونه‌کار و تجربه متخصصان را ببین و برای مراسمت انتخابی هماهنگ با سلیقه خودت داشته باش.',
     query: 'میکاپ',
-    image: '/images/home/services/makeup.webp',
+    image: '/images/photography/parnegarin/womens-salon.webp',
     imageAlt: 'میکاپ حرفه‌ای مشتری در سالن زیبایی',
     popular: ['میکاپ روز', 'میکاپ مراسم', 'میکاپ عروس', 'گریم تخصصی', 'میکاپ لایت'],
     guide: [
@@ -119,7 +119,7 @@ export const SERVICE_CATEGORIES: ServiceCategory[] = [
     description:
       'خدمت مناسب نوع پوستت را پیدا کن، تجربه متخصصان را مقایسه کن و برای یک مراقبت مطمئن وقت بگیر.',
     query: 'پوست',
-    image: '/images/home/services/skincare.webp',
+    image: '/images/photography/parnegarin/spa-facial.webp',
     imageAlt: 'متخصص در حال اجرای فیشال و مراقبت پوست',
     popular: ['فیشال پایه', 'پاکسازی عمیق', 'آبرسانی', 'مراقبت پوست حساس', 'ماساژ صورت'],
     guide: [
@@ -143,7 +143,7 @@ export const SERVICE_CATEGORIES: ServiceCategory[] = [
     description:
       'آرایشگر مناسب را بر اساس سبک کار، امتیاز و زمان خالی پیدا کن و بدون تماس تلفنی نوبت بگیر.',
     query: 'اصلاح',
-    image: '/images/home/services/barber.webp',
+    image: '/images/photography/parnegarin/mens-barber.webp',
     imageAlt: 'آرایشگر در حال اصلاح حرفه‌ای موی آقایان',
     popular: ['کوتاهی کلاسیک', 'فید', 'اصلاح ریش', 'گریم داماد', 'استایل مو و ریش'],
     guide: [

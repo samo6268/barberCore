@@ -23,7 +23,7 @@ const BOTTOM_LINKS = [
 
 export function SiteFooter() {
   return (
-    <footer style={{ background: 'var(--brand-navy-600)', color: 'var(--bg-ivory)' }}>
+    <footer style={{ background: '#17110f', color: '#f8f1e9' }}>
       <div className="container-editorial py-16">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-12">
           <div className="col-span-2 md:col-span-1">

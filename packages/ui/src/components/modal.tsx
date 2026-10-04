@@ -49,7 +49,7 @@ export function Modal({ open, onClose, title, children, size = 'md' }: ModalProp
         aria-modal="true"
         aria-labelledby={title ? 'modal-title' : undefined}
         className={[
-          'relative w-full bg-[var(--bg-ivory)] rounded-2xl p-8',
+          'relative w-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-8 shadow-[0_24px_70px_rgba(0,0,0,0.34)]',
           'animate-scale-in',
           sizeMap[size],
         ].join(' ')}

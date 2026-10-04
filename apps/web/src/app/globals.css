@@ -39,6 +39,22 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  /* Parnegarin dark editorial foundation. Components may opt into a lighter
+     surface, but the product canvas is always warm espresso rather than white. */
+  body {
+    background-image:
+      radial-gradient(circle at 82% -10%, rgba(189, 112, 75, 0.12), transparent 28rem),
+      linear-gradient(180deg, #1d1715 0%, #211916 100%);
+  }
+
+  a,
+  button,
+  input,
+  select,
+  textarea {
+    -webkit-tap-highlight-color: transparent;
+  }
+
   /* RTL default for Persian UI */
   [dir='rtl'] {
     font-family: var(--font-sans);
@@ -121,8 +137,8 @@
 
   /* Selection */
   ::selection {
-    background-color: var(--brand-plum-100);
-    color: var(--brand-plum-800);
+    background-color: var(--brand-plum-600);
+    color: #fff8f1;
   }
 
   /* Smooth image rendering */
@@ -309,7 +325,7 @@
 
   /* ── Text gradient plum→rose ────────────────────────── */
   .text-gradient-brand {
-    background: linear-gradient(135deg, var(--brand-plum-600) 0%, var(--brand-rose-600) 100%);
+    background: linear-gradient(135deg, var(--brand-gold-500) 0%, var(--brand-plum-500) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -348,6 +364,72 @@
   }
 }
 
+/* Compatibility bridge for legacy screens while they migrate to semantic
+   tokens. This keeps hard-coded white surfaces from breaking the dark system. */
+@layer utilities {
+  [data-theme='neutral'] .bg-white,
+  [data-theme='neutral'] .bg-white\/95,
+  [data-theme='neutral'] .bg-white\/90 {
+    background-color: var(--color-surface) !important;
+  }
+
+  [data-theme='neutral'] [class*='bg-[#fbfaf7]'],
+  [data-theme='neutral'] [class*='bg-[#fffaf5]'],
+  [data-theme='neutral'] [class*='bg-[#faf7f3]'] {
+    background-color: var(--color-background) !important;
+  }
+
+  [data-theme='neutral'] [class*='bg-[#f5ece7]'],
+  [data-theme='neutral'] [class*='bg-[#f4ece7]'],
+  [data-theme='neutral'] [class*='bg-[#e8e1da]'] {
+    background-color: var(--brand-plum-50) !important;
+  }
+
+  [data-theme='neutral'] [class*='bg-[#30393d]'],
+  [data-theme='neutral'] [class*='bg-[#30383a]'] {
+    background-color: #241b18 !important;
+  }
+
+  [data-theme='neutral'] [class*='text-[#221d1f]'],
+  [data-theme='neutral'] [class*='text-[#292326]'],
+  [data-theme='neutral'] [class*='text-[#2b2527]'],
+  [data-theme='neutral'] [class*='text-[#332c2f]'],
+  [data-theme='neutral'] [class*='text-[#302a2c]'],
+  [data-theme='neutral'] [class*='text-[#2e282a]'],
+  [data-theme='neutral'] [class*='text-[#282225]'],
+  [data-theme='neutral'] [class*='text-[#3a3336]'] {
+    color: var(--color-text) !important;
+  }
+
+  [data-theme='neutral'] [class*='text-[#756f71]'],
+  [data-theme='neutral'] [class*='text-[#817a7c]'],
+  [data-theme='neutral'] [class*='text-[#7f787a]'],
+  [data-theme='neutral'] [class*='text-[#777073]'],
+  [data-theme='neutral'] [class*='text-[#8d8587]'],
+  [data-theme='neutral'] [class*='text-[#8e8789]'],
+  [data-theme='neutral'] [class*='text-[#7d7678]'],
+  [data-theme='neutral'] [class*='text-[#6f686a]'],
+  [data-theme='neutral'] [class*='text-[#5f585a]'],
+  [data-theme='neutral'] [class*='text-[#655d60]'],
+  [data-theme='neutral'] [class*='text-[#91898b]'] {
+    color: var(--color-text-muted) !important;
+  }
+
+  [data-theme='neutral'] [class*='text-[#805146]'],
+  [data-theme='neutral'] [class*='text-[#8b5e50]'],
+  [data-theme='neutral'] [class*='text-[#85594e]'],
+  [data-theme='neutral'] [class*='text-[#765047]'],
+  [data-theme='neutral'] [class*='text-[#684138]'],
+  [data-theme='neutral'] [class*='text-[#8f594d]'] {
+    color: var(--brand-plum-500) !important;
+  }
+
+  [data-theme='neutral'] [class*='border-[#e'],
+  [data-theme='neutral'] [class*='border-[#d'] {
+    border-color: var(--color-border) !important;
+  }
+}
+
 @layer utilities {
   .persian-nums {
     font-variant-numeric: tabular-nums;
@@ -377,7 +459,7 @@
 
 /* ── Persian calendar — shared across marketplace and operations ── */
 .parnegarin-calendar.rdp-root {
-  --rdp-accent-color: var(--brand-plum-600);
+  --rdp-accent-color: var(--brand-plum-500);
   --rdp-accent-background-color: var(--brand-plum-50);
   --rdp-day-height: 42px;
   --rdp-day-width: 42px;
@@ -387,7 +469,7 @@
   --rdp-selected-border: 0;
   --rdp-today-color: var(--brand-plum-600);
   width: 100%;
-  color: var(--brand-navy-600);
+  color: var(--brand-navy-800);
   font-family: var(--font-sans);
 }
 
@@ -467,8 +549,8 @@
 
 .parnegarin-calendar .rdp-today:not(.rdp-selected) .rdp-day_button {
   border: 1px solid var(--brand-gold-600);
-  background: var(--brand-gold-50);
-  color: var(--brand-navy-600);
+  background: rgba(216, 183, 106, 0.14);
+  color: var(--brand-navy-800);
   font-weight: 700;
 }
 

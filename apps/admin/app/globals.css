@@ -4,48 +4,22 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Admin token overrides (navy-dominant, male theme) ── */
+/* ── Admin uses the same Parnegarin dark editorial language ── */
 :root {
-  --brand-plum-50: #f5ebf4;
-  --brand-plum-100: #e3cbe1;
-  --brand-plum-600: #4b244a;
-  --brand-plum-800: #2d1530;
-  --brand-gold-100: #f3e5b8;
-  --brand-gold-400: #e5c682;
-  --brand-gold-600: #d8b76a;
-  --brand-navy-50: #eceff2;
-  --brand-navy-100: #d2d8de;
-  --brand-navy-200: #b5bfc9;
-  --brand-navy-300: #8d9ba8;
-  --brand-navy-400: #4a5562;
-  --brand-navy-500: #364452;
-  --brand-navy-600: #1f2933;
-  --brand-navy-700: #18212a;
-  --brand-navy-800: #131a20;
-  --brand-navy-900: #0f141a;
-  --brand-rose-200: #eac5d1;
-  --brand-rose-800: #8f5e70;
-  --bg-ivory: #faf7f2;
-  --bg-ivory-soft: #f4efe6;
-  --ui-gray-100: #f0ebe5;
-  --ui-gray-200: #e7e2dc;
-  --ui-gray-400: #b8b0a5;
-  --ui-gray-500: #9a9188;
-
-  --admin-sidebar-bg: var(--brand-navy-900);
-  --admin-sidebar-text: var(--bg-ivory);
-  --admin-sidebar-muted: var(--brand-navy-300);
-  --admin-sidebar-active: var(--brand-gold-600);
+  --admin-sidebar-bg: #17110f;
+  --admin-sidebar-text: #f8f1e9;
+  --admin-sidebar-muted: #a99487;
+  --admin-sidebar-active: #d08a5e;
   --admin-sidebar-hover: rgba(255, 255, 255, 0.06);
   --admin-content-bg: var(--bg-ivory);
-  --admin-card-bg: #ffffff;
+  --admin-card-bg: var(--color-surface);
   --admin-border: var(--ui-gray-200);
-  --admin-text: var(--brand-navy-900);
+  --admin-text: var(--color-text);
   --admin-muted: var(--ui-gray-500);
-  --admin-primary: var(--brand-navy-600);
-  --admin-primary-fg: var(--bg-ivory);
+  --admin-primary: var(--brand-plum-600);
+  --admin-primary-fg: #fff8f1;
   --admin-accent: var(--brand-gold-600);
-  --admin-danger: #c0392b;
+  --admin-danger: #e27d69;
 }
 
 * {
@@ -60,6 +34,10 @@ body {
   line-height: var(--type-body-line);
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background-image: radial-gradient(circle at 82% -10%, rgba(189, 112, 75, 0.12), transparent 28rem);
 }
 
 h1,
@@ -133,6 +111,23 @@ th {
 }
 
 @layer utilities {
+  .bg-white,
+  .bg-white\/95,
+  .bg-white\/90 {
+    background-color: var(--admin-card-bg) !important;
+  }
+
+  [class*='bg-[#fbfaf7]'],
+  [class*='bg-[#faf7f3]'],
+  [class*='bg-[#fffaf5]'] {
+    background-color: var(--admin-content-bg) !important;
+  }
+
+  [class*='border-[#e'],
+  [class*='border-[#d'] {
+    border-color: var(--admin-border) !important;
+  }
+
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }

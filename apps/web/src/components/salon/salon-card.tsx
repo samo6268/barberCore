@@ -68,7 +68,7 @@ export function SalonCard({ salon }: SalonCardProps) {
             {salon.isVerified && (
               <span
                 className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-caption font-medium"
-                style={{ background: 'var(--brand-navy-600)', color: 'var(--brand-gold-100)' }}
+                style={{ background: '#241b18', color: 'var(--brand-gold-100)' }}
               >
                 <CheckCircle size={10} strokeWidth={2} />
                 تأیید شده
