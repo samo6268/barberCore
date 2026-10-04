@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, BadgeCheck, CalendarDays, MapPin, Search, Star, Store } from 'lucide-react';
+import { ArrowLeft, BadgeCheck, CalendarDays, Droplets, Flower2, Hand, MapPin, Scissors, Search, Sparkles, Star, Store, UserRound } from 'lucide-react';
 import { useSearchSalons } from '@/lib/api-hooks';
 import { SERVICE_CATEGORIES } from '@/lib/service-catalog';
 import { trackEvent } from '@/lib/analytics';
@@ -36,6 +36,15 @@ type FeaturedSalon = {
 const HERO_IMAGE = '/images/photography/parnegarin/womens-salon.webp';
 
 const SERVICES = SERVICE_CATEGORIES;
+
+const SERVICE_ICONS: Record<string, typeof Sparkles> = {
+  haircut: Sparkles,
+  'hair-color': Flower2,
+  nails: Hand,
+  makeup: Sparkles,
+  skincare: Droplets,
+  barber: Scissors,
+};
 
 const QUICK_SEARCHES = [
   { label: 'رنگ و لایت', query: 'رنگ مو' },
@@ -95,159 +104,60 @@ function Hero() {
   };
 
   return (
-    <section className="border-b border-[var(--color-border)] bg-[var(--color-background)] pt-20">
-      <div className="container-editorial grid min-h-[660px] items-center gap-10 py-12 lg:grid-cols-[0.92fr_1.08fr] lg:gap-16 lg:py-16">
-        <div className="order-2 lg:order-1">
-          <div className="mb-6 flex items-center gap-3 text-label text-[var(--brand-plum-500)]">
-            <span className="h-px w-9 bg-[var(--brand-plum-500)]" aria-hidden="true" />
-            رزرو آنلاین خدمات زیبایی
+    <section className="relative isolate overflow-visible bg-[#191312] pt-20 text-[#fff7ef]">
+      <div className="absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute inset-y-0 left-0 w-full lg:w-[58%]">
+          <div className="grid h-full grid-cols-3 gap-1 opacity-90">
+            <div className="relative overflow-hidden"><Image src="/images/photography/parnegarin/womens-salon.webp" alt="سالن زیبایی بانوان" fill priority sizes="33vw" className="object-cover" /></div>
+            <div className="relative overflow-hidden"><Image src="/images/photography/parnegarin/mens-barber.webp" alt="آرایشگاه آقایان" fill priority sizes="33vw" className="object-cover" /></div>
+            <div className="relative overflow-hidden"><Image src="/images/photography/parnegarin/spa-facial.webp" alt="اسپا و مراقبت پوست" fill priority sizes="33vw" className="object-cover" /></div>
           </div>
-          <h1 className="max-w-[620px] type-display-lg text-[var(--color-text)]">
-            وقت خالیِ سالن مناسب را پیدا کن،
-            <span className="block text-[var(--brand-plum-500)]">همین امروز رزرو کن.</span>
+        </div>
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(25,19,18,.08)_0%,rgba(25,19,18,.62)_40%,#191312_72%,#191312_100%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#191312] to-transparent" />
+      </div>
+
+      <div className="container-editorial relative flex min-h-[670px] flex-col justify-center pb-36 pt-16 lg:min-h-[700px] lg:pb-40 lg:pt-20">
+        <div className="ms-auto max-w-[600px] text-right">
+          <div className="mb-6 inline-flex items-center gap-3 rounded-full border border-[#c58b69]/35 bg-[#251a17]/70 px-4 py-2 type-label text-[#d9a57f] backdrop-blur-sm">
+            <span className="h-2 w-2 rounded-full bg-[#d9a57f]" aria-hidden="true" />
+            زیبایی، مراقبت و آرامش برای همه
+          </div>
+          <h1 className="type-display-lg text-[#fffaf5] sm:text-[3.65rem] sm:leading-[1.25]">
+            زیبایی، مراقبت و آرامش؛
+            <span className="block text-[#d9a57f]">برای همه</span>
           </h1>
-          <p className="mt-5 max-w-xl type-body-lg text-[var(--color-text-muted)]">
-            خدمت و شهرت را انتخاب کن؛ قیمت‌ها، نظرها و زمان‌های خالی را یک‌جا ببین.
+          <p className="mt-5 max-w-xl type-body-lg text-[#eadfd6]">
+            از آرایشگاه و باربرشاپ تا اسپا و مراقبت‌های تخصصی؛ تجربه‌ای مطمئن، نزدیک و قابل رزرو.
           </p>
+          <div className="mt-7 flex flex-wrap justify-end gap-3">
+            <Link href="#services" className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-[#b46f50] px-6 type-button text-white transition hover:bg-[#ca8663]">
+              پیدا کردن خدمت <ArrowLeft size={17} />
+            </Link>
+            <Link href="/salons" className="inline-flex min-h-12 items-center gap-2 rounded-xl border border-[#e6d5c8]/45 bg-[#211815]/55 px-6 type-button text-[#fff7ef] backdrop-blur-sm transition hover:bg-[#3a2721]">
+              مشاهده سالن‌ها <Store size={17} />
+            </Link>
+          </div>
+        </div>
 
-          <form
-            onSubmit={submit}
-            className="mt-8 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-3 shadow-[0_20px_55px_rgba(0,0,0,0.22)]"
-          >
-            <fieldset className="mb-3 flex border-b border-[var(--color-border)]" aria-label="نوع سالن">
-              {(
-                [
-                  ['UNISEX', 'همه'],
-                  ['FEMALE', 'بانوان'],
-                  ['MALE', 'آقایان'],
-                ] as [GenderFilter, string][]
-              ).map(([value, label]) => (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() => setGender(value)}
-                  aria-pressed={gender === value}
-                  className={`relative min-h-11 px-5 text-body-sm transition ${
-                    gender === value
-                      ? 'text-[var(--brand-plum-500)] after:absolute after:inset-x-0 after:-bottom-px after:h-0.5 after:bg-[var(--brand-plum-500)]'
-                      : 'text-[var(--color-text-muted)] hover:text-[var(--color-text)]'
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
+        <form onSubmit={submit} className="absolute inset-x-4 -bottom-10 z-20 rounded-[1.35rem] border border-[#e3cfc1]/25 bg-[#2a1e1a]/95 p-3 shadow-[0_28px_80px_rgba(0,0,0,.4)] backdrop-blur-xl lg:inset-x-0">
+          <div className="grid gap-2 lg:grid-cols-[1.2fr_1fr_1.1fr_auto] lg:items-end">
+            <label className="min-w-0 rounded-xl border border-[#e3cfc1]/20 bg-[#362620] px-4 py-3 text-right">
+              <span className="mb-1 block type-caption text-[#cdb5a7]">چه خدمتی؟</span>
+              <span className="flex items-center gap-2"><Search size={18} className="shrink-0 text-[#d9a57f]" /><input value={service} onChange={(event) => setService(event.target.value)} list="home-services" className="w-full bg-transparent type-label text-[#fff7ef] outline-none placeholder:text-[#ad978d]" placeholder="مثلاً فیشال، کوتاهی یا اصلاح" /><datalist id="home-services">{SERVICES.map((item) => <option key={item.query} value={item.query} />)}</datalist></span>
+            </label>
+            <div className="min-w-0 rounded-xl border border-[#e3cfc1]/20 bg-[#362620] px-3 py-2"><ProvinceCitySelect compact province={province} city={city} onProvinceChange={setProvince} onCityChange={setCity} /></div>
+            <fieldset className="flex min-h-[72px] items-end gap-2 rounded-xl border border-[#e3cfc1]/20 bg-[#362620] p-2" aria-label="مخاطب سالن">
+              <legend className="px-2 type-caption text-[#cdb5a7]">برای چه کسی؟</legend>
+              {([['UNISEX', 'همه'], ['FEMALE', 'بانوان'], ['MALE', 'آقایان']] as [GenderFilter, string][]).map(([value, label]) => <button key={value} type="button" onClick={() => setGender(value)} aria-pressed={gender === value} className={`min-h-10 flex-1 rounded-lg px-3 type-button transition ${gender === value ? 'bg-[#b46f50] text-white' : 'text-[#d8c7bd] hover:bg-[#4a3027]'}`}>{label}</button>)}
             </fieldset>
-
-            <div className="grid sm:grid-cols-[1fr_1.45fr_auto]">
-              <label className="flex min-w-0 items-center gap-3 px-3 py-3 sm:border-l sm:border-[var(--color-border)]">
-                <Search size={19} className="shrink-0 text-[var(--brand-plum-500)]" />
-                <span className="min-w-0 flex-1">
-                  <span className="block text-caption text-[var(--color-text-muted)]">خدمت</span>
-                  <input
-                    value={service}
-                    onChange={(event) => setService(event.target.value)}
-                    list="home-services"
-                    className="mt-0.5 w-full bg-transparent text-label text-[var(--color-text)] outline-none placeholder:font-normal placeholder:text-[var(--color-text-subtle)]"
-                    placeholder="مثلاً رنگ مو"
-                  />
-                  <datalist id="home-services">
-                    {SERVICES.map((item) => (
-                      <option key={item.query} value={item.query} />
-                    ))}
-                  </datalist>
-                </span>
-              </label>
-
-              <div className="min-w-0 border-t border-[var(--color-border)] px-3 py-3 sm:border-0">
-                <ProvinceCitySelect
-                  compact
-                  province={province}
-                  city={city}
-                  onProvinceChange={setProvince}
-                  onCityChange={setCity}
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="mt-2 flex min-h-14 items-center justify-center gap-2 rounded-xl bg-[var(--color-primary)] px-6 text-white transition hover:bg-[var(--color-primary-hover)] sm:mt-0 sm:min-w-28"
-              >
-                جست‌وجو <ArrowLeft size={17} />
-              </button>
-            </div>
-
-            <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-[var(--color-border)] pt-3">
-              <span className="type-caption text-[var(--color-text-muted)]">زمان ترجیحی:</span>
-              {[
-                ['any', 'هر زمان'],
-                ['today', 'امروز'],
-                ['tomorrow', 'فردا'],
-                ['week', 'این هفته'],
-              ].map(([value, label]) => (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() => setAvailability(value)}
-                  className={`rounded-full border px-3 py-1.5 type-caption transition ${
-                    availability === value
-                      ? 'border-[var(--brand-plum-500)] bg-[var(--brand-plum-50)] text-[var(--brand-plum-500)]'
-                      : 'border-[var(--color-border)] text-[var(--color-text-muted)] hover:border-[var(--brand-plum-300)]'
-                  }`}
-                  aria-pressed={availability === value}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-          </form>
-
-          <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2">
-            <span className="text-caption text-[var(--color-text-muted)]">جست‌وجوی سریع:</span>
-            {QUICK_SEARCHES.map((item) => (
-              <button
-                key={item.label}
-                type="button"
-                onClick={() => {
-                  setService(item.query);
-                  if (item.gender) setGender(item.gender);
-                  trackEvent('service_selected', { service: item.query, source: 'hero_quick_search' });
-                }}
-                className="border-b border-[var(--brand-plum-300)] pb-0.5 text-caption text-[var(--color-text-muted)] transition hover:border-[var(--brand-plum-500)] hover:text-[var(--brand-plum-500)]"
-              >
-                {item.label}
-              </button>
-            ))}
+            <button type="submit" className="flex min-h-14 items-center justify-center gap-2 rounded-xl bg-[#d9a57f] px-7 type-button text-[#241713] transition hover:bg-[#ebbb98]">جست‌وجو <ArrowLeft size={17} /></button>
           </div>
-        </div>
-
-        <div className="order-1 lg:order-2">
-          <div className="relative aspect-[5/4] overflow-hidden rounded-[2rem] border border-[var(--color-border)] bg-[var(--color-surface-raised)] shadow-[0_24px_60px_rgba(0,0,0,0.3)]">
-            <Image
-              src={HERO_IMAGE}
-              alt="متخصص در حال ارائه خدمات مو در سالن زیبایی"
-              fill
-              priority
-              sizes="(max-width: 1024px) 100vw, 52vw"
-              className="object-cover"
-            />
-            <div className="absolute bottom-5 right-5 max-w-[230px] rounded-2xl border border-white/20 bg-[#241b18]/90 p-4 shadow-lg backdrop-blur-sm">
-              <div className="flex items-center gap-2 type-caption text-[#d9b879]"><CalendarDays size={15} /> زمان‌های آزاد امروز</div>
-              <strong className="mt-1 block type-label text-[#fff5ea]">قبل از رزرو، ساعت مناسب را ببین</strong>
-            </div>
+          <div className="mt-2 flex flex-wrap items-center justify-end gap-2 border-t border-[#e3cfc1]/15 pt-2">
+            <span className="type-caption text-[#bda79a]">زمان ترجیحی:</span>
+            {[['any', 'هر زمان'], ['today', 'امروز'], ['tomorrow', 'فردا'], ['week', 'این هفته']].map(([value, label]) => <button key={value} type="button" onClick={() => setAvailability(value)} aria-pressed={availability === value} className={`rounded-full px-3 py-1.5 type-caption transition ${availability === value ? 'bg-[#d9a57f] text-[#241713]' : 'text-[#d8c7bd] hover:bg-[#4a3027]'}`}>{label}</button>)}
           </div>
-          <div className="mt-3 grid grid-cols-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)]">
-            {['مقایسه خدمات', 'دیدن زمان خالی', 'رزرو بدون تماس'].map((item, index) => (
-              <div
-                key={item}
-                  className={`px-2 py-3 text-center text-caption text-[var(--color-text-muted)] ${
-                  index < 2 ? 'border-l border-[var(--color-border)]' : ''
-                }`}
-              >
-                {item}
-              </div>
-            ))}
-          </div>
-        </div>
+        </form>
       </div>
     </section>
   );
@@ -283,41 +193,30 @@ function SectionHeading({
 
 function ServiceDiscovery() {
   return (
-    <section id="services" className="scroll-mt-24 bg-[var(--color-background)] py-16 lg:py-24">
+    <section id="services" className="scroll-mt-24 bg-[var(--color-background)] py-24 lg:py-32">
       <div className="container-editorial">
-        <SectionHeading
-          title="دنبال چه خدمتی هستی؟"
-          description="خدمت را انتخاب کن تا سالن‌ها، متخصصان و قیمت‌های مرتبط را ببینی."
-        />
-        <div className="grid grid-cols-2 items-stretch gap-x-3 gap-y-7 md:grid-cols-3 md:gap-x-5 md:gap-y-9">
-          {SERVICES.map(({ slug, name, hint, image, imageAlt }) => (
-                <Link
-                  key={name}
-                  href={`/services/${slug}`}
-                  onClick={() => trackEvent('service_selected', { service: slug, source: 'homepage_grid' })}
-                  className="group flex h-full flex-col"
-                >
-              <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-raised)] shadow-[0_14px_35px_rgba(0,0,0,0.18)]">
+        <div className="mb-10 text-center">
+          <p className="mb-3 inline-flex items-center gap-3 type-label text-[#d9a57f]"><span className="h-px w-8 bg-[#b46f50]" aria-hidden="true" /> دسته‌بندی خدمات <span className="h-px w-8 bg-[#b46f50]" aria-hidden="true" /></p>
+          <h2 className="type-h1 text-[var(--color-text)] sm:text-[2.2rem]">هر آنچه برای زیبایی، مراقبت و حال خوب نیاز داری</h2>
+          <p className="mx-auto mt-3 max-w-2xl type-body text-[var(--color-text-muted)]">خدمت موردنظرت را انتخاب کن؛ از آرایش و پیرایش تا پوست، ناخن و اسپا.</p>
+        </div>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+          {SERVICES.map(({ slug, name, hint, image, imageAlt }) => {
+            const ServiceIcon = SERVICE_ICONS[slug] ?? UserRound;
+            return (
+            <Link key={name} href={`/services/${slug}`} onClick={() => trackEvent('service_selected', { service: slug, source: 'homepage_grid' })} className="group relative aspect-[0.92/1] overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-raised)] shadow-[0_14px_35px_rgba(0,0,0,0.2)]">
                 <Image
                   src={image}
                   alt={imageAlt}
                   fill
-                  sizes="(max-width: 768px) 50vw, 34vw"
-                  className="object-cover transition duration-500 group-hover:scale-[1.025]"
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 17vw"
+                  className="object-cover transition duration-700 group-hover:scale-110"
                 />
-              </div>
-              <div className="mt-3 flex min-h-[70px] flex-1 items-start justify-between gap-2 border-t border-[var(--color-border)] pt-3">
-                <span className="min-w-0">
-                  <strong className="block type-h4 text-[var(--color-text)]">{name}</strong>
-                  <span className="mt-0.5 hidden type-caption text-[var(--color-text-muted)] sm:block">{hint}</span>
-                </span>
-                <ArrowLeft
-                  size={17}
-                  className="mt-1 shrink-0 text-[var(--brand-plum-500)] transition group-hover:-translate-x-1"
-                />
-              </div>
+                <span className="absolute inset-0 bg-gradient-to-t from-[#170f0d]/95 via-[#170f0d]/15 to-transparent" />
+                <span className="absolute inset-x-0 bottom-0 p-4 text-right text-white"><span className="mb-3 flex h-9 w-9 items-center justify-center rounded-full border border-white/45 bg-black/15 text-[#f5d6bd] backdrop-blur-sm"><ServiceIcon size={21} strokeWidth={1.45} /></span><strong className="block type-h4">{name}</strong><span className="mt-1 block type-caption text-white/70">{hint}</span><span className="mt-3 inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/45 transition group-hover:bg-[#d9a57f] group-hover:text-[#241713]"><ArrowLeft size={15} /></span></span>
             </Link>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

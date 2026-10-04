@@ -29,23 +29,23 @@ export function ProvinceCitySelect({
   const cities = province ? IRAN_CITIES_BY_PROVINCE[province] ?? [] : [];
 
   const selectClass = compact
-    ? 'h-11 w-full appearance-none rounded-lg border border-[#eadfd8] bg-white px-3 pl-8 text-[14px] font-semibold text-[#342d30] outline-none transition hover:border-[#b98d7d] focus:border-[#8b5e50] focus:ring-2 focus:ring-[#8b5e50]/10'
-    : 'w-full appearance-none rounded-xl border border-[#dfd5cc] bg-white px-4 py-3 pl-9 text-sm text-[#342d30] outline-none transition focus:border-[#8b5e50]';
+    ? 'h-11 w-full appearance-none rounded-lg border border-[#e3cfc1]/20 bg-[#2a1e1a] px-3 pl-8 text-[14px] font-semibold text-[#fff7ef] outline-none transition hover:border-[#d9a57f]/70 focus:border-[#d9a57f] focus:ring-2 focus:ring-[#d9a57f]/10'
+    : 'w-full appearance-none rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 pl-9 text-sm text-[var(--color-text)] outline-none transition focus:border-[#d9a57f]';
 
   return (
-    <div className={`${compact ? 'rounded-2xl border border-[#eadfd8] bg-[#fcf8f5] p-2.5' : ''} ${className}`}>
+    <div className={`${compact ? 'rounded-2xl border border-[#e3cfc1]/20 bg-[#362620] p-2.5' : ''} ${className}`}>
       {compact && (
-        <div className="mb-2 flex items-center gap-2 px-1 text-[11px] text-[#806b64]">
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#f0e1d9] text-[#8b5e50]">
+        <div className="mb-2 flex items-center gap-2 px-1 text-[11px] text-[#cdb5a7]">
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#4a3027] text-[#d9a57f]">
             <MapPin size={13} />
           </span>
           <span className="font-semibold">محدوده جست‌وجو</span>
-          <span className="text-[#a4938c]">استان و شهر</span>
+          <span className="text-[#ad978d]">استان و شهر</span>
         </div>
       )}
       <div className="grid gap-2 sm:grid-cols-2">
       <label className="block">
-        <span className={`mb-1.5 flex items-center gap-1.5 font-medium text-[#746b6d] ${compact ? 'text-[11px]' : 'text-xs'}`}>
+        <span className={`mb-1.5 flex items-center gap-1.5 font-medium text-[#cdb5a7] ${compact ? 'text-[11px]' : 'text-xs'}`}>
           استان
         </span>
         <div className="relative">
@@ -64,7 +64,7 @@ export function ProvinceCitySelect({
               </option>
             ))}
           </select>
-          <ChevronDown size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#9a8177]" />
+          <ChevronDown size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#d9a57f]" />
         </div>
       </label>
 
@@ -88,7 +88,7 @@ export function ProvinceCitySelect({
               </option>
             ))}
           </select>
-          <ChevronDown size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#9a8177]" />
+          <ChevronDown size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#d9a57f]" />
         </div>
       </label>
       </div>
