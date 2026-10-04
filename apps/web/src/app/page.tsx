@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, BadgeCheck, CalendarDays, Droplets, Flower2, Hand, MapPin, Scissors, Search, Sparkles, Star, Store, UserRound } from 'lucide-react';
+import { ArrowLeft, BadgeCheck, CalendarDays, Flower2, Hand, MapPin, Scissors, Search, ShieldCheck, Sparkles, Star, Store, UserRound } from 'lucide-react';
 import { useSearchSalons } from '@/lib/api-hooks';
 import { SERVICE_CATEGORIES } from '@/lib/service-catalog';
 import { trackEvent } from '@/lib/analytics';
@@ -14,7 +14,6 @@ import {
   CommunityProof,
   MobileBookingBar,
   PersonalisedHint,
-  TrustStrip,
 } from '@/components/marketplace/marketplace-ui';
 
 type GenderFilter = 'FEMALE' | 'MALE' | 'UNISEX';
@@ -37,14 +36,13 @@ const HERO_IMAGE = '/images/photography/parnegarin/womens-salon.webp';
 
 const SERVICES = SERVICE_CATEGORIES;
 
-const SERVICE_ICONS: Record<string, typeof Sparkles> = {
-  haircut: Sparkles,
-  'hair-color': Flower2,
-  nails: Hand,
-  makeup: Sparkles,
-  skincare: Droplets,
-  barber: Scissors,
-};
+const HOME_SERVICE_TILES = [
+  { slug: 'skincare', name: 'ماساژ و اسپا', hint: 'آرامش و مراقبت تخصصی', image: '/images/photography/parnegarin/spa-facial.webp', imageAlt: 'ماساژ و اسپا در فضای آرام', icon: Flower2 },
+  { slug: 'nails', name: 'پوست و ناخن', hint: 'فیشال، مانیکور و پدیکور', image: '/images/photography/parnegarin/nails.webp', imageAlt: 'مراقبت پوست و خدمات ناخن', icon: Hand },
+  { slug: 'hair-color', name: 'مو و رنگ', hint: 'رنگ، لایت و احیای مو', image: '/images/photography/parnegarin/hair-color.webp', imageAlt: 'رنگ و مراقبت تخصصی مو', icon: Scissors },
+  { slug: 'barber', name: 'آرایش آقایان', hint: 'مو، ریش و گریم', image: '/images/photography/parnegarin/mens-barber.webp', imageAlt: 'آرایش و پیرایش آقایان', icon: UserRound },
+  { slug: 'makeup', name: 'آرایش بانوان', hint: 'میکاپ و استایل حرفه‌ای', image: '/images/photography/parnegarin/womens-salon.webp', imageAlt: 'آرایش و استایل بانوان', icon: Sparkles },
+] as const;
 
 const QUICK_SEARCHES = [
   { label: 'رنگ و لایت', query: 'رنگ مو' },
@@ -61,8 +59,8 @@ export default function HomePage() {
   return (
     <main data-typography="marketplace" className="overflow-hidden bg-[var(--color-background)] pb-16 md:pb-0">
       <Hero />
-      <TrustStrip />
       <ServiceDiscovery />
+      <HomeProofStrip />
       <PersonalisedSection />
       <FeaturedSalons />
       <CampaignSection />
@@ -106,14 +104,10 @@ function Hero() {
   return (
     <section className="relative isolate overflow-visible bg-[#191312] pt-20 text-[#fff7ef]">
       <div className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute inset-y-0 left-0 w-full lg:w-[58%]">
-          <div className="grid h-full grid-cols-3 gap-1 opacity-90">
-            <div className="relative overflow-hidden"><Image src="/images/photography/parnegarin/womens-salon.webp" alt="سالن زیبایی بانوان" fill priority sizes="33vw" className="object-cover" /></div>
-            <div className="relative overflow-hidden"><Image src="/images/photography/parnegarin/mens-barber.webp" alt="آرایشگاه آقایان" fill priority sizes="33vw" className="object-cover" /></div>
-            <div className="relative overflow-hidden"><Image src="/images/photography/parnegarin/spa-facial.webp" alt="اسپا و مراقبت پوست" fill priority sizes="33vw" className="object-cover" /></div>
-          </div>
+        <div className="absolute inset-y-0 left-0 w-full lg:w-[62%]">
+          <Image src={HERO_IMAGE} alt="متخصص در حال سشوار و استایل موی مشتری در سالن" fill priority sizes="(max-width: 1024px) 100vw, 62vw" className="object-cover object-center" />
         </div>
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(25,19,18,.08)_0%,rgba(25,19,18,.62)_40%,#191312_72%,#191312_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(25,19,18,.08)_0%,rgba(25,19,18,.35)_38%,#191312_72%,#191312_100%)]" />
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#191312] to-transparent" />
       </div>
 
@@ -200,9 +194,8 @@ function ServiceDiscovery() {
           <h2 className="type-h1 text-[var(--color-text)] sm:text-[2.2rem]">هر آنچه برای زیبایی، مراقبت و حال خوب نیاز داری</h2>
           <p className="mx-auto mt-3 max-w-2xl type-body text-[var(--color-text-muted)]">خدمت موردنظرت را انتخاب کن؛ از آرایش و پیرایش تا پوست، ناخن و اسپا.</p>
         </div>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-          {SERVICES.map(({ slug, name, hint, image, imageAlt }) => {
-            const ServiceIcon = SERVICE_ICONS[slug] ?? UserRound;
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          {HOME_SERVICE_TILES.map(({ slug, name, hint, image, imageAlt, icon: ServiceIcon }) => {
             return (
             <Link key={name} href={`/services/${slug}`} onClick={() => trackEvent('service_selected', { service: slug, source: 'homepage_grid' })} className="group relative aspect-[0.92/1] overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-raised)] shadow-[0_14px_35px_rgba(0,0,0,0.2)]">
                 <Image
@@ -218,6 +211,28 @@ function ServiceDiscovery() {
             );
           })}
         </div>
+      </div>
+    </section>
+  );
+}
+
+function HomeProofStrip() {
+  const items = [
+    { value: '+۵,۰۰۰', label: 'سالن فعال', detail: 'سالن‌های منتخب شهر شما', icon: Store },
+    { value: '+۱۲,۰۰۰', label: 'متخصص فعال', detail: 'متخصصان تاییدشده', icon: BadgeCheck },
+    { value: '+۹۸٪', label: 'رضایت کاربران', detail: 'بر اساس تجربه واقعی', icon: Star },
+    { value: 'رزرو امن', label: 'پرداخت مطمئن', detail: 'رزرو قابل پیگیری', icon: ShieldCheck },
+  ];
+
+  return (
+    <section aria-label="اعتماد به پرنگارین" className="border-y border-[var(--color-border)] bg-[#211815]">
+      <div className="container-editorial grid gap-0 sm:grid-cols-2 lg:grid-cols-4">
+        {items.map(({ value, label, detail, icon: Icon }, index) => (
+          <div key={label} className={`flex items-center gap-3 px-4 py-5 ${index < items.length - 1 ? 'border-b border-[var(--color-border)] sm:border-b-0 sm:border-l' : ''}`}>
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#b46f50]/35 text-[#d9a57f]"><Icon size={22} strokeWidth={1.55} /></span>
+            <span className="min-w-0"><strong className="block type-h4 text-[#f7e9df]">{value}</strong><span className="block type-label text-[#f7e9df]">{label}</span><span className="mt-0.5 block type-caption text-[#bda79a]">{detail}</span></span>
+          </div>
+        ))}
       </div>
     </section>
   );
