@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useSalonBookings, useUpdateBookingStatus } from '@/lib/api-hooks';
 import { toJalali, formatPrice, formatTime } from '@/lib/utils';
-import { CalendarX2, UserRound } from 'lucide-react';
+import { CalendarX2, UserRound } from '@barbercore/ui/icons';
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
 import { PersianDatePicker } from '@/components/shared/persian-date-picker';
 import { toast } from 'sonner';
@@ -98,7 +98,6 @@ export default function SalonBookingsPage() {
           >
             <CalendarX2
               className="mx-auto mb-3 h-12 w-12 text-[var(--ui-gray-300)]"
-              strokeWidth={1.4}
             />
             <p style={{ color: 'var(--ui-gray-500)' }}>در این روز رزروی وجود ندارد</p>
           </div>

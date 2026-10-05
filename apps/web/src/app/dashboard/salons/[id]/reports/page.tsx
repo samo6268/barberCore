@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useParams } from 'next/navigation';
-import { BarChart3, Download, Loader2, Printer, RefreshCw } from 'lucide-react';
+import { BarChart3, Download, Loader2, Printer, RefreshCw } from '@barbercore/ui/icons';
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
 import { PersianDatePicker } from '@/components/shared/persian-date-picker';
 import { useFinancialReport } from '@/lib/api-hooks';

@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { useState } from 'react';
-import { Star, Users, Clock, ChevronDown, Play } from 'lucide-react';
+import { Star, Users, Clock, ChevronDown, Play } from '@barbercore/ui/icons';
 
 const MOCK_COURSES: Record<
   string,

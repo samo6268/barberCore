@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Calendar, Edit2, Mail, Phone, Save, User, X } from 'lucide-react';
+import { Calendar, Edit2, Mail, Phone, Save, User, X } from '@barbercore/ui/icons';
 import { toast } from 'sonner';
 import { useMe, useUpdateProfile } from '@/lib/api-hooks';
 import { ReferralCard } from '@/components/marketplace/marketplace-ui';

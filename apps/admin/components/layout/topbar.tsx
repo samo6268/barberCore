@@ -1,6 +1,6 @@
 'use client';
 
-import { Bell, Search } from 'lucide-react';
+import { Bell, Search } from '@barbercore/ui/icons';
 
 interface TopbarProps {
   title: string;
@@ -20,7 +20,7 @@ export function Topbar({ title }: TopbarProps) {
           className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm"
           style={{ background: 'var(--bg-ivory)', border: '1px solid var(--admin-border)', color: 'var(--admin-muted)' }}
         >
-          <Search size={14} strokeWidth={1.5} />
+          <Search size={14} />
           <span>جستجو...</span>
           <span className="mr-4 text-xs px-1.5 py-0.5 rounded" style={{ background: 'var(--ui-gray-100)' }}>⌘K</span>
         </div>
@@ -30,7 +30,7 @@ export function Topbar({ title }: TopbarProps) {
           className="relative w-9 h-9 flex items-center justify-center rounded-lg transition-colors"
           style={{ color: 'var(--admin-muted)' }}
         >
-          <Bell size={18} strokeWidth={1.5} />
+          <Bell size={18} />
           <span
             className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full"
             style={{ background: 'var(--brand-plum-600)' }}

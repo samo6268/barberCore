@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronDown, MapPin } from 'lucide-react';
+import { ChevronDown, MapPin } from '@barbercore/ui/icons';
 import { IRAN_CITIES_BY_PROVINCE, IRAN_PROVINCES } from '@/lib/iran-locations';
 
 type ProvinceCitySelectProps = {

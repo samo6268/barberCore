@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Star, Users, BookOpen, Award } from 'lucide-react';
+import { Star, Users, BookOpen, Award } from '@barbercore/ui/icons';
 
 const MOCK_INSTRUCTORS: Record<
   string,

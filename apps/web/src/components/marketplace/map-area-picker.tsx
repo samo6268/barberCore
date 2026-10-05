@@ -1,7 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Circle, MapContainer, TileLayer, useMap, useMapEvents } from 'react-leaflet';
+import { DomEvent } from 'leaflet';
+import { Minus, Plus } from '@barbercore/ui/icons';
 import type { LatLngExpression } from 'leaflet';
 
 type MapAreaPickerProps = {
@@ -10,6 +12,35 @@ type MapAreaPickerProps = {
   radiusKm: number;
   onChange: (center: [number, number]) => void;
 };
+
+function MapZoomControls() {
+  const map = useMap();
+  const container = useRef<HTMLDivElement>(null);
+  const [zoom, setZoom] = useState(map.getZoom());
+  useMapEvents({ zoomend: () => setZoom(map.getZoom()) });
+
+  useEffect(() => {
+    const element = container.current;
+    if (!element) return;
+    // A control click must not select a new search/salon location.
+    DomEvent.disableClickPropagation(element);
+    DomEvent.disableScrollPropagation(element);
+    return () => { DomEvent.off(element); };
+  }, []);
+
+  return (
+    <div ref={container} className="absolute left-3 top-3 z-[1000] overflow-hidden rounded-xl border border-[#dfd5cc] bg-white text-[#6b493b] shadow-md">
+      <button type="button" aria-label="بزرگ‌نمایی نقشه" disabled={zoom >= map.getMaxZoom()}
+        onClick={() => map.zoomIn()} className="flex h-11 w-11 items-center justify-center border-b border-[#dfd5cc] hover:bg-[#f5eee7] disabled:opacity-40">
+        <Plus size={22} />
+      </button>
+      <button type="button" aria-label="کوچک‌نمایی نقشه" disabled={zoom <= map.getMinZoom()}
+        onClick={() => map.zoomOut()} className="flex h-11 w-11 items-center justify-center hover:bg-[#f5eee7] disabled:opacity-40">
+        <Minus size={22} />
+      </button>
+    </div>
+  );
+}
 
 function RecenterMap({ center }: { center: [number, number] }) {
   const map = useMap();
@@ -80,11 +111,13 @@ export function MapAreaPicker({ city, center, radiusKm, onChange }: MapAreaPicke
       <MapContainer
         center={position}
         zoom={12}
+        zoomControl={false}
         scrollWheelZoom
         className="h-[340px] w-full sm:h-[390px]"
         aria-label={`انتخاب محدوده در ${city}`}
       >
         <MapTiles />
+        <MapZoomControls />
         <Circle
           center={position}
           radius={radiusKm * 1000}

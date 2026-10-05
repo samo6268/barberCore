@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, HTMLAttributes } from 'react';
-import { X } from 'lucide-react';
+import { X } from '../icons';
 
 interface ModalProps {
   open: boolean;
@@ -59,7 +59,7 @@ export function Modal({ open, onClose, title, children, size = 'md' }: ModalProp
           className="absolute top-4 left-4 p-2 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--ui-gray-100)] transition-colors"
           aria-label="بستن"
         >
-          <X size={20} strokeWidth={1.5} />
+          <X size={20} />
         </button>
 
         {title && (

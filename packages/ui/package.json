@@ -7,12 +7,13 @@
   "exports": {
     ".": "./src/index.ts",
     "./tokens.css": "./src/tokens.css",
-    "./typography": "./src/typography.ts"
+    "./typography": "./src/typography.ts",
+    "./icons": "./src/icons.tsx"
   },
   "dependencies": {
     "clsx": "^2.1.0",
     "tailwind-merge": "^2.5.0",
-    "lucide-react": "^0.460.0"
+    "@phosphor-icons/react": "2.1.10"
   },
   "peerDependencies": {
     "react": "^18.3.0",

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { AdminShell } from '@/components/layout/admin-shell';
-import { Search, CheckCircle, XCircle, MoreHorizontal, Eye, MapPin } from 'lucide-react';
+import { Search, CheckCircle, XCircle, MoreHorizontal, Eye, MapPin } from '@barbercore/ui/icons';
 
 const MOCK_SALONS = [
   { id: 's1', name: 'لوکس بیوتی', owner: 'سارا کریمی',   city: 'تهران',   district: 'نیاوران',     status: 'APPROVED', plan: 'PROFESSIONAL', rating: 4.9, bookings: 312, createdAt: '۱۴۰۳/۰۸/۱۲', gender: 'FEMALE' },

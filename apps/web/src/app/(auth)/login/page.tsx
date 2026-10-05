@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Phone, Lock, ArrowLeft } from 'lucide-react';
+import { Phone, Lock, ArrowLeft } from '@barbercore/ui/icons';
 import { toast } from 'sonner';
 import { useSendOtp, useVerifyOtp } from '@/lib/api-hooks';
 import Link from 'next/link';

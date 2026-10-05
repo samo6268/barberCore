@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { Calendar, CalendarCheck, Check, ChevronLeft, Clock, UserRound } from 'lucide-react';
+import { Calendar, CalendarCheck, Check, ChevronLeft, Clock, UserRound } from '@barbercore/ui/icons';
 import { useAvailability, useCreateBooking, useSalonBySlug } from '@/lib/api-hooks';
 import { formatPrice, toJalali } from '@/lib/utils';
 import { PersianDatePicker } from '@/components/shared/persian-date-picker';

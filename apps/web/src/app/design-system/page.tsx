@@ -7,7 +7,11 @@ import { Input } from '@ui/components/input';
 import { Badge } from '@ui/components/badge';
 import { Avatar } from '@ui/components/avatar';
 import { Modal } from '@ui/components/modal';
-import { Brush, CalendarDays, Scissors, Sparkles, SprayCan, Wind } from 'lucide-react';
+import {
+  ArrowLeft, Bell, Brush, CalendarDays, CheckCircle, Flower2, Gift,
+  GraduationCap, HairDryer, Hand, Heart, Loader2, MapPin, Scissors,
+  Search, ShieldCheck, Sparkles, Star, Store, Wallet,
+} from '@barbercore/ui/icons';
 import { PersianDatePicker } from '@/components/shared/persian-date-picker';
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -230,23 +234,45 @@ export default function DesignSystemPage() {
         </Section>
 
         {/* Icons */}
-        <Section title="آیکون‌های رابط — Lucide">
-          <div className="flex items-center gap-8">
+        <Section title="آیکون‌های رابط — Phosphor">
+          <p className="mb-6 text-body-sm" style={{ color: 'var(--color-text-muted)' }}>
+            یک خانواده مشترک؛ دورنگ برای خدمات و بخش‌های اصلی، ساده برای کنترل‌های کوچک.
+          </p>
+          <div data-icon-showcase className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
             {[
-              { Icon: Scissors, label: 'خدمات' },
-              { Icon: Brush, label: 'آرایش' },
-              { Icon: SprayCan, label: 'مراقبت' },
-              { Icon: Wind, label: 'حالت مو' },
+              { Icon: HairDryer, label: 'استایل مو' },
+              { Icon: Scissors, label: 'پیرایش' },
+              { Icon: Brush, label: 'رنگ و آرایش' },
+              { Icon: Hand, label: 'پوست و ناخن' },
+              { Icon: Flower2, label: 'ماساژ و اسپا' },
               { Icon: Sparkles, label: 'ویژه' },
               { Icon: CalendarDays, label: 'رزرو' },
+              { Icon: Store, label: 'سالن' },
+              { Icon: MapPin, label: 'محدوده' },
+              { Icon: ShieldCheck, label: 'اعتماد' },
+              { Icon: Gift, label: 'هدیه' },
+              { Icon: Bell, label: 'اعلان' },
+              { Icon: Wallet, label: 'مالی' },
+              { Icon: GraduationCap, label: 'آموزش' },
+              { Icon: CheckCircle, label: 'موفقیت' },
+              { Icon: Search, label: 'جست‌وجو' },
             ].map(({ Icon, label }) => (
-              <div key={label} className="flex flex-col items-center gap-3">
-                <Icon size={32} style={{ color: 'var(--color-primary)' }} />
+              <div key={label} className="flex flex-col items-center gap-3 rounded-2xl border p-5"
+                style={{ borderColor: 'var(--color-border)', background: 'var(--color-surface)' }}>
+                <Icon size={36} style={{ color: 'var(--color-primary)' }} />
                 <span className="text-caption" style={{ color: 'var(--color-text-muted)' }}>
                   {label}
                 </span>
               </div>
             ))}
+          </div>
+          <div data-icon-states className="mt-6 flex flex-wrap items-center gap-6 text-body-sm"
+            style={{ color: 'var(--color-text-muted)' }}>
+            <span className="inline-flex items-center gap-2"><Star size={24} /> امتیاز خالی</span>
+            <span className="inline-flex items-center gap-2"><Star size={24} weight="fill" className="text-amber-400" /> امتیاز ثبت‌شده</span>
+            <span className="inline-flex items-center gap-2"><Heart size={24} weight="fill" className="text-rose-400" /> علاقه‌مندی</span>
+            <span className="inline-flex items-center gap-2"><ArrowLeft size={20} /> ادامه</span>
+            <span className="inline-flex items-center gap-2"><Loader2 size={20} className="animate-spin motion-reduce:animate-none" /> در حال بارگذاری</span>
           </div>
         </Section>
 

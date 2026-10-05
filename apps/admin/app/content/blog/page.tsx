@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { AdminShell } from '@/components/layout/admin-shell';
-import { Plus, Edit2, Eye, Trash2, Tag } from 'lucide-react';
+import { Plus, Edit2, Eye, Trash2, Tag } from '@barbercore/ui/icons';
 
 const POSTS = [
   { id: 'b1', title: '۱۰ ترند مو در پاییز ۱۴۰۳', author: 'سارا کریمی', category: 'ترندها', status: 'PUBLISHED', views: 1240, date: '۱۴۰۳/۱۰/۰۸' },
@@ -64,9 +64,9 @@ export default function BlogPage() {
                 {p.status === 'PUBLISHED' ? 'منتشر' : 'پیش‌نویس'}
               </span>
               <div className="flex gap-1">
-                <button className="p-1.5 rounded-md" style={{ color: 'var(--admin-muted)' }}><Edit2 size={15} strokeWidth={1.5} /></button>
-                <button className="p-1.5 rounded-md" style={{ color: 'var(--admin-muted)' }}><Eye size={15} strokeWidth={1.5} /></button>
-                <button className="p-1.5 rounded-md" style={{ color: '#C0392B' }}><Trash2 size={15} strokeWidth={1.5} /></button>
+                <button className="p-1.5 rounded-md" style={{ color: 'var(--admin-muted)' }}><Edit2 size={15} /></button>
+                <button className="p-1.5 rounded-md" style={{ color: 'var(--admin-muted)' }}><Eye size={15} /></button>
+                <button className="p-1.5 rounded-md" style={{ color: '#C0392B' }}><Trash2 size={15} /></button>
               </div>
             </div>
           </div>

@@ -1,7 +1,7 @@
 'use client';
 import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Star } from 'lucide-react';
+import { Star } from '@barbercore/ui/icons';
 import { toast } from 'sonner';
 import { useSubmitReview } from '@/lib/api-hooks';
 import { trackEvent } from '@/lib/analytics';
@@ -36,7 +36,7 @@ function ReviewForm() {
     >
       <div className="w-full max-w-sm space-y-6">
         <div className="text-center">
-          <div className="text-4xl mb-2">⭐</div>
+          <Star size={40} weight="duotone" className="mx-auto mb-2 text-amber-400" />
           <h1 className="text-xl font-bold" style={{ color: 'var(--color-text)' }}>
             ثبت نظر
           </h1>
@@ -58,12 +58,17 @@ function ReviewForm() {
               {[1, 2, 3, 4, 5].map((i) => (
                 <button
                   key={i}
+                  type="button"
+                  aria-label={`${i.toLocaleString('fa-IR')} ستاره`}
+                  aria-pressed={rating === i}
                   onClick={() => setRating(i)}
                   onMouseEnter={() => setHover(i)}
                   onMouseLeave={() => setHover(0)}
                 >
                   <Star
-                    className={`w-10 h-10 transition-colors ${i <= (hover || rating) ? 'fill-amber-400 text-amber-400' : 'text-gray-300'}`}
+                    size={40}
+                    className={`transition-colors ${i <= (hover || rating) ? 'text-amber-400' : 'text-gray-300'}`}
+                    weight={i <= (hover || rating) ? 'fill' : 'regular'}
                   />
                 </button>
               ))}

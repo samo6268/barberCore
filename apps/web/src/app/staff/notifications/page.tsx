@@ -1,6 +1,6 @@
 'use client';
 
-import { Bell, CheckCheck } from 'lucide-react';
+import { Bell, CheckCheck } from '@barbercore/ui/icons';
 import {
   useReadAllStaffNotifications,
   useReadStaffNotification,

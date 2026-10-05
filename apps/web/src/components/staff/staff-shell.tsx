@@ -10,9 +10,10 @@ import {
   CircleUserRound,
   Clock3,
   LayoutDashboard,
+  Loader2,
   LogOut,
   WalletCards,
-} from 'lucide-react';
+} from '@barbercore/ui/icons';
 import { useStaffMemberships } from '@/lib/api-hooks';
 
 type Membership = {
@@ -88,7 +89,7 @@ export function StaffShell({ children }: { children: React.ReactNode }) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[var(--bg-ivory)]">
         <div className="text-center">
-          <div className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-[var(--brand-plum-200)] border-t-[var(--brand-plum-600)]" />
+          <Loader2 size={40} className="mx-auto animate-spin text-[var(--brand-plum-600)] motion-reduce:animate-none" />
           <p className="mt-4 text-sm text-[var(--ui-gray-500)]">در حال آماده‌سازی برنامه کاری...</p>
         </div>
       </div>
@@ -191,7 +192,7 @@ export function StaffShell({ children }: { children: React.ReactNode }) {
                       background: active ? 'var(--brand-plum-50)' : 'transparent',
                     }}
                   >
-                    <Icon size={18} strokeWidth={active ? 2.3 : 1.7} />
+                    <Icon size={18} />
                     {item.label}
                   </Link>
                 );
@@ -221,7 +222,7 @@ export function StaffShell({ children }: { children: React.ReactNode }) {
                 className="flex min-w-0 flex-col items-center gap-1 py-1 text-caption"
                 style={{ color: active ? 'var(--brand-plum-600)' : 'var(--ui-gray-400)' }}
               >
-                <Icon size={19} strokeWidth={active ? 2.4 : 1.7} />
+                <Icon size={19} />
                 <span className="truncate">{item.label}</span>
               </Link>
             );

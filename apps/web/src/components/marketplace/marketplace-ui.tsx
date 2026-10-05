@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowLeft, CalendarClock, Check, Gift, MapPin, ShieldCheck, Sparkles, Users } from 'lucide-react';
+import { ArrowLeft, CalendarClock, Check, Gift, MapPin, ShieldCheck, Sparkles, Users } from '@barbercore/ui/icons';
 import { trackEvent } from '@/lib/analytics';
 
 export function TrustStrip() {
@@ -17,7 +17,7 @@ export function TrustStrip() {
         {items.map(({ icon: Icon, title, text }) => (
           <div key={title} className="flex items-center gap-3 border-b border-[var(--color-border)] px-1 py-4 last:border-b-0 sm:justify-center sm:border-b-0 sm:py-5">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--brand-plum-50)] text-[var(--brand-plum-500)]">
-              <Icon size={17} strokeWidth={1.8} />
+              <Icon size={17} />
             </span>
             <span>
               <strong className="block type-label text-[var(--color-text)]">{title}</strong>

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { AdminShell } from '@/components/layout/admin-shell';
-import { Search, Filter, Download, UserX, Send, MoreHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Filter, Download, UserX, Send, MoreHorizontal, ChevronLeft, ChevronRight } from '@barbercore/ui/icons';
 
 const MOCK_USERS = Array.from({ length: 20 }, (_, i) => ({
   id: `u${i + 1}`,
@@ -60,7 +60,7 @@ export default function UsersPage() {
       <div className="flex flex-wrap items-center gap-3 mb-6">
         <div className="flex items-center gap-2 flex-1 min-w-[200px] px-4 py-2.5 rounded-lg border"
           style={{ background: 'var(--admin-card-bg)', borderColor: 'var(--admin-border)' }}>
-          <Search size={16} strokeWidth={1.5} style={{ color: 'var(--admin-muted)', flexShrink: 0 }} />
+          <Search size={16}  style={{ color: 'var(--admin-muted)', flexShrink: 0 }} />
           <input
             value={search}
             onChange={e => { setSearch(e.target.value); setPage(1); }}
@@ -96,7 +96,7 @@ export default function UsersPage() {
 
         <button className="flex items-center gap-2 px-4 py-2.5 rounded-lg border text-sm transition-colors"
           style={{ background: 'var(--admin-card-bg)', borderColor: 'var(--admin-border)', color: 'var(--admin-muted)' }}>
-          <Download size={16} strokeWidth={1.5} /> خروجی CSV
+          <Download size={16} /> خروجی CSV
         </button>
       </div>
 
@@ -159,7 +159,7 @@ export default function UsersPage() {
                 <td className="px-4 py-3">
                   <button className="p-1 rounded-md transition-colors hover:bg-[var(--ui-gray-100)]"
                     style={{ color: 'var(--admin-muted)' }}>
-                    <MoreHorizontal size={16} strokeWidth={1.5} />
+                    <MoreHorizontal size={16} />
                   </button>
                 </td>
               </tr>

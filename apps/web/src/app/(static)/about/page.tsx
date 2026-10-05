@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { Shield, Star, Zap } from 'lucide-react';
+import { Shield, Star, Zap } from '@barbercore/ui/icons';
 
 export default function AboutPage() {
   return (

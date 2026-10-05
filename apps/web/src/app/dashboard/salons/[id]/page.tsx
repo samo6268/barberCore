@@ -17,7 +17,7 @@ import {
   TrendingUp,
   Users,
   Wallet,
-} from 'lucide-react';
+} from '@barbercore/ui/icons';
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
 import { useSalonOverview } from '@/lib/api-hooks';
 import { SALON_IMAGES } from '@/lib/images';
@@ -333,7 +333,7 @@ export default function SalonOverviewPage() {
                         {review.customer.firstName} {review.customer.lastName}
                       </p>
                       <span className="flex items-center gap-1 text-xs font-bold text-amber-600">
-                        <Star size={12} fill="currentColor" />{' '}
+                        <Star size={12} color="currentColor" weight="fill" />{' '}
                         {review.rating.toLocaleString('fa-IR')}
                       </span>
                     </div>

@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Scissors, User, GraduationCap, ShieldCheck, ArrowLeft, BadgeCheck } from 'lucide-react';
+import { Scissors, User, GraduationCap, ShieldCheck, ArrowLeft, BadgeCheck } from '@barbercore/ui/icons';
 import { HERO_IMAGES, SALON_IMAGES } from '@/lib/images';
 
 const ROLES = [
@@ -189,8 +189,8 @@ export default function RoleSelectorPage() {
           </div>
 
           <p className="text-center text-xs mt-8" style={{ color: 'var(--ui-gray-400)' }}>
-            <Link href="/" style={{ color: 'var(--brand-plum-600)' }}>
-              ← بازگشت به صفحه اصلی
+            <Link href="/" className="inline-flex items-center gap-2" style={{ color: 'var(--brand-plum-600)' }}>
+              <ArrowLeft size={16} /> بازگشت به صفحه اصلی
             </Link>
           </p>
         </div>

@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, BadgeCheck, CalendarDays, Flower2, Hand, MapPin, Scissors, Search, ShieldCheck, Sparkles, Star, Store, UserRound } from 'lucide-react';
+import { ArrowLeft, BadgeCheck, Brush, CalendarDays, Flower2, HairDryer, Hand, MapPin, Scissors, Search, ShieldCheck, Sparkles, Star, Store } from '@barbercore/ui/icons';
 import { useSearchSalons } from '@/lib/api-hooks';
 import { SERVICE_CATEGORIES } from '@/lib/service-catalog';
 import { trackEvent } from '@/lib/analytics';
@@ -39,9 +39,9 @@ const HERO_IMAGE = '/images/photography/parnegarin/womens-salon.webp';
 const SERVICES = SERVICE_CATEGORIES;
 
 const HOME_SERVICE_TILES = [
-  { slug: 'makeup', name: 'آرایش بانوان', href: '/salons?gender=FEMALE', image: '/images/photography/parnegarin/womens-salon.webp', imageAlt: 'آرایش و استایل بانوان', icon: Sparkles },
-  { slug: 'barber', name: 'آرایش آقایان', href: '/services/barber', image: '/images/photography/parnegarin/mens-barber.webp', imageAlt: 'آرایش و پیرایش آقایان', icon: UserRound },
-  { slug: 'hair-color', name: 'مو و رنگ', href: '/services/hair-color', image: '/images/photography/parnegarin/hair-color.webp', imageAlt: 'رنگ و مراقبت تخصصی مو', icon: Scissors },
+  { slug: 'makeup', name: 'آرایش بانوان', href: '/salons?gender=FEMALE', image: '/images/photography/parnegarin/womens-salon.webp', imageAlt: 'آرایش و استایل بانوان', icon: HairDryer },
+  { slug: 'barber', name: 'آرایش آقایان', href: '/services/barber', image: '/images/photography/parnegarin/mens-barber.webp', imageAlt: 'آرایش و پیرایش آقایان', icon: Scissors },
+  { slug: 'hair-color', name: 'مو و رنگ', href: '/services/hair-color', image: '/images/photography/parnegarin/hair-color.webp', imageAlt: 'رنگ و مراقبت تخصصی مو', icon: Brush },
   { slug: 'nails', name: 'پوست و ناخن', href: '/services/skincare', image: '/images/photography/parnegarin/nails.webp', imageAlt: 'مراقبت پوست و خدمات ناخن', icon: Hand },
   { slug: 'spa', name: 'ماساژ و اسپا', href: '/salons?service=ماساژ', image: '/images/photography/parnegarin/spa-facial.webp', imageAlt: 'فضای خدمات اسپا و مراقبت', icon: Flower2 },
 ] as const;
@@ -114,8 +114,8 @@ function Hero() {
           <h1 className={styles.heroTitle}>زیبایی، مراقبت و آرامش؛<span>برای همه</span></h1>
           <p className={styles.heroDescription}>از آرایشگاه و باربرشاپ تا اسپا و مراقبت‌های تخصصی؛ تجربه‌ای مطمئن، نزدیک و قابل رزرو.</p>
           <div className={styles.heroActions}>
-            <Link href="#services" className={styles.primaryAction}>پیدا کردن خدمت <ArrowLeft size={18} strokeWidth={1.5} /></Link>
-            <Link href="/salons" className={styles.secondaryAction}>مشاهده سالن‌ها <Store size={18} strokeWidth={1.5} /></Link>
+            <Link href="#services" className={styles.primaryAction}>پیدا کردن خدمت <ArrowLeft size={18} /></Link>
+            <Link href="/salons" className={styles.secondaryAction}>مشاهده سالن‌ها <Store size={18} /></Link>
             <label className={styles.searchTime}>زمان ترجیحی
               <select value={availability} onChange={(event) => setAvailability(event.target.value)} className={styles.timeSelect}>
                 <option value="any">هر زمان</option><option value="today">امروز</option><option value="tomorrow">فردا</option><option value="week">این هفته</option>
@@ -127,7 +127,7 @@ function Hero() {
       <form onSubmit={submit} className={styles.searchPanel} aria-label="جست‌وجوی سالن">
         <div className={styles.searchFields}>
           <label className={styles.searchField}>
-            <span className={styles.fieldLabel}><Search size={18} strokeWidth={1.5} /> چه خدمتی؟</span>
+            <span className={styles.fieldLabel}><Search size={18} /> چه خدمتی؟</span>
             <input value={service} onChange={(event) => setService(event.target.value)} list="home-services" className={styles.serviceInput} placeholder="مثلاً کوتاهی، مو، ماساژ یا فیشال" />
             <datalist id="home-services">{SERVICES.map((item) => <option key={item.query} value={item.query} />)}</datalist>
           </label>
@@ -140,8 +140,8 @@ function Hero() {
             </div>
           </fieldset>
           <ProvinceCitySelect compact inline includeAll province={province} city={city} onProvinceChange={setProvince} onCityChange={setCity} />
-          <Link href={`/salons?${mapParams}`} className={styles.mapAction}><MapPin size={27} strokeWidth={1.5} /> انتخاب محدوده روی نقشه</Link>
-          <button type="submit" className={styles.submitSearch}><Search size={22} strokeWidth={1.5} /> جست‌وجو</button>
+          <Link href={`/salons?${mapParams}`} className={styles.mapAction}><MapPin size={27} /> انتخاب محدوده روی نقشه</Link>
+          <button type="submit" className={styles.submitSearch}><Search size={22} /> جست‌وجو</button>
         </div>
       </form>
     </section>
@@ -194,7 +194,7 @@ function ServiceDiscovery() {
                   className={styles.servicePhoto}
                 />
                 <span className={styles.serviceOverlay} />
-                <span className={styles.serviceCaption}><ServiceIcon size={28} strokeWidth={1.4} /><strong>{name}</strong><span className={styles.serviceArrow}><ArrowLeft size={15} /></span></span>
+                <span className={styles.serviceCaption}><ServiceIcon size={28} /><strong>{name}</strong><span className={styles.serviceArrow}><ArrowLeft size={15} /></span></span>
             </Link>
           ))}
         </div>
@@ -214,7 +214,7 @@ function HomeProofStrip() {
     <section aria-label="امکانات رزرو در پرنگارین" className={styles.proof}>
         {items.map(({ label, detail, icon: Icon }) => (
           <div key={label} className={styles.proofItem}>
-            <Icon size={28} strokeWidth={1.5} />
+            <Icon size={28} />
             <span><strong>{label}</strong><small>{detail}</small></span>
           </div>
         ))}
@@ -368,7 +368,7 @@ function FeaturedSalons() {
                     </div>
                     {(salon.reviewCount ?? 0) > 0 && salon.rating > 0 ? (
                       <span className="flex shrink-0 items-center gap-1 type-label text-[#5d5140]">
-                        <Star size={14} className="fill-[#b38a45] text-[#b38a45]" />
+                        <Star size={14} className="text-[#b38a45]" weight="fill" />
                         {salon.rating.toLocaleString('fa-IR', { maximumFractionDigits: 1 })}
                         <span className="text-caption font-normal text-[var(--color-text-subtle)]">
                           ({(salon.reviewCount ?? 0).toLocaleString('fa-IR')})
@@ -456,7 +456,7 @@ function BookingSteps() {
                 <strong className="block type-h4 text-white">{title}</strong>
                 <span className="mt-0.5 block type-body-sm text-white/55">{text}</span>
               </span>
-              <Icon size={20} className="text-white/55" strokeWidth={1.6} />
+              <Icon size={20} className="text-white/55" />
             </li>
           ))}
         </ol>

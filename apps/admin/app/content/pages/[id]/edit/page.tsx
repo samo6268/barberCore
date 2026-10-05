@@ -21,7 +21,7 @@ import {
   Save,
   Send,
   ChevronRight,
-} from 'lucide-react';
+} from '@barbercore/ui/icons';
 import NextLink from 'next/link';
 
 const TOOLBAR_GROUPS = [

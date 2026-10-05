@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { AdminShell } from '@/components/layout/admin-shell';
-import { CheckCircle, XCircle, Eye, GraduationCap, Star, Users, Clock } from 'lucide-react';
+import { CheckCircle, XCircle, Eye, GraduationCap, Star, Users, Clock } from '@barbercore/ui/icons';
 import { toast } from 'sonner';
 
 const MOCK_COURSES = [
@@ -124,7 +124,6 @@ export default function CoursesModerationPage() {
                     <GraduationCap
                       size={20}
                       style={{ color: 'var(--brand-plum-600)' }}
-                      strokeWidth={1.5}
                     />
                   </div>
                   <div className="min-w-0">

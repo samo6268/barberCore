@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, LockKeyhole, Phone, UserRoundCheck } from 'lucide-react';
+import { ArrowRight, LockKeyhole, Phone, UserRoundCheck } from '@barbercore/ui/icons';
 import { toast } from 'sonner';
 import { AuthLayout } from '@/components/auth/auth-layout';
 import { useSendOtp, useVerifyOtp } from '@/lib/api-hooks';

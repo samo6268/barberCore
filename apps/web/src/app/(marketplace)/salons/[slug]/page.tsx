@@ -3,7 +3,7 @@
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
-import { CheckCircle, Clock, Heart, MapPin, Phone, Star, UserRound } from 'lucide-react';
+import { CheckCircle, Clock, Heart, MapPin, Phone, Star, UserRound } from '@barbercore/ui/icons';
 import { useMyFavorites, useSalonBySlug, useToggleFavorite } from '@/lib/api-hooks';
 import { SALON_IMAGES } from '@/lib/images';
 import { formatPrice } from '@/lib/utils';
@@ -121,7 +121,7 @@ export default function SalonDetailPage() {
           <h1 className="font-semibold text-4xl lg:text-6xl mb-4">{salon.name}</h1>
           <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-sm sm:text-base">
             <span className="flex items-center gap-2">
-              <Star className="w-5 h-5 fill-[var(--brand-gold-600)] text-[var(--brand-gold-600)]" />
+              <Star className="w-5 h-5 text-[var(--brand-gold-600)]" weight="fill" />
               {salon.rating.toLocaleString('fa-IR')} ({salon.reviewCount.toLocaleString('fa-IR')}{' '}
               نظر)
             </span>
@@ -144,7 +144,7 @@ export default function SalonDetailPage() {
           }}
           className="absolute left-5 top-24 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-[#684138] shadow-lg backdrop-blur"
         >
-          <Heart size={19} className={isFavorite ? 'fill-[#9a6658]' : ''} />
+          <Heart size={19} weight={isFavorite ? 'fill' : 'regular'} />
         </button>
       </section>
 
@@ -282,7 +282,7 @@ export default function SalonDetailPage() {
                 <p className="eyebrow">نظر مشتریان</p>
                 <div className="mt-2 flex items-center gap-3">
                   <span className="text-3xl font-semibold text-[var(--brand-navy-600)]">{Number(salon.rating || 0).toLocaleString('fa-IR', { maximumFractionDigits: 1 })}</span>
-                  <span className="flex items-center gap-1 text-sm text-[#7b6e68]"><Star size={16} className="fill-[#b38a45] text-[#b38a45]" /> از {Number(salon.reviewCount || 0).toLocaleString('fa-IR')} نظر ثبت‌شده</span>
+                  <span className="flex items-center gap-1 text-sm text-[#7b6e68]"><Star size={16} className="text-[#b38a45]" weight="fill" /> از {Number(salon.reviewCount || 0).toLocaleString('fa-IR')} نظر ثبت‌شده</span>
                 </div>
               </div>
               <div className="flex rounded-xl bg-[#faf7f3] p-1 text-xs">
@@ -295,7 +295,7 @@ export default function SalonDetailPage() {
                 <article key={review.id} className="border-t border-[#eee8e2] pt-4">
                   <div className="flex items-center justify-between gap-3">
                     <strong className="text-sm text-[#332c2f]">{[review.customer?.firstName, review.customer?.lastName].filter(Boolean).join(' ') || 'مشتری پرنگارین'}</strong>
-                    <span className="flex items-center gap-1 text-xs text-[#7b6e68]"><Star size={13} className="fill-[#b38a45] text-[#b38a45]" /> {Number(review.rating).toLocaleString('fa-IR')}</span>
+                    <span className="flex items-center gap-1 text-xs text-[#7b6e68]"><Star size={13} className="text-[#b38a45]" weight="fill" /> {Number(review.rating).toLocaleString('fa-IR')}</span>
                   </div>
                   {review.comment && <p className="mt-2 text-sm leading-7 text-[#71686a]">{review.comment}</p>}
                 </article>

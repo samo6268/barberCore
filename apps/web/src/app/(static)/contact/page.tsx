@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { CheckCircle2, Mail, Phone, MapPin, ChevronDown } from 'lucide-react';
+import { CheckCircle2, Mail, Phone, MapPin, ChevronDown } from '@barbercore/ui/icons';
 
 const FAQS = [
   {
@@ -93,7 +93,6 @@ export default function ContactPage() {
                 >
                   <CheckCircle2
                     size={42}
-                    strokeWidth={1.6}
                     style={{ color: '#15803d', margin: '0 auto 0.75rem' }}
                   />
                   <p className="text-body" style={{ color: '#166534', fontWeight: 600 }}>

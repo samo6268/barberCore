@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Clock, User } from 'lucide-react';
+import { ArrowLeft, Clock, User } from '@barbercore/ui/icons';
 
 const ARTICLES = [
   {
@@ -206,7 +206,10 @@ export default function BlogPage() {
                   <Link
                     href={`/blog/${article.slug}`}
                     style={{
-                      display: 'block',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.5rem',
                       marginTop: '1rem',
                       textAlign: 'center',
                       padding: '0.625rem',
@@ -219,7 +222,7 @@ export default function BlogPage() {
                       border: '1px solid var(--ui-gray-200)',
                     }}
                   >
-                    ادامه مطلب ←
+                    ادامه مطلب <ArrowLeft size={16} />
                   </Link>
                 </div>
               </article>

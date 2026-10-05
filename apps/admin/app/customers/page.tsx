@@ -10,7 +10,7 @@ import {
   MoreHorizontal,
   ChevronLeft,
   ChevronRight,
-} from 'lucide-react';
+} from '@barbercore/ui/icons';
 
 const MOCK_CUSTOMERS = Array.from({ length: 18 }, (_, i) => ({
   id: `c${i + 1}`,
@@ -116,7 +116,7 @@ export default function CustomersPage() {
           className="flex items-center gap-2 flex-1 min-w-[200px] px-4 py-2.5 rounded-lg border"
           style={{ background: 'var(--admin-card-bg)', borderColor: 'var(--admin-border)' }}
         >
-          <Search size={16} strokeWidth={1.5} style={{ color: 'var(--admin-muted)' }} />
+          <Search size={16}  style={{ color: 'var(--admin-muted)' }} />
           <input
             value={search}
             onChange={(e) => {
@@ -273,7 +273,7 @@ export default function CustomersPage() {
                       className="p-1 rounded-md transition-colors hover:bg-[var(--ui-gray-100)]"
                       style={{ color: 'var(--admin-muted)' }}
                     >
-                      <MoreHorizontal size={16} strokeWidth={1.5} />
+                      <MoreHorizontal size={16} />
                     </button>
                   </td>
                 </tr>

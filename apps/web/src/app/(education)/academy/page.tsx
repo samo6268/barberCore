@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { Play, Star, Users, Clock, Award, ChevronLeft, BookOpen } from 'lucide-react';
+import { Play, Star, Users, Clock, Award, ChevronLeft, BookOpen } from '@barbercore/ui/icons';
 import { INSTRUCTOR_AVATARS, COURSE_COVERS } from '@/lib/images';
 
 const INSTRUCTORS = [
@@ -166,8 +166,8 @@ function InstructorCard({ inst }: { inst: (typeof INSTRUCTORS)[0] }) {
           <span className="flex items-center gap-1">
             <Star
               size={11}
-              fill="var(--brand-gold-600)"
-              style={{ color: 'var(--brand-gold-600)' }}
+              color="var(--brand-gold-600)"
+              style={{ color: 'var(--brand-gold-600)' }} weight="fill"
             />
             {inst.rating}
           </span>
@@ -217,8 +217,8 @@ function CourseCard({ course }: { course: (typeof COURSES)[0] }) {
           >
             <Play
               size={22}
-              fill="var(--brand-plum-600)"
-              style={{ color: 'var(--brand-plum-600)', marginRight: '-2px' }}
+              color="var(--brand-plum-600)"
+              style={{ color: 'var(--brand-plum-600)', marginRight: '-2px' }} weight="fill"
             />
           </div>
         </div>
@@ -249,8 +249,8 @@ function CourseCard({ course }: { course: (typeof COURSES)[0] }) {
           <div className="flex items-center gap-1">
             <Star
               size={13}
-              fill="var(--brand-gold-600)"
-              style={{ color: 'var(--brand-gold-600)' }}
+              color="var(--brand-gold-600)"
+              style={{ color: 'var(--brand-gold-600)' }} weight="fill"
             />
             <span className="text-sm font-semibold" style={{ color: 'var(--brand-navy-600)' }}>
               {course.rating}
@@ -407,7 +407,6 @@ export default function AcademyPage() {
             size={40}
             className="mx-auto mb-4"
             style={{ color: 'rgba(255,255,255,0.7)' }}
-            strokeWidth={1}
           />
           <h2 className="text-3xl font-bold mb-4" style={{ color: 'white' }}>
             خودت مدرس شو

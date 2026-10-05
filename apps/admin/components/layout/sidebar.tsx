@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard, Users, Store, FileText, Image, MessageSquare,
   Star, TrendingUp, Shield, Megaphone, ChevronDown, Settings, LogOut, GraduationCap,
-} from 'lucide-react';
+} from '@barbercore/ui/icons';
 
 interface NavItem {
   label: string;
@@ -16,9 +16,9 @@ interface NavItem {
 }
 
 const NAV: NavItem[] = [
-  { label: 'داشبورد', href: '/dashboard', icon: <LayoutDashboard size={18} strokeWidth={1.5} /> },
+  { label: 'داشبورد', href: '/dashboard', icon: <LayoutDashboard size={18} /> },
   {
-    label: 'محتوا', icon: <FileText size={18} strokeWidth={1.5} />,
+    label: 'محتوا', icon: <FileText size={18} />,
     children: [
       { label: 'صفحات',    href: '/content/pages' },
       { label: 'وبلاگ',    href: '/content/blog' },
@@ -28,23 +28,23 @@ const NAV: NavItem[] = [
     ],
   },
   {
-    label: 'کاربران', icon: <Users size={18} strokeWidth={1.5} />,
+    label: 'کاربران', icon: <Users size={18} />,
     children: [
       { label: 'مدیریت کاربران',    href: '/users' },
       { label: 'مدیریت مشتریان',    href: '/customers' },
     ],
   },
-  { label: 'سالن‌ها', href: '/salons',  icon: <Store size={18} strokeWidth={1.5} /> },
-  { label: 'دوره‌ها', href: '/courses', icon: <GraduationCap size={18} strokeWidth={1.5} /> },
+  { label: 'سالن‌ها', href: '/salons',  icon: <Store size={18} /> },
+  { label: 'دوره‌ها', href: '/courses', icon: <GraduationCap size={18} /> },
   {
-    label: 'تبلیغات', icon: <Megaphone size={18} strokeWidth={1.5} />,
+    label: 'تبلیغات', icon: <Megaphone size={18} />,
     children: [
       { label: 'بررسی آگهی‌ها',     href: '/moderation/ads' },
     ],
   },
-  { label: 'مالی',      href: '/financial',  icon: <TrendingUp size={18} strokeWidth={1.5} /> },
-  { label: 'نظرات',    href: '/reviews',    icon: <Star size={18} strokeWidth={1.5} /> },
-  { label: 'تنظیمات',  href: '/settings',   icon: <Settings size={18} strokeWidth={1.5} /> },
+  { label: 'مالی',      href: '/financial',  icon: <TrendingUp size={18} /> },
+  { label: 'نظرات',    href: '/reviews',    icon: <Star size={18} /> },
+  { label: 'تنظیمات',  href: '/settings',   icon: <Settings size={18} /> },
 ];
 
 export function Sidebar() {
@@ -86,7 +86,7 @@ export function Sidebar() {
           onMouseOver={e => (e.currentTarget.style.background = 'var(--admin-sidebar-hover)')}
           onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
         >
-          <LogOut size={16} strokeWidth={1.5} />
+          <LogOut size={16} />
           خروج
         </button>
       </div>

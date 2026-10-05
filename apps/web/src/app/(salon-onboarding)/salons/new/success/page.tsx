@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle } from '@barbercore/ui/icons';
 
 const NEXT_STEPS = [
   'تیم پرنگارین اطلاعات سالن شما را بررسی می‌کند.',
@@ -25,7 +25,7 @@ export default function SalonSuccessPage() {
       <div style={{ maxWidth: '560px', width: '100%', textAlign: 'center' }}>
         {/* Icon */}
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
-          <CheckCircle size={80} style={{ color: '#059669' }} strokeWidth={1.5} />
+          <CheckCircle size={80} style={{ color: '#059669' }} />
         </div>
 
         {/* Title */}

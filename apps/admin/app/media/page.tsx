@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { AdminShell } from '@/components/layout/admin-shell';
-import { Upload, Image as ImageIcon, File, Trash2, Copy } from 'lucide-react';
+import { Upload, Image as ImageIcon, File, Trash2, Copy } from '@barbercore/ui/icons';
 
 const MOCK_MEDIA = Array.from({ length: 12 }, (_, i) => ({
   id: `m${i}`,
@@ -52,7 +52,7 @@ export default function MediaPage() {
       {/* Drop zone */}
       <div className="border-2 border-dashed rounded-xl p-8 text-center mb-6 transition-colors"
         style={{ borderColor: 'var(--admin-border)', background: 'var(--admin-card-bg)' }}>
-        <Upload size={32} strokeWidth={1} className="mx-auto mb-3" style={{ color: 'var(--admin-muted)' }} />
+        <Upload size={32}  className="mx-auto mb-3" style={{ color: 'var(--admin-muted)' }} />
         <p className="text-sm" style={{ color: 'var(--admin-muted)' }}>فایل‌ها را اینجا رها کنید یا کلیک کنید</p>
         <p className="text-xs mt-1" style={{ color: 'var(--admin-muted)', opacity: 0.6 }}>JPG، PNG، WebP، PDF — حداکثر ۱۰MB</p>
       </div>
@@ -70,7 +70,7 @@ export default function MediaPage() {
                 </div>
               ) : (
                 <div className="aspect-square flex items-center justify-center" style={{ background: 'var(--bg-ivory)' }}>
-                  <File size={32} strokeWidth={1} style={{ color: 'var(--admin-muted)' }} />
+                  <File size={32}  style={{ color: 'var(--admin-muted)' }} />
                 </div>
               )}
               <div className="p-2">

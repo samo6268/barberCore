@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Star, MapPin, CheckCircle } from 'lucide-react';
+import { Star, MapPin, CheckCircle } from '@barbercore/ui/icons';
 
 interface SalonCardProps {
   salon: {
@@ -70,7 +70,7 @@ export function SalonCard({ salon }: SalonCardProps) {
                 className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-caption font-medium"
                 style={{ background: '#241b18', color: 'var(--brand-gold-100)' }}
               >
-                <CheckCircle size={10} strokeWidth={2} />
+                <CheckCircle size={10} />
                 تأیید شده
               </span>
             )}
@@ -99,7 +99,7 @@ export function SalonCard({ salon }: SalonCardProps) {
             <div className="flex items-center gap-1 shrink-0 mt-0.5">
               <Star
                 size={14}
-                className="fill-[var(--brand-gold-600)] text-[var(--brand-gold-600)]"
+                className="text-[var(--brand-gold-600)]" weight="fill"
               />
               <span className="text-body-sm font-medium" style={{ color: 'var(--color-text)' }}>
                 {salon.rating.toFixed(1)}
@@ -115,7 +115,7 @@ export function SalonCard({ salon }: SalonCardProps) {
               className="flex items-center gap-1 mt-2 text-caption"
               style={{ color: 'var(--color-text-muted)' }}
             >
-              <MapPin size={12} strokeWidth={1.5} />
+              <MapPin size={12} />
               {salon.city}
             </div>
           )}

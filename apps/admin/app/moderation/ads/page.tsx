@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { AdminShell } from '@/components/layout/admin-shell';
-import { Check, X, Eye, Megaphone } from 'lucide-react';
+import { Check, X, Eye, Megaphone } from '@barbercore/ui/icons';
 
 const PENDING_ADS = [
   {
@@ -78,7 +78,7 @@ export default function AdModerationPage() {
                 className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
                 style={{ background: 'rgba(216,183,106,0.1)', color: 'var(--brand-gold-600)' }}
               >
-                <Megaphone size={20} strokeWidth={1.5} />
+                <Megaphone size={20} />
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-1">

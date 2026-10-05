@@ -4,6 +4,7 @@ import { useMySalons, useMe } from '@/lib/api-hooks';
 import Link from 'next/link';
 import {
   ArrowLeft,
+  Loader2,
   Plus,
   Settings,
   Calendar,
@@ -12,7 +13,7 @@ import {
   Star,
   Zap,
   TrendingUp,
-} from 'lucide-react';
+} from '@barbercore/ui/icons';
 import { useEffect } from 'react';
 import { SALON_IMAGES } from '@/lib/images';
 
@@ -49,9 +50,10 @@ export default function DashboardPage() {
         className="min-h-screen flex items-center justify-center"
         style={{ background: 'var(--bg-ivory)' }}
       >
-        <div
-          className="w-8 h-8 border-4 rounded-full animate-spin"
-          style={{ borderColor: 'var(--brand-plum-600)', borderTopColor: 'transparent' }}
+        <Loader2
+          size={32}
+          className="animate-spin motion-reduce:animate-none"
+          style={{ color: 'var(--brand-plum-600)' }}
         />
       </div>
     );
@@ -167,7 +169,7 @@ export default function DashboardPage() {
                 color: 'var(--brand-navy-600)',
               }}
             >
-              <Icon size={20} strokeWidth={1.5} style={{ color: 'var(--brand-plum-600)' }} />
+              <Icon size={20}  style={{ color: 'var(--brand-plum-600)' }} />
               {label}
             </Link>
           ))}
@@ -258,7 +260,7 @@ function SalonCard({ salon }: { salon: any }) {
               className="text-center py-3 rounded-xl"
               style={{ background: 'var(--bg-ivory)' }}
             >
-              <Icon size={16} className="mx-auto mb-1" style={{ color }} strokeWidth={1.5} />
+              <Icon size={16} className="mx-auto mb-1" style={{ color }} />
               <div className="font-bold text-sm" style={{ color: 'var(--brand-navy-600)' }}>
                 {value}
               </div>

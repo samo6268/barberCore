@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { AdminShell } from '@/components/layout/admin-shell';
-import { Search, CheckCircle, XCircle, GraduationCap, Clock, Users, Star } from 'lucide-react';
+import { Search, CheckCircle, XCircle, GraduationCap, Clock, Users, Star } from '@barbercore/ui/icons';
 
 const MOCK_COURSES = [
   { id: 'c1', title: 'رنگ و هایلایت حرفه‌ای', instructor: 'نازنین احمدی', category: 'رنگ', duration: 8, lessons: 24, students: 0, price: 890000, rating: 0, status: 'PENDING_REVIEW', createdAt: '۱۴۰۳/۱۰/۱۵' },

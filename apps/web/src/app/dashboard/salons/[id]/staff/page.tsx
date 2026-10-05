@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import { toast } from 'sonner';
-import { Plus, Settings2, UserRound, X } from 'lucide-react';
+import { Plus, Settings2, UserRound, X } from '@barbercore/ui/icons';
 import {
   useSalonStaffManagement,
   useCreateStaff,
@@ -314,7 +314,6 @@ export default function StaffPage() {
           >
             <UserRound
               className="mx-auto mb-3 h-12 w-12 text-[var(--ui-gray-300)]"
-              strokeWidth={1.4}
             />
             <p style={{ color: 'var(--ui-gray-500)' }}>هنوز متخصصی اضافه نکرده‌اید</p>
           </div>

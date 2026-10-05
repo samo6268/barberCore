@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { BadgeCheck, BriefcaseBusiness, Save, ShieldCheck } from 'lucide-react';
+import { BadgeCheck, BriefcaseBusiness, Save, ShieldCheck } from '@barbercore/ui/icons';
 import { toast } from 'sonner';
 import { useStaffProfile, useUpdateStaffProfile } from '@/lib/api-hooks';
 import { getApiErrorMessage } from '@/lib/api';

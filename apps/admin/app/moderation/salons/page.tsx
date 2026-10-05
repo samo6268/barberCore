@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { AdminShell } from '@/components/layout/admin-shell';
-import { Check, X, Eye, MapPin, User, ChevronDown } from 'lucide-react';
+import { Check, X, Eye, MapPin, User, ChevronDown } from '@barbercore/ui/icons';
 
 const PENDING_SALONS = [
   {

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { AdminShell } from '@/components/layout/admin-shell';
-import { Plus, FileText, Edit2, Eye, Trash2, Globe } from 'lucide-react';
+import { Plus, FileText, Edit2, Eye, Trash2, Globe } from '@barbercore/ui/icons';
 
 const PAGES = [
   { id: 'p1', title: 'درباره ما',       slug: 'about',      status: 'PUBLISHED', updatedAt: '۱۴۰۳/۱۰/۱۰', blocks: 5 },
@@ -98,7 +98,7 @@ export default function PagesPage() {
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-lg flex items-center justify-center"
                         style={{ background: 'var(--bg-ivory)', color: 'var(--admin-muted)' }}>
-                        <FileText size={16} strokeWidth={1.5} />
+                        <FileText size={16} />
                       </div>
                       <span className="text-sm font-medium" style={{ color: 'var(--admin-text)' }}>{p.title}</span>
                     </div>
@@ -120,11 +120,11 @@ export default function PagesPage() {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-1">
                       <button onClick={() => openEdit(p)} className="p-1.5 rounded-md transition-colors hover:bg-[var(--ui-gray-100)]"
-                        style={{ color: 'var(--admin-muted)' }}><Edit2 size={15} strokeWidth={1.5} /></button>
+                        style={{ color: 'var(--admin-muted)' }}><Edit2 size={15} /></button>
                       <button className="p-1.5 rounded-md transition-colors hover:bg-[var(--ui-gray-100)]"
-                        style={{ color: 'var(--admin-muted)' }}><Eye size={15} strokeWidth={1.5} /></button>
+                        style={{ color: 'var(--admin-muted)' }}><Eye size={15} /></button>
                       <button className="p-1.5 rounded-md transition-colors hover:bg-[rgba(192,57,43,0.08)]"
-                        style={{ color: '#C0392B' }}><Trash2 size={15} strokeWidth={1.5} /></button>
+                        style={{ color: '#C0392B' }}><Trash2 size={15} /></button>
                     </div>
                   </td>
                 </tr>

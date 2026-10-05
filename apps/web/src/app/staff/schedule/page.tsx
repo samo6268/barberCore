@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { CalendarOff, Plus, Save, Trash2 } from 'lucide-react';
+import { CalendarOff, Plus, Save, Trash2 } from '@barbercore/ui/icons';
 import { toast } from 'sonner';
 import {
   useCreateStaffTimeOff,

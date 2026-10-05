@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { User, LogOut, Menu, X } from 'lucide-react';
+import { User, LogOut, Menu, X } from '@barbercore/ui/icons';
 import { useMe, useLogout } from '@/lib/api-hooks';
 
 export function Navbar() {
@@ -79,7 +79,7 @@ export function Navbar() {
                   className="flex items-center gap-2 rounded-full border border-[#d9a57f]/40 px-5 py-2.5 text-body-sm font-medium transition-colors hover:bg-[#3a2721]"
                   style={{ color: 'var(--color-text)' }}
                 >
-                  <User size={16} strokeWidth={1.5} />
+                  <User size={16} />
                   {user.firstName}
                 </Link>
                 <button
@@ -91,7 +91,7 @@ export function Navbar() {
                   aria-label="خروج از حساب"
                   style={{ color: 'var(--color-text-muted)' }}
                 >
-                  <LogOut size={20} strokeWidth={1.5} />
+                  <LogOut size={20} />
                 </button>
               </>
             ) : (
@@ -100,7 +100,7 @@ export function Navbar() {
                   href="/role-selector"
                   className="flex items-center gap-2 rounded-full border border-[#d9a57f]/45 px-5 py-2.5 text-body-sm font-medium text-[#fff7ef] transition-colors hover:bg-[#3a2721]"
                 >
-                  <User size={16} strokeWidth={1.5} /> ورود / ثبت‌نام
+                  <User size={16} /> ورود / ثبت‌نام
                 </Link>
               </>
             )}
@@ -113,7 +113,7 @@ export function Navbar() {
             onClick={() => setMobileOpen(true)}
             aria-label="منو"
           >
-            <Menu size={24} strokeWidth={1.5} />
+            <Menu size={24} />
           </button>
         </div>
       </header>
@@ -127,7 +127,7 @@ export function Navbar() {
           <div className="flex justify-between items-center mb-12">
             <Link href="/" onClick={() => setMobileOpen(false)} className="font-semibold text-h3 text-[#d9794d]">پرنگارین</Link>
             <button onClick={() => setMobileOpen(false)} aria-label="بستن منو">
-              <X size={28} strokeWidth={1.5} />
+              <X size={28} />
             </button>
           </div>
 

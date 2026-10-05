@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Toaster } from 'sonner';
+import { CheckCircle, Info, Loader2, WarningCircle, XCircle } from '@barbercore/ui/icons';
 import { ThemeProvider } from '@/components/shared/theme-provider';
 import { QueryProvider } from '@/components/shared/query-provider';
 import { ConditionalNav } from '@/components/layout/conditional-nav';
@@ -55,7 +56,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <ConditionalNav />
             {children}
             <ConditionalFooter />
-            <Toaster position="top-center" richColors dir="rtl" />
+            <Toaster
+              position="top-center"
+              richColors
+              dir="rtl"
+              icons={{
+                success: <CheckCircle size={20} />,
+                error: <XCircle size={20} />,
+                warning: <WarningCircle size={20} />,
+                info: <Info size={20} />,
+                loading: <Loader2 size={20} className="animate-spin motion-reduce:animate-none" />,
+              }}
+           />
           </QueryProvider>
         </ThemeProvider>
       </body>

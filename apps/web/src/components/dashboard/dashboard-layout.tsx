@@ -11,7 +11,7 @@ import {
   Users,
   Wallet,
   Zap,
-} from 'lucide-react';
+} from '@barbercore/ui/icons';
 import { useMySalons } from '@/lib/api-hooks';
 
 const TABS = [
@@ -116,7 +116,7 @@ export function DashboardLayout({
                     borderRightColor: isActive ? 'var(--brand-plum-600)' : 'transparent',
                   }}
                 >
-                  <Icon size={17} strokeWidth={isActive ? 2 : 1.5} /> {tab.label}
+                  <Icon size={17} /> {tab.label}
                 </Link>
               );
             })}

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { CalendarDays, CheckCircle2, Clock3, Coins, RefreshCw } from 'lucide-react';
+import { CalendarDays, CheckCircle2, Clock3, Coins, RefreshCw } from '@barbercore/ui/icons';
 import { toast } from 'sonner';
 import { useStaffDashboard, useUpdateStaffBookingStatus } from '@/lib/api-hooks';
 import { getApiErrorMessage } from '@/lib/api';

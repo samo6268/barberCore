@@ -1,6 +1,6 @@
 'use client';
 
-import { CalendarClock, Check, CirclePlay, Phone, UserX } from 'lucide-react';
+import { CalendarClock, Check, CirclePlay, Phone, UserX } from '@barbercore/ui/icons';
 import { formatPrice, formatTime } from '@/lib/utils';
 
 export const STATUS_LABELS: Record<string, string> = {

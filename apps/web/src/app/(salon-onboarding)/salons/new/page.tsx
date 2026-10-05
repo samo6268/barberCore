@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { CheckCircle, ChevronLeft, ChevronRight } from '@barbercore/ui/icons';
 import { ProvinceCitySelect } from '@/components/shared/province-city-select';
 import { getIranCityCoordinates } from '@/lib/iran-locations';
 

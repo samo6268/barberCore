@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Clock, User, Calendar, ArrowRight } from 'lucide-react';
+import { Clock, User, Calendar, ArrowRight } from '@barbercore/ui/icons';
 
 const MOCK_ARTICLES: Record<
   string,

@@ -11,7 +11,7 @@ import {
   ChevronUp,
   Clock3,
   X,
-} from 'lucide-react';
+} from '@barbercore/ui/icons';
 import { cn } from '@/lib/utils';
 
 type PersianDatePickerProps = {
@@ -61,7 +61,7 @@ function CalendarChevron({ orientation = 'left', size = 18, className }: Chevron
     down: ChevronDown,
   };
   const Icon = icons[orientation];
-  return <Icon size={size} className={className} strokeWidth={1.8} />;
+  return <Icon size={size} className={className} />;
 }
 
 export function PersianDatePicker({

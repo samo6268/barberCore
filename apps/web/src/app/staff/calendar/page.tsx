@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Filter } from 'lucide-react';
+import { Filter } from '@barbercore/ui/icons';
 import { toast } from 'sonner';
 import { useStaffBookings, useUpdateStaffBookingStatus } from '@/lib/api-hooks';
 import { getApiErrorMessage } from '@/lib/api';

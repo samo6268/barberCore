@@ -3,7 +3,7 @@
 import { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import { CalendarClock, CheckCircle, Heart, Map, MapPin, Search, SlidersHorizontal, Star, X } from 'lucide-react';
+import { CalendarClock, CheckCircle, Heart, Loader2, Map, MapPin, Search, SlidersHorizontal, Star, X } from '@barbercore/ui/icons';
 import { useMyFavorites, useSearchSalons, useToggleFavorite } from '@/lib/api-hooks';
 import { SALON_IMAGES } from '@/lib/images';
 import { formatPrice } from '@/lib/utils';
@@ -200,7 +200,7 @@ export default function SalonsPage() {
                 style={{ color: 'var(--brand-navy-600)' }}
               />
               {isFetching && !isLoading && (
-                <span className="w-4 h-4 rounded-full border-2 border-t-transparent animate-spin" />
+                <Loader2 size={16} className="animate-spin motion-reduce:animate-none" />
               )}
               {search && (
                 <button
@@ -636,10 +636,10 @@ function SalonCard({ salon, fallbackImage }: { salon: SalonSummary; fallbackImag
             }}
             className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-[#684138] shadow-sm backdrop-blur transition hover:bg-white"
           >
-            <Heart size={16} className={isFavorite ? 'fill-[#9a6658]' : ''} />
+            <Heart size={16} weight={isFavorite ? 'fill' : 'regular'} />
           </button>
           <div className="absolute bottom-3 left-3 flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/55">
-            <Star size={11} className="fill-[var(--brand-gold-400)] text-[var(--brand-gold-400)]" />
+            <Star size={11} className="text-[var(--brand-gold-400)]" weight="fill" />
             <span className="text-xs font-semibold text-white">
               {salon.rating.toLocaleString('fa-IR')}
             </span>

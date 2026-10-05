@@ -1,7 +1,7 @@
 'use client';
 
 import { AdminShell } from '@/components/layout/admin-shell';
-import { TrendingUp, Users, Store, Calendar, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { TrendingUp, Users, Store, Calendar, ArrowLeft, ArrowUpRight, ArrowDownRight } from '@barbercore/ui/icons';
 
 const METRICS = [
   {
@@ -9,28 +9,28 @@ const METRICS = [
     value: '۴۸۳٬۰۰۰٬۰۰۰ تومان',
     delta: '+۱۲٪',
     up: true,
-    icon: <TrendingUp size={20} strokeWidth={1.5} />,
+    icon: <TrendingUp size={20} />,
   },
   {
     label: 'رزروهای امروز',
     value: '۱٬۲۴۷',
     delta: '+۸٪',
     up: true,
-    icon: <Calendar size={20} strokeWidth={1.5} />,
+    icon: <Calendar size={20} />,
   },
   {
     label: 'کاربران فعال',
     value: '۳۸٬۴۲۱',
     delta: '+۵٪',
     up: true,
-    icon: <Users size={20} strokeWidth={1.5} />,
+    icon: <Users size={20} />,
   },
   {
     label: 'سالن‌های منتظر',
     value: '۱۴',
     delta: '-۳',
     up: false,
-    icon: <Store size={20} strokeWidth={1.5} />,
+    icon: <Store size={20} />,
   },
 ];
 
@@ -191,8 +191,8 @@ export default function DashboardPage() {
           <h2 className="font-semibold text-base" style={{ color: 'var(--admin-text)' }}>
             آخرین درخواست‌های سالن
           </h2>
-          <a href="/moderation/salons" className="text-sm" style={{ color: 'var(--admin-accent)' }}>
-            مشاهده همه ←
+          <a href="/moderation/salons" className="inline-flex items-center gap-2 text-sm" style={{ color: 'var(--admin-accent)' }}>
+            مشاهده همه <ArrowLeft size={16} />
           </a>
         </div>
         <table className="w-full">

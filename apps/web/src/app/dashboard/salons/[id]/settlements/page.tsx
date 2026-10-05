@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { CheckCircle2, CreditCard, FileText, Loader2, Plus, XCircle } from 'lucide-react';
+import { CheckCircle2, CreditCard, FileText, Loader2, Plus, XCircle } from '@barbercore/ui/icons';
 import { toast } from 'sonner';
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
 import { PersianDatePicker } from '@/components/shared/persian-date-picker';

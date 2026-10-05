@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { AdminShell } from '@/components/layout/admin-shell';
-import { MessageSquare, Mail, Edit2, Send, Copy } from 'lucide-react';
+import { MessageSquare, Mail, Edit2, Send, Copy } from '@barbercore/ui/icons';
 
 const TEMPLATES = [
   {
@@ -90,8 +90,8 @@ export default function TemplatesPage() {
                 }}>
                 <div className="flex items-center gap-2 mb-1">
                   {t.type === 'SMS'
-                    ? <MessageSquare size={14} strokeWidth={1.5} style={{ color: 'var(--brand-navy-400)' }} />
-                    : <Mail size={14} strokeWidth={1.5} style={{ color: 'var(--brand-plum-600)' }} />}
+                    ? <MessageSquare size={14}  style={{ color: 'var(--brand-navy-400)' }} />
+                    : <Mail size={14}  style={{ color: 'var(--brand-plum-600)' }} />}
                   <span className="text-sm font-medium" style={{ color: 'var(--admin-text)' }}>{t.name}</span>
                 </div>
                 <p className="text-xs" style={{ color: 'var(--admin-muted)' }}>{t.trigger}</p>

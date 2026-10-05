@@ -1,4 +1,5 @@
 import { forwardRef, ButtonHTMLAttributes } from 'react';
+import { Loader2 } from '../icons';
 
 type Variant = 'primary' | 'secondary' | 'ghost';
 type Size = 'sm' | 'md' | 'lg' | 'xl';
@@ -54,7 +55,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       >
         {loading ? (
-          <span className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+          <Loader2 size={16} className="animate-spin motion-reduce:animate-none" />
         ) : null}
         {children}
       </button>

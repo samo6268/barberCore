@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import { toast } from 'sonner';
-import { Edit, Plus, Scissors, Trash2 } from 'lucide-react';
+import { Edit, Plus, Scissors, Trash2 } from '@barbercore/ui/icons';
 import { useSalonServices, useCreateService, useServiceCategories } from '@/lib/api-hooks';
 import { formatPrice } from '@/lib/utils';
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
@@ -176,7 +176,6 @@ export default function ServicesPage() {
           >
             <Scissors
               className="mx-auto mb-3 h-12 w-12 text-[var(--ui-gray-300)]"
-              strokeWidth={1.4}
             />
             <p style={{ color: 'var(--ui-gray-500)' }}>هنوز خدمتی تعریف نکرده‌اید</p>
           </div>

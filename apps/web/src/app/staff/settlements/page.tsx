@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronLeft, FileCheck2, X } from 'lucide-react';
+import { ChevronLeft, FileCheck2, X } from '@barbercore/ui/icons';
 import { useStaffSettlement, useStaffSettlements } from '@/lib/api-hooks';
 import { formatPrice, toJalali } from '@/lib/utils';
 import { useStaffPortal } from '@/components/staff/staff-shell';

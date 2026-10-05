@@ -1,7 +1,7 @@
 'use client';
 import { useCancelBooking, useMyBookings } from '@/lib/api-hooks';
 import { toJalali, formatPrice, formatTime } from '@/lib/utils';
-import { Calendar, CalendarPlus2, CheckCircle, Clock, Scissors, XCircle } from 'lucide-react';
+import { Calendar, CalendarPlus2, CheckCircle, Clock, Scissors, XCircle } from '@barbercore/ui/icons';
 import Link from 'next/link';
 import { toast } from 'sonner';
 
@@ -70,7 +70,6 @@ export default function BookingsPage() {
           <div className="text-center py-20">
             <CalendarPlus2
               className="mx-auto mb-4 h-12 w-12 text-[var(--ui-gray-300)]"
-              strokeWidth={1.4}
             />
             <p className="text-lg mb-2" style={{ color: 'var(--color-text)' }}>
               هنوز رزروی ثبت نکرده‌اید

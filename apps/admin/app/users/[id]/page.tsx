@@ -14,7 +14,7 @@ import {
   Copy,
   Ban,
   UserCheck,
-} from 'lucide-react';
+} from '@barbercore/ui/icons';
 import Link from 'next/link';
 import { toast } from 'sonner';
 
@@ -231,7 +231,6 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
               size={16}
               className="mb-2"
               style={{ color: 'var(--brand-gold-600)' }}
-              strokeWidth={1.5}
             />
             <p className="text-lg font-bold" style={{ color: 'var(--brand-navy-600)' }}>
               {value}

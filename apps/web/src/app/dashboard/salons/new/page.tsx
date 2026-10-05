@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import { toast } from 'sonner';
 import { useCreateSalon, useMe } from '@/lib/api-hooks';
 import { useEffect } from 'react';
-import { CheckCircle2, Scissors, Sparkles, UserRound } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Scissors, Sparkles, UserRound } from '@barbercore/ui/icons';
 import { ProvinceCitySelect } from '@/components/shared/province-city-select';
 import { getIranCityCoordinates } from '@/lib/iran-locations';
 
@@ -128,7 +128,7 @@ export default function NewSalonPage() {
                           form.genderType === opt.v ? 'var(--color-background)' : 'transparent',
                       }}
                     >
-                      <opt.icon size={16} strokeWidth={1.7} /> {opt.l}
+                      <opt.icon size={16} /> {opt.l}
                     </button>
                   ))}
                 </div>
@@ -243,10 +243,10 @@ export default function NewSalonPage() {
             {step < STEPS.length - 1 ? (
               <button
                 onClick={() => setStep((s) => s + 1)}
-                className="flex-1 py-3 rounded-xl text-white font-medium transition-opacity hover:opacity-90"
+                className="flex flex-1 items-center justify-center gap-2 py-3 rounded-xl text-white font-medium transition-opacity hover:opacity-90"
                 style={{ background: 'var(--color-primary)' }}
               >
-                بعدی ←
+                بعدی <ArrowLeft size={16} />
               </button>
             ) : (
               <button

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Check, Zap, Star, Crown, ChevronRight, Loader2 } from 'lucide-react';
+import { Check, Zap, Star, Crown, ChevronRight, Loader2 } from '@barbercore/ui/icons';
 import { useMySalons, useSalonSubscription } from '@/lib/api-hooks';
 import { toJalali } from '@/lib/utils';
 

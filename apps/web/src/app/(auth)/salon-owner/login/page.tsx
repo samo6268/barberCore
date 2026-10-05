@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff } from '@barbercore/ui/icons';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import { AuthLayout } from '@/components/auth/auth-layout';

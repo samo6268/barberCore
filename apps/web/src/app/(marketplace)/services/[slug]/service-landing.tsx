@@ -13,7 +13,7 @@ import {
   ShieldCheck,
   Sparkles,
   Star,
-} from 'lucide-react';
+} from '@barbercore/ui/icons';
 import { useSearchSalons } from '@/lib/api-hooks';
 import type { ServiceCategory } from '@/lib/service-catalog';
 import { AvailabilityPill } from '@/components/marketplace/marketplace-ui';
@@ -118,7 +118,7 @@ export function ServiceLanding({ service }: { service: ServiceCategory }) {
             { icon: CalendarCheck, title: 'رزرو ساده', text: 'انتخاب روز و ساعت بدون تماس' },
           ].map(({ icon: Icon, title, text }) => (
             <div key={title} className="flex items-center gap-4 px-4 py-6 sm:justify-center">
-              <Icon size={22} strokeWidth={1.6} className="shrink-0 text-[var(--brand-plum-500)]" />
+              <Icon size={22}  className="shrink-0 text-[var(--brand-plum-500)]" />
               <span>
                 <strong className="block type-label text-[var(--color-text)]">{title}</strong>
                 <span className="mt-0.5 block type-caption text-[var(--color-text-muted)]">{text}</span>
@@ -213,7 +213,7 @@ export function ServiceLanding({ service }: { service: ServiceCategory }) {
                       </span>
                       {salon.rating > 0 && (
                         <span className="flex shrink-0 items-center gap-1 type-label text-[#5d5140]">
-                          <Star size={14} className="fill-[#b38a45] text-[#b38a45]" />
+                          <Star size={14} className="text-[#b38a45]" weight="fill" />
                           {salon.rating.toLocaleString('fa-IR', { maximumFractionDigits: 1 })}
                         </span>
                       )}

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { CheckCircle, DollarSign, Users, BookOpen, Star } from 'lucide-react';
+import { CheckCircle, DollarSign, Users, BookOpen, Star } from '@barbercore/ui/icons';
 import { useApplyAsInstructor, useMe } from '@/lib/api-hooks';
 
 const BENEFITS = [
