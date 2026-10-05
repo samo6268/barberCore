@@ -13,6 +13,7 @@ type ProvinceCitySelectProps = {
   allCityLabel?: string;
   className?: string;
   compact?: boolean;
+  inline?: boolean;
 };
 
 export function ProvinceCitySelect({
@@ -25,6 +26,7 @@ export function ProvinceCitySelect({
   allCityLabel = 'همه شهرها',
   className = '',
   compact = false,
+  inline = false,
 }: ProvinceCitySelectProps) {
   const cities = province ? IRAN_CITIES_BY_PROVINCE[province] ?? [] : [];
 
@@ -33,8 +35,8 @@ export function ProvinceCitySelect({
     : 'w-full appearance-none rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 pl-9 text-sm text-[var(--color-text)] outline-none transition focus:border-[#d9a57f]';
 
   return (
-    <div className={`${compact ? 'rounded-2xl border border-[#e3cfc1]/20 bg-[#362620] p-2.5' : ''} ${className}`}>
-      {compact && (
+    <div className={`${compact && !inline ? 'rounded-2xl border border-[#e3cfc1]/20 bg-[#362620] p-2.5' : ''} ${className}`}>
+      {compact && !inline && (
         <div className="mb-2 flex items-center gap-2 px-1 text-[11px] text-[#cdb5a7]">
           <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#4a3027] text-[#d9a57f]">
             <MapPin size={13} />
@@ -43,19 +45,21 @@ export function ProvinceCitySelect({
           <span className="text-[#ad978d]">استان و شهر</span>
         </div>
       )}
-      <div className="grid gap-2 sm:grid-cols-2">
+      <div className={`grid gap-3 ${inline ? 'grid-cols-2' : 'sm:grid-cols-2'}`}>
       <label className="block">
-        <span className={`mb-1.5 flex items-center gap-1.5 font-medium text-[#cdb5a7] ${compact ? 'text-[11px]' : 'text-xs'}`}>
+        <span className={`mb-2 flex items-center gap-1.5 font-medium text-[#f1dfd0] ${inline ? 'text-[13px]' : compact ? 'text-[11px]' : 'text-xs'}`}>
           استان
         </span>
         <div className="relative">
           <select
+            aria-label="استان"
             value={province}
             onChange={(event) => {
               onProvinceChange(event.target.value);
               onCityChange('');
             }}
             className={selectClass}
+            style={inline ? { height: 48, borderColor: '#524238', background: '#2c241e', fontWeight: 400 } : undefined}
           >
             <option value="">{includeAll ? allLabel : 'انتخاب استان'}</option>
             {IRAN_PROVINCES.map((item) => (
@@ -69,18 +73,20 @@ export function ProvinceCitySelect({
       </label>
 
       <label className="block">
-        <span className={`mb-1.5 flex items-center gap-1.5 font-medium text-[#746b6d] ${compact ? 'text-[11px]' : 'text-xs'}`}>
+        <span className={`mb-2 flex items-center gap-1.5 font-medium text-[#f1dfd0] ${inline ? 'text-[13px]' : compact ? 'text-[11px]' : 'text-xs'}`}>
           شهر
         </span>
         <div className="relative">
           <select
+            aria-label="شهر"
             value={city === allCityLabel ? '' : city}
             onChange={(event) => onCityChange(event.target.value)}
             disabled={!province}
-            className={`${selectClass} disabled:cursor-not-allowed disabled:bg-[#f1ece8] disabled:text-[#aaa1a1]`}
+            className={`${selectClass} disabled:cursor-not-allowed disabled:text-[#b7a89b]`}
+            style={inline ? { height: 48, borderColor: '#524238', background: '#2c241e', fontWeight: 400 } : undefined}
           >
             <option value="">
-              {province ? (includeAll ? allCityLabel : 'انتخاب شهر') : 'ابتدا استان را انتخاب کنید'}
+              {province ? (includeAll ? allCityLabel : 'انتخاب شهر') : inline ? 'ابتدا استان' : 'ابتدا استان را انتخاب کنید'}
             </option>
             {cities.map((item) => (
               <option key={item.id} value={item.name}>

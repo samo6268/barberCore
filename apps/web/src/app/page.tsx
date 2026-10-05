@@ -9,6 +9,8 @@ import { useSearchSalons } from '@/lib/api-hooks';
 import { SERVICE_CATEGORIES } from '@/lib/service-catalog';
 import { trackEvent } from '@/lib/analytics';
 import { ProvinceCitySelect } from '@/components/shared/province-city-select';
+import { getIranCityCoordinates } from '@/lib/iran-locations';
+import styles from './home.module.css';
 import {
   AvailabilityPill,
   CommunityProof,
@@ -37,19 +39,12 @@ const HERO_IMAGE = '/images/photography/parnegarin/womens-salon.webp';
 const SERVICES = SERVICE_CATEGORIES;
 
 const HOME_SERVICE_TILES = [
-  { slug: 'skincare', name: 'ماساژ و اسپا', hint: 'آرامش و مراقبت تخصصی', image: '/images/photography/parnegarin/spa-facial.webp', imageAlt: 'ماساژ و اسپا در فضای آرام', icon: Flower2 },
-  { slug: 'nails', name: 'پوست و ناخن', hint: 'فیشال، مانیکور و پدیکور', image: '/images/photography/parnegarin/nails.webp', imageAlt: 'مراقبت پوست و خدمات ناخن', icon: Hand },
-  { slug: 'hair-color', name: 'مو و رنگ', hint: 'رنگ، لایت و احیای مو', image: '/images/photography/parnegarin/hair-color.webp', imageAlt: 'رنگ و مراقبت تخصصی مو', icon: Scissors },
-  { slug: 'barber', name: 'آرایش آقایان', hint: 'مو، ریش و گریم', image: '/images/photography/parnegarin/mens-barber.webp', imageAlt: 'آرایش و پیرایش آقایان', icon: UserRound },
-  { slug: 'makeup', name: 'آرایش بانوان', hint: 'میکاپ و استایل حرفه‌ای', image: '/images/photography/parnegarin/womens-salon.webp', imageAlt: 'آرایش و استایل بانوان', icon: Sparkles },
+  { slug: 'makeup', name: 'آرایش بانوان', href: '/salons?gender=FEMALE', image: '/images/photography/parnegarin/womens-salon.webp', imageAlt: 'آرایش و استایل بانوان', icon: Sparkles },
+  { slug: 'barber', name: 'آرایش آقایان', href: '/services/barber', image: '/images/photography/parnegarin/mens-barber.webp', imageAlt: 'آرایش و پیرایش آقایان', icon: UserRound },
+  { slug: 'hair-color', name: 'مو و رنگ', href: '/services/hair-color', image: '/images/photography/parnegarin/hair-color.webp', imageAlt: 'رنگ و مراقبت تخصصی مو', icon: Scissors },
+  { slug: 'nails', name: 'پوست و ناخن', href: '/services/skincare', image: '/images/photography/parnegarin/nails.webp', imageAlt: 'مراقبت پوست و خدمات ناخن', icon: Hand },
+  { slug: 'spa', name: 'ماساژ و اسپا', href: '/salons?service=ماساژ', image: '/images/photography/parnegarin/spa-facial.webp', imageAlt: 'فضای خدمات اسپا و مراقبت', icon: Flower2 },
 ] as const;
-
-const QUICK_SEARCHES = [
-  { label: 'رنگ و لایت', query: 'رنگ مو' },
-  { label: 'کاشت ناخن', query: 'ناخن' },
-  { label: 'فیشال', query: 'پوست' },
-  { label: 'اصلاح آقایان', query: 'اصلاح', gender: 'MALE' as GenderFilter },
-];
 
 export default function HomePage() {
   useEffect(() => {
@@ -57,7 +52,7 @@ export default function HomePage() {
   }, []);
 
   return (
-    <main data-typography="marketplace" className="overflow-hidden bg-[var(--color-background)] pb-16 md:pb-0">
+    <main data-typography="marketplace" className={`${styles.page} overflow-hidden pb-16 md:pb-0`} data-home-layout="fullbleed-v4">
       <Hero />
       <ServiceDiscovery />
       <HomeProofStrip />
@@ -101,66 +96,54 @@ function Hero() {
     router.push(query ? `/salons?${query}` : '/salons');
   };
 
+  const mapCoordinates = getIranCityCoordinates(city || 'تهران', province || 'تهران');
+  const mapParams = new URLSearchParams({
+    ...(province ? { province } : { province: 'تهران' }),
+    city: city || 'تهران',
+    ...(mapCoordinates ? { lat: String(mapCoordinates[0]), lng: String(mapCoordinates[1]), radiusKm: '3' } : {}),
+    ...(service.trim() ? { service: service.trim() } : {}),
+    ...(gender !== 'UNISEX' ? { gender } : {}),
+  });
+
   return (
-    <section className="relative isolate overflow-visible bg-[#191312] pt-20 text-[#fff7ef]">
-      <div className="absolute inset-0 -z-10 overflow-hidden">
-<<<<<<< ours
-<<<<<<< ours
-        <div className="absolute inset-y-0 left-0 w-full lg:w-[62%]">
-=======
-        <div className="absolute inset-y-0 left-0 w-full lg:w-[55%]">
->>>>>>> theirs
-=======
-        <div className="absolute inset-y-0 left-0 w-full lg:w-[55%]">
->>>>>>> theirs
-          <Image src={HERO_IMAGE} alt="متخصص در حال سشوار و استایل موی مشتری در سالن" fill priority sizes="(max-width: 1024px) 100vw, 62vw" className="object-cover object-center" />
-        </div>
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(25,19,18,.08)_0%,rgba(25,19,18,.35)_38%,#191312_72%,#191312_100%)]" />
-        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#191312] to-transparent" />
-      </div>
-
-      <div className="container-editorial relative flex min-h-[590px] flex-col justify-center pb-32 pt-16 lg:min-h-[620px] lg:pb-36 lg:pt-20">
-        <div className="me-auto max-w-[560px] text-right">
-          <div className="mb-6 inline-flex items-center gap-3 rounded-full border border-[#c58b69]/35 bg-[#251a17]/70 px-4 py-2 type-label text-[#d9a57f] backdrop-blur-sm">
-            <span className="h-2 w-2 rounded-full bg-[#d9a57f]" aria-hidden="true" />
-            زیبایی، مراقبت و آرامش برای همه
-          </div>
-          <h1 className="type-display-lg text-[#fffaf5] sm:text-[3.65rem] sm:leading-[1.25]">
-            زیبایی، مراقبت و آرامش؛
-            <span className="block text-[#d9a57f]">برای همه</span>
-          </h1>
-          <p className="mt-5 max-w-xl type-body-lg text-[#eadfd6]">
-            از آرایشگاه و باربرشاپ تا اسپا و مراقبت‌های تخصصی؛ تجربه‌ای مطمئن، نزدیک و قابل رزرو.
-          </p>
-          <div className="mt-7 flex flex-wrap justify-end gap-3">
-            <Link href="#services" className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-[#b46f50] px-6 type-button text-white transition hover:bg-[#ca8663]">
-              پیدا کردن خدمت <ArrowLeft size={17} />
-            </Link>
-            <Link href="/salons" className="inline-flex min-h-12 items-center gap-2 rounded-xl border border-[#e6d5c8]/45 bg-[#211815]/55 px-6 type-button text-[#fff7ef] backdrop-blur-sm transition hover:bg-[#3a2721]">
-              مشاهده سالن‌ها <Store size={17} />
-            </Link>
-          </div>
-        </div>
-
-        <form onSubmit={submit} className="absolute inset-x-4 -bottom-10 z-20 rounded-[1.35rem] border border-[#e3cfc1]/25 bg-[#2a1e1a]/95 p-3 shadow-[0_28px_80px_rgba(0,0,0,.4)] backdrop-blur-xl lg:inset-x-0">
-          <div className="grid gap-2 lg:grid-cols-[1.2fr_1fr_1.1fr_auto] lg:items-end">
-            <label className="min-w-0 rounded-xl border border-[#e3cfc1]/20 bg-[#362620] px-4 py-3 text-right">
-              <span className="mb-1 block type-caption text-[#cdb5a7]">چه خدمتی؟</span>
-              <span className="flex items-center gap-2"><Search size={18} className="shrink-0 text-[#d9a57f]" /><input value={service} onChange={(event) => setService(event.target.value)} list="home-services" className="w-full bg-transparent type-label text-[#fff7ef] outline-none placeholder:text-[#ad978d]" placeholder="مثلاً فیشال، کوتاهی یا اصلاح" /><datalist id="home-services">{SERVICES.map((item) => <option key={item.query} value={item.query} />)}</datalist></span>
+    <section className={styles.hero} aria-label="انتخاب و رزرو خدمات">
+      <div className={styles.heroScene} data-testid="home-hero-scene">
+        <Image src={HERO_IMAGE} alt="متخصص در حال سشوار و استایل موی مشتری در سالن" fill priority sizes="100vw" className={styles.heroPhoto} />
+        <div className={styles.heroShade} aria-hidden="true" />
+        <div className={styles.heroCopy}>
+          <h1 className={styles.heroTitle}>زیبایی، مراقبت و آرامش؛<span>برای همه</span></h1>
+          <p className={styles.heroDescription}>از آرایشگاه و باربرشاپ تا اسپا و مراقبت‌های تخصصی؛ تجربه‌ای مطمئن، نزدیک و قابل رزرو.</p>
+          <div className={styles.heroActions}>
+            <Link href="#services" className={styles.primaryAction}>پیدا کردن خدمت <ArrowLeft size={18} strokeWidth={1.5} /></Link>
+            <Link href="/salons" className={styles.secondaryAction}>مشاهده سالن‌ها <Store size={18} strokeWidth={1.5} /></Link>
+            <label className={styles.searchTime}>زمان ترجیحی
+              <select value={availability} onChange={(event) => setAvailability(event.target.value)} className={styles.timeSelect}>
+                <option value="any">هر زمان</option><option value="today">امروز</option><option value="tomorrow">فردا</option><option value="week">این هفته</option>
+              </select>
             </label>
-            <div className="min-w-0 rounded-xl border border-[#e3cfc1]/20 bg-[#362620] px-3 py-2"><ProvinceCitySelect compact province={province} city={city} onProvinceChange={setProvince} onCityChange={setCity} /></div>
-            <fieldset className="flex min-h-[72px] items-end gap-2 rounded-xl border border-[#e3cfc1]/20 bg-[#362620] p-2" aria-label="مخاطب سالن">
-              <legend className="px-2 type-caption text-[#cdb5a7]">برای چه کسی؟</legend>
-              {([['UNISEX', 'همه'], ['FEMALE', 'بانوان'], ['MALE', 'آقایان']] as [GenderFilter, string][]).map(([value, label]) => <button key={value} type="button" onClick={() => setGender(value)} aria-pressed={gender === value} className={`min-h-10 flex-1 rounded-lg px-3 type-button transition ${gender === value ? 'bg-[#b46f50] text-white' : 'text-[#d8c7bd] hover:bg-[#4a3027]'}`}>{label}</button>)}
-            </fieldset>
-            <button type="submit" className="flex min-h-14 items-center justify-center gap-2 rounded-xl bg-[#d9a57f] px-7 type-button text-[#241713] transition hover:bg-[#ebbb98]">جست‌وجو <ArrowLeft size={17} /></button>
           </div>
-          <div className="mt-2 flex flex-wrap items-center justify-end gap-2 border-t border-[#e3cfc1]/15 pt-2">
-            <span className="type-caption text-[#bda79a]">زمان ترجیحی:</span>
-            {[['any', 'هر زمان'], ['today', 'امروز'], ['tomorrow', 'فردا'], ['week', 'این هفته']].map(([value, label]) => <button key={value} type="button" onClick={() => setAvailability(value)} aria-pressed={availability === value} className={`rounded-full px-3 py-1.5 type-caption transition ${availability === value ? 'bg-[#d9a57f] text-[#241713]' : 'text-[#d8c7bd] hover:bg-[#4a3027]'}`}>{label}</button>)}
-          </div>
-        </form>
+        </div>
       </div>
+      <form onSubmit={submit} className={styles.searchPanel} aria-label="جست‌وجوی سالن">
+        <div className={styles.searchFields}>
+          <label className={styles.searchField}>
+            <span className={styles.fieldLabel}><Search size={18} strokeWidth={1.5} /> چه خدمتی؟</span>
+            <input value={service} onChange={(event) => setService(event.target.value)} list="home-services" className={styles.serviceInput} placeholder="مثلاً کوتاهی، مو، ماساژ یا فیشال" />
+            <datalist id="home-services">{SERVICES.map((item) => <option key={item.query} value={item.query} />)}</datalist>
+          </label>
+          <fieldset className={styles.genderField}>
+            <legend className={styles.fieldLabel}>برای چه کسی؟</legend>
+            <div className={styles.genderOptions}>
+              {([['UNISEX', 'همه'], ['FEMALE', 'بانوان'], ['MALE', 'آقایان']] as [GenderFilter, string][]).map(([value, label]) => (
+                <button key={value} type="button" onClick={() => setGender(value)} aria-pressed={gender === value}>{label}</button>
+              ))}
+            </div>
+          </fieldset>
+          <ProvinceCitySelect compact inline includeAll province={province} city={city} onProvinceChange={setProvince} onCityChange={setCity} />
+          <Link href={`/salons?${mapParams}`} className={styles.mapAction}><MapPin size={27} strokeWidth={1.5} /> انتخاب محدوده روی نقشه</Link>
+          <button type="submit" className={styles.submitSearch}><Search size={22} strokeWidth={1.5} /> جست‌وجو</button>
+        </div>
+      </form>
     </section>
   );
 }
@@ -195,53 +178,46 @@ function SectionHeading({
 
 function ServiceDiscovery() {
   return (
-    <section id="services" className="scroll-mt-24 bg-[var(--color-background)] py-24 lg:py-32">
-      <div className="container-editorial">
-        <div className="mb-10 text-center">
-          <p className="mb-3 inline-flex items-center gap-3 type-label text-[#d9a57f]"><span className="h-px w-8 bg-[#b46f50]" aria-hidden="true" /> دسته‌بندی خدمات <span className="h-px w-8 bg-[#b46f50]" aria-hidden="true" /></p>
-          <h2 className="type-h1 text-[var(--color-text)] sm:text-[2.2rem]">هر آنچه برای زیبایی، مراقبت و حال خوب نیاز داری</h2>
-          <p className="mx-auto mt-3 max-w-2xl type-body text-[var(--color-text-muted)]">خدمت موردنظرت را انتخاب کن؛ از آرایش و پیرایش تا پوست، ناخن و اسپا.</p>
+    <section id="services" className={styles.services}>
+        <div className={styles.servicesHeading}>
+          <p className={styles.servicesEyebrow}>دسته‌بندی خدمات</p>
+          <h2 className={styles.servicesTitle}>هر آنچه برای زیبایی، مراقبت و حال بهتر نیاز داری</h2>
         </div>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-          {HOME_SERVICE_TILES.map(({ slug, name, hint, image, imageAlt, icon: ServiceIcon }) => {
-            return (
-            <Link key={name} href={`/services/${slug}`} onClick={() => trackEvent('service_selected', { service: slug, source: 'homepage_grid' })} className="group relative aspect-[0.92/1] overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-raised)] shadow-[0_14px_35px_rgba(0,0,0,0.2)]">
+        <div className={styles.serviceGrid}>
+          {HOME_SERVICE_TILES.map(({ slug, href, name, image, imageAlt, icon: ServiceIcon }) => (
+            <Link key={name} href={href} onClick={() => trackEvent('service_selected', { service: slug, source: 'homepage_grid' })} className={styles.serviceCard}>
                 <Image
                   src={image}
                   alt={imageAlt}
                   fill
                   sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 17vw"
-                  className="object-cover transition duration-700 group-hover:scale-110"
+                  className={styles.servicePhoto}
                 />
-                <span className="absolute inset-0 bg-gradient-to-t from-[#170f0d]/95 via-[#170f0d]/15 to-transparent" />
-                <span className="absolute inset-x-0 bottom-0 p-4 text-right text-white"><span className="mb-3 flex h-9 w-9 items-center justify-center rounded-full border border-white/45 bg-black/15 text-[#f5d6bd] backdrop-blur-sm"><ServiceIcon size={21} strokeWidth={1.45} /></span><strong className="block type-h4">{name}</strong><span className="mt-1 block type-caption text-white/70">{hint}</span><span className="mt-3 inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/45 transition group-hover:bg-[#d9a57f] group-hover:text-[#241713]"><ArrowLeft size={15} /></span></span>
+                <span className={styles.serviceOverlay} />
+                <span className={styles.serviceCaption}><ServiceIcon size={28} strokeWidth={1.4} /><strong>{name}</strong><span className={styles.serviceArrow}><ArrowLeft size={15} /></span></span>
             </Link>
-            );
-          })}
+          ))}
         </div>
-      </div>
     </section>
   );
 }
 
 function HomeProofStrip() {
   const items = [
-    { value: '+۵,۰۰۰', label: 'سالن فعال', detail: 'سالن‌های منتخب شهر شما', icon: Store },
-    { value: '+۱۲,۰۰۰', label: 'متخصص فعال', detail: 'متخصصان تاییدشده', icon: BadgeCheck },
-    { value: '+۹۸٪', label: 'رضایت کاربران', detail: 'بر اساس تجربه واقعی', icon: Star },
-    { value: 'رزرو امن', label: 'پرداخت مطمئن', detail: 'رزرو قابل پیگیری', icon: ShieldCheck },
+    { label: 'انتخاب نزدیک‌تر', detail: 'جست‌وجو بر اساس شهر و محدوده', icon: MapPin },
+    { label: 'انتخاب آگاهانه', detail: 'مقایسه خدمات و قیمت‌ها', icon: Store },
+    { label: 'زمان مناسب شما', detail: 'مشاهده نوبت‌های آزاد', icon: CalendarDays },
+    { label: 'رزرو قابل پیگیری', detail: 'دسترسی به سوابق نوبت‌ها', icon: ShieldCheck },
   ];
 
   return (
-    <section aria-label="اعتماد به پرنگارین" className="border-y border-[var(--color-border)] bg-[#211815]">
-      <div className="container-editorial grid gap-0 sm:grid-cols-2 lg:grid-cols-4">
-        {items.map(({ value, label, detail, icon: Icon }, index) => (
-          <div key={label} className={`flex items-center gap-3 px-4 py-5 ${index < items.length - 1 ? 'border-b border-[var(--color-border)] sm:border-b-0 sm:border-l' : ''}`}>
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#b46f50]/35 text-[#d9a57f]"><Icon size={22} strokeWidth={1.55} /></span>
-            <span className="min-w-0"><strong className="block type-h4 text-[#f7e9df]">{value}</strong><span className="block type-label text-[#f7e9df]">{label}</span><span className="mt-0.5 block type-caption text-[#bda79a]">{detail}</span></span>
+    <section aria-label="امکانات رزرو در پرنگارین" className={styles.proof}>
+        {items.map(({ label, detail, icon: Icon }) => (
+          <div key={label} className={styles.proofItem}>
+            <Icon size={28} strokeWidth={1.5} />
+            <span><strong>{label}</strong><small>{detail}</small></span>
           </div>
         ))}
-      </div>
     </section>
   );
 }

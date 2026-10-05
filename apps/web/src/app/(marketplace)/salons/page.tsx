@@ -50,6 +50,8 @@ const SERVICES = [
   'پوست',
   'اصلاح',
   'عروس',
+  'ماساژ',
+  'اسپا',
 ];
 const SORT_OPTIONS = [
   { value: 'rating', label: 'بهترین امتیاز' },

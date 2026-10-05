@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { User, LogOut, Menu, X } from 'lucide-react';
 import { useMe, useLogout } from '@/lib/api-hooks';
 
@@ -11,6 +11,16 @@ export function Navbar() {
   const logout = useLogout();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
+  const [scrolled, setScrolled] = useState(false);
+  const isHome = pathname === '/';
+
+  useEffect(() => {
+    const updateScroll = () => setScrolled(window.scrollY > 32);
+    updateScroll();
+    window.addEventListener('scroll', updateScroll, { passive: true });
+    return () => window.removeEventListener('scroll', updateScroll);
+  }, []);
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? 'hidden' : '';
@@ -21,21 +31,22 @@ export function Navbar() {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-50 border-b border-[var(--color-border)] bg-[rgba(29,23,21,0.9)] backdrop-blur-xl">
-        <div className="container-editorial flex h-20 items-center justify-between">
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-[var(--color-border)] bg-[rgba(29,23,21,0.9)] backdrop-blur-xl" style={isHome && !scrolled ? { background: 'linear-gradient(180deg, rgba(20,15,12,.65), rgba(20,15,12,.12))', borderColor: 'transparent', backdropFilter: 'none' } : undefined}>
+        <div className={`${isHome ? '' : 'container-editorial'} flex h-20 items-center justify-between gap-5`} style={isHome ? { width: '100%', paddingInline: 'clamp(20px, 4.2vw, 96px)' } : undefined}>
           {/* Logo */}
           <Link
             href="/"
             className="font-semibold text-h3 text-[#d9794d]"
             aria-label="پرنگارین — صفحه اصلی"
+            style={isHome ? { fontSize: 'clamp(24px, 2.1vw, 34px)', lineHeight: 1.4 } : undefined}
           >
             پرنگارین
           </Link>
 
           {/* Center nav — desktop */}
           <nav
-            className="hidden items-center gap-8 text-body-sm font-medium md:flex"
-            style={{ color: 'var(--color-text-muted)' }}
+            className="hidden items-center gap-6 text-body-sm font-medium lg:flex"
+            style={{ color: isHome ? '#efdfd3' : 'var(--color-text-muted)' }}
           >
             <Link href="/" className="transition-colors hover:text-[#d9794d]">
               صفحه اصلی
@@ -61,6 +72,8 @@ export function Navbar() {
           <div className="hidden md:flex items-center gap-3">
             {user ? (
               <>
+                <Link href="/profile/bookings" className="text-body-sm text-[#fff0e4]">نوبت‌های من</Link>
+                {(user.role === 'SALON_OWNER' || user.role === 'SUPER_ADMIN') && <Link href="/dashboard" className="text-body-sm text-[#fff0e4]">مدیریت سالن</Link>}
                 <Link
                   href="/profile"
                   className="flex items-center gap-2 rounded-full border border-[#d9a57f]/40 px-5 py-2.5 text-body-sm font-medium transition-colors hover:bg-[#3a2721]"
@@ -75,6 +88,7 @@ export function Navbar() {
                     router.push('/');
                   }}
                   className="rounded-xl p-2 transition-colors hover:bg-[var(--ui-gray-100)]"
+                  aria-label="خروج از حساب"
                   style={{ color: 'var(--color-text-muted)' }}
                 >
                   <LogOut size={20} strokeWidth={1.5} />
@@ -94,7 +108,7 @@ export function Navbar() {
 
           {/* Hamburger — mobile */}
           <button
-            className="p-2 md:hidden"
+            className="p-2 lg:hidden"
             style={{ color: 'var(--color-text)' }}
             onClick={() => setMobileOpen(true)}
             aria-label="منو"
@@ -124,7 +138,11 @@ export function Navbar() {
               { href: '/#services', label: 'خدمات' },
               { href: '/blog', label: 'مجله زیبایی و سلامت' },
               { href: '/academy', label: 'برای متخصصان' },
-              { href: '/role-selector', label: 'ورود / ثبت‌نام' },
+              ...(user ? [
+                { href: '/profile', label: 'حساب کاربری' },
+                { href: '/profile/bookings', label: 'نوبت‌های من' },
+                ...(user.role === 'SALON_OWNER' || user.role === 'SUPER_ADMIN' ? [{ href: '/dashboard', label: 'مدیریت سالن' }] : []),
+              ] : [{ href: '/role-selector', label: 'ورود / ثبت‌نام' }]),
             ].map((item) => (
               <Link
                 key={item.href}
