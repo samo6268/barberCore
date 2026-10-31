@@ -22,7 +22,7 @@ const nextConfig = {
     defaultLocale: 'fa',
   },
   // Transpile packages/ui
-  transpilePackages: ['@barbercore/ui'],
+  transpilePackages: ['@barbercore/ui', '@adaptive-assistant/core', '@adaptive-assistant/react'],
   webpack(config) {
     const path = require('path');
     config.resolve.alias['@ui'] = path.resolve(__dirname, '../../packages/ui/src');

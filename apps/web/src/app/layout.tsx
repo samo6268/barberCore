@@ -5,7 +5,9 @@ import { ThemeProvider } from '@/components/shared/theme-provider';
 import { QueryProvider } from '@/components/shared/query-provider';
 import { ConditionalNav } from '@/components/layout/conditional-nav';
 import { ConditionalFooter } from '@/components/layout/conditional-footer';
+import { ParnegarinAssistant } from '@/components/assistant/parnegarin-assistant';
 import '@daypicker/react/style.css';
+import '@adaptive-assistant/react/styles.css';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -56,6 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <ConditionalNav />
             {children}
             <ConditionalFooter />
+            <ParnegarinAssistant />
             <Toaster
               position="top-center"
               richColors
