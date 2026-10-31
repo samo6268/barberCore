@@ -347,8 +347,7 @@ export function defaultManifest(assistantId = 'default'): AssistantManifest {
     direction: 'rtl',
     greeting: 'سلام! چطور می‌توانم کمکتان کنم؟',
     inputPlaceholder: 'پیامتان را بنویسید…',
-    disclosure:
-      'پاسخ‌ها توسط هوش مصنوعی تولید می‌شوند؛ پیام و داده لازم به ارائه‌دهنده مدل ارسال می‌شود.',
+    disclosure: 'پاسخ‌ها از دانش داخلی کسب‌وکار و داده‌های مجاز سامانه تهیه می‌شوند.',
     suggestions: [
       {
         id: 'page-help',

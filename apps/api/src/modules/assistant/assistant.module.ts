@@ -11,7 +11,7 @@ import { AssistantToolsService } from './assistant-tools.service';
 import { AssistantSessionService } from './assistant-session.service';
 import { AssistantAuthGuard } from './assistant-auth.guard';
 import { ASSISTANT_PROVIDER } from './providers/assistant-provider';
-import { ResponsesAssistantProvider } from './providers/responses.provider';
+import { InternalKnowledgeProvider } from './providers/internal-knowledge.provider';
 @Module({
   imports: [AuthModule, MarketplaceModule, BookingModule, SalonsModule, StaffModule],
   controllers: [AssistantController],
@@ -21,8 +21,8 @@ import { ResponsesAssistantProvider } from './providers/responses.provider';
     AssistantToolsService,
     AssistantSessionService,
     AssistantAuthGuard,
-    ResponsesAssistantProvider,
-    { provide: ASSISTANT_PROVIDER, useExisting: ResponsesAssistantProvider },
+    InternalKnowledgeProvider,
+    { provide: ASSISTANT_PROVIDER, useExisting: InternalKnowledgeProvider },
   ],
   exports: [AssistantService],
 })

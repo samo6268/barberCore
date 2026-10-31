@@ -175,6 +175,17 @@ export class AssistantToolsService {
           return {
             daysFromToday: index,
             gregorian: `${get('year')}-${get('month')}-${get('day')}`,
+            persianDate: (() => {
+              const parts = new Intl.DateTimeFormat('en-US-u-ca-persian', {
+                timeZone: 'Asia/Tehran',
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric',
+              }).formatToParts(date);
+              const value = (name: string) =>
+                Number(parts.find((part) => part.type === name)!.value);
+              return `${value('year')}/${value('month')}/${value('day')}`;
+            })(),
             persian: new Intl.DateTimeFormat('fa-IR-u-ca-persian', {
               timeZone: 'Asia/Tehran',
               year: 'numeric',
@@ -324,7 +335,9 @@ export class AssistantToolsService {
       case 'my_salons': {
         const result = await this.salons.findMine(actor!.id);
         return {
-          data: result.slice(0, 20).map((s) => ({ id: s.id, name: s.name, city: s.city })),
+          data: result
+            .slice(0, 20)
+            .map((s) => ({ id: s.id, slug: s.slug, name: s.name, city: s.city })),
           sources: [{ title: 'سالن‌های من', url: '/dashboard' }],
         };
       }
@@ -356,6 +369,7 @@ export class AssistantToolsService {
           data: result.map((s) => ({
             salonId: s.salon.id,
             salonName: s.salon.name,
+            slug: s.salon.slug,
             displayName: s.displayName,
           })),
           sources: [{ title: 'پنل متخصص', url: '/staff' }],

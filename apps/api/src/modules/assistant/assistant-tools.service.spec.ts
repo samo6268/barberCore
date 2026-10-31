@@ -118,6 +118,7 @@ describe('Assistant read-only tools', () => {
     expect(data.days).toHaveLength(30);
     expect(data.days[0].gregorian).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     expect(data.days[0].persian).toBeTruthy();
+    expect(data.days[0].persianDate).toMatch(/^1[34]\d{2}\/\d{1,2}\/\d{1,2}$/);
     expect(data.days[1].daysFromToday).toBe(1);
   });
   it('rejects SQL-like or invented tool names without executing them', async () => {

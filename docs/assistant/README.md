@@ -79,9 +79,11 @@ adaptive-ai-assistant {
 
 ## Current reference scope
 
-The reference now connects a real Responses-compatible model to curated per-business knowledge, live read-only domain tools and isolated Redis conversations. It includes verified identity, bounded tool execution, source links, cost controls and actionable error states. See [REAL_MODEL_SETUP.md](./REAL_MODEL_SETUP.md) for activation on Mac and Docker.
+Mimo now defaults to **internal knowledge mode**, without a model, embedding API or external provider subscription. Its deterministic engine ranks curated per-business articles, recognizes a bounded set of Persian requests and reads authorized live data through domain tools. Redis stores conversation history and structured follow-up state. See [INTERNAL_KNOWLEDGE_SETUP.md](./INTERNAL_KNOWLEDGE_SETUP.md).
 
-Privileged writes, an embeddings-based document ingestion pipeline, streaming and the management control panel remain separate phases. The current knowledge retrieval uses curated articles and keyword ranking; it does not claim to crawl or understand arbitrary documents.
+Existing installations of patch 0003 are upgraded in place. Its optional Responses adapter remains unregistered and is never selected by environment variables; legacy API keys, if present, do not enable it. This is a guided search and information assistant, not a general-purpose language model. Unknown questions are acknowledged instead of answered with unrelated articles.
+
+Privileged writes, automatic document ingestion, streaming and the management control panel remain separate phases.
 
 ## Mimo interaction states
 

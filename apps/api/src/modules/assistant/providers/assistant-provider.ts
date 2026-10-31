@@ -1,6 +1,7 @@
-import type { ModelRequest } from '../assistant.types';
+import type { LocalAssistantState, ModelRequest } from '../assistant.types';
 export interface ProviderResult {
   content: string;
+  state?: LocalAssistantState;
   citations?: Array<{ title: string; url?: string }>;
 }
 export interface AssistantProvider {

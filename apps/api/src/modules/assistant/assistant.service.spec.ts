@@ -58,7 +58,9 @@ describe('Assistant gateway', () => {
     expect(f.prisma.user.findUnique).not.toHaveBeenCalled();
     expect(f.tools.definitions).toHaveBeenCalledWith('parnegarin', undefined);
     const request = f.provider.respond.mock.calls[0][0] as any;
-    expect(request.instructions).toContain('بازدیدکننده ناشناس');
+    expect(request.actor).toBeUndefined();
+    expect(request.businessId).toBe('parnegarin');
+    expect(request.page.route).toBe('/salons');
     expect(request.instructions).not.toContain('forged');
     expect(request.history).toHaveLength(3);
     expect(request.history[0].content).toContain('تهران');
@@ -83,7 +85,7 @@ describe('Assistant gateway', () => {
     ).rejects.toBeInstanceOf(UnauthorizedException);
     expect(f.provider.respond).not.toHaveBeenCalled();
   });
-  it('does not silently fall back to fake answers without credentials', async () => {
+  it('reports unavailable internal engines without inventing answers', async () => {
     const f = fixture();
     f.provider.isReady.mockReturnValue(false);
     await expect(f.service.chat(dto)).rejects.toBeInstanceOf(ServiceUnavailableException);

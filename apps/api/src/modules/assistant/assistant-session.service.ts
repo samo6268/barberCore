@@ -9,11 +9,12 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { createHash, createHmac, randomUUID, timingSafeEqual } from 'crypto';
 import Redis from 'ioredis';
-import type { AssistantActor, ModelMessage } from './assistant.types';
+import type { AssistantActor, ModelMessage, LocalAssistantState } from './assistant.types';
 
 interface Conversation {
   scope: string;
   history: ModelMessage[];
+  state?: LocalAssistantState;
 }
 @Injectable()
 export class AssistantSessionService implements OnModuleDestroy {
@@ -88,19 +89,19 @@ export class AssistantSessionService implements OnModuleDestroy {
         quotaKey,
       )) as number;
       if (count > this.dailyLimit) throw new HttpException('سهمیه روزانه گفتگو تمام شده است.', 429);
-      return { id, lock, history: stored.history };
+      return { id, lock, history: stored.history, state: stored.state };
     } catch (error) {
       await this.release(id, lock);
       throw error;
     }
   }
-  async save(id: string, scope: string, history: ModelMessage[]) {
+  async save(id: string, scope: string, history: ModelMessage[], state?: LocalAssistantState) {
     const recent = history.slice(-12);
     while (recent.reduce((sum, item) => sum + item.content.length, 0) > 24000 && recent.length > 2)
       recent.splice(0, 2);
     await this.redis.set(
       `mimo:conversation:${id}`,
-      JSON.stringify({ scope, history: recent }),
+      JSON.stringify({ scope, history: recent, state }),
       'EX',
       3600,
     );
