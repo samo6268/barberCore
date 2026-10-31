@@ -1,0 +1,10 @@
+# Add this override after your existing compose file; do not replace server-specific fixes.
+services:
+  api:
+    environment:
+      ASSISTANT_API_KEY: ${ASSISTANT_API_KEY:-}
+      ASSISTANT_MODEL: ${ASSISTANT_MODEL:-}
+      ASSISTANT_API_BASE_URL: ${ASSISTANT_API_BASE_URL:-https://api.openai.com/v1}
+      ASSISTANT_DAILY_TURN_LIMIT: ${ASSISTANT_DAILY_TURN_LIMIT:-60}
+      ASSISTANT_PRICE_UNIT: ${ASSISTANT_PRICE_UNIT:-IRR}
+      ASSISTANT_BUSINESSES_JSON: ${ASSISTANT_BUSINESSES_JSON:-}

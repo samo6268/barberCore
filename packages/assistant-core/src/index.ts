@@ -1,6 +1,12 @@
 export { attachCharacterGaze } from './character-motion';
 export type AssistantDirection = 'rtl' | 'ltr';
-export type AssistantReaction = 'idle' | 'greeting' | 'listening' | 'thinking' | 'success' | 'error';
+export type AssistantReaction =
+  | 'idle'
+  | 'greeting'
+  | 'listening'
+  | 'thinking'
+  | 'success'
+  | 'error';
 export type ToolRisk = 'read' | 'suggest' | 'draft' | 'confirm' | 'restricted';
 
 export interface AssistantIdentity {
@@ -84,6 +90,7 @@ export interface AssistantMessage {
 export interface AssistantChatRequest {
   assistantId: string;
   conversationId?: string;
+  sessionToken?: string;
   message: string;
   identity?: AssistantIdentity;
   context: AssistantPageContext;
@@ -91,6 +98,7 @@ export interface AssistantChatRequest {
 
 export interface AssistantChatResponse {
   conversationId: string;
+  sessionToken?: string;
   message: AssistantMessage;
   suggestions?: AssistantSuggestion[];
 }
@@ -114,7 +122,8 @@ export class ToolRegistry {
   private readonly tools = new Map<string, AssistantTool>();
 
   register(tool: AssistantTool): () => void {
-    if (this.tools.has(tool.name)) throw new Error(`Assistant tool already registered: ${tool.name}`);
+    if (this.tools.has(tool.name))
+      throw new Error(`Assistant tool already registered: ${tool.name}`);
     this.tools.set(tool.name, tool);
     return () => this.tools.delete(tool.name);
   }
@@ -133,12 +142,33 @@ export class ToolRegistry {
   }
 }
 
+export class AssistantTransportError extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+  ) {
+    super(message);
+    this.name = 'AssistantTransportError';
+  }
+}
+
+export function safeAssistantUrl(value?: string): string | undefined {
+  if (!value) return undefined;
+  // Allow same-origin paths only. No javascript:, protocol-relative or external links.
+  return /^\/(?![\/\\])[^\\\u0000-\u0020]*$/.test(value) ? value : undefined;
+}
+
 export interface AssistantTransport {
   chat(request: AssistantChatRequest, signal?: AbortSignal): Promise<AssistantChatResponse>;
+  resetConversation?(): void;
   confirmAction?(actionId: string, signal?: AbortSignal): Promise<AssistantChatResponse>;
 }
 
 export class HttpAssistantTransport implements AssistantTransport {
+  private sessionToken?: string;
+  resetConversation() {
+    this.sessionToken = undefined;
+  }
   constructor(
     private readonly endpoint: string,
     private readonly getToken?: () => string | null | Promise<string | null>,
@@ -152,12 +182,29 @@ export class HttpAssistantTransport implements AssistantTransport {
         'Content-Type': 'application/json',
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
-      body: JSON.stringify(request),
+      body: JSON.stringify({ ...request, sessionToken: this.sessionToken }),
       signal,
     });
-    if (!response.ok) throw new Error(`Assistant gateway returned ${response.status}`);
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({}));
+      const message =
+        response.status === 401
+          ? 'نشست معتبر نیست؛ دوباره وارد شوید یا گفتگوی تازه‌ای شروع کنید.'
+          : response.status === 404
+            ? 'این گفتگو منقضی شده است؛ گفتگوی تازه‌ای شروع کنید.'
+            : response.status === 429
+              ? 'سهمیه یا ظرفیت گفتگو کافی نیست؛ کمی بعد تلاش کنید.'
+              : response.status === 409
+                ? 'لطفاً تا پایان پاسخ قبلی صبر کنید.'
+                : response.status === 503 && typeof body.message === 'string'
+                  ? body.message
+                  : 'ارتباط با سرویس پاسخ‌گویی برقرار نشد؛ دوباره تلاش کنید.';
+      throw new AssistantTransportError(message, response.status);
+    }
     const payload = await response.json();
-    return (payload.data ?? payload) as AssistantChatResponse;
+    const result = (payload.data ?? payload) as AssistantChatResponse;
+    this.sessionToken = result.sessionToken ?? this.sessionToken;
+    return result;
   }
 
   async confirmAction(actionId: string, signal?: AbortSignal): Promise<AssistantChatResponse> {
@@ -182,7 +229,11 @@ export function detectHostTheme(element?: Element | null): AssistantTheme {
   const styles = window.getComputedStyle(host);
   const read = (name: string, fallback = '') => styles.getPropertyValue(name).trim() || fallback;
   const background = read('--color-background', styles.backgroundColor);
-  const rgb = background.match(/\d+(?:\.\d+)?/g)?.slice(0, 3).map(Number) ?? [];
+  const rgb =
+    background
+      .match(/\d+(?:\.\d+)?/g)
+      ?.slice(0, 3)
+      .map(Number) ?? [];
   const luminance = rgb.length === 3 ? (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000 : 255;
   return {
     primary: read('--color-primary', '#a86345'),
@@ -205,9 +256,11 @@ export function resolveSuggestions(
   role?: string,
 ): AssistantSuggestion[] {
   return manifest.suggestions.filter((suggestion) => {
-    const routeMatches = !suggestion.routes?.length || suggestion.routes.some((route) =>
-      route === '/' ? context.route === '/' : context.route.startsWith(route),
-    );
+    const routeMatches =
+      !suggestion.routes?.length ||
+      suggestion.routes.some((route) =>
+        route === '/' ? context.route === '/' : context.route.startsWith(route),
+      );
     const roleMatches = !suggestion.roles?.length || (!!role && suggestion.roles.includes(role));
     return routeMatches && roleMatches;
   });

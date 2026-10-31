@@ -79,7 +79,9 @@ adaptive-ai-assistant {
 
 ## Current reference scope
 
-The first release provides the installable shell, Mimo reactions, host theme inheritance, page and user context, route-specific suggestions, HTTP transport, provider abstraction and a read-only NestJS gateway. Model-backed answers, RAG, privileged tool execution and the control panel remain separate delivery phases.
+The reference now connects a real Responses-compatible model to curated per-business knowledge, live read-only domain tools and isolated Redis conversations. It includes verified identity, bounded tool execution, source links, cost controls and actionable error states. See [REAL_MODEL_SETUP.md](./REAL_MODEL_SETUP.md) for activation on Mac and Docker.
+
+Privileged writes, an embeddings-based document ingestion pipeline, streaming and the management control panel remain separate phases. The current knowledge retrieval uses curated articles and keyword ranking; it does not claim to crawl or understand arbitrary documents.
 
 ## Mimo interaction states
 

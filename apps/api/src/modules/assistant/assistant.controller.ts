@@ -1,22 +1,35 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
+import { CurrentUser, JwtPayload } from '../../common/decorators/current-user.decorator';
 import { AssistantChatDto } from './assistant.dto';
 import { AssistantService } from './assistant.service';
+import { AssistantAuthGuard } from './assistant-auth.guard';
 
 @ApiTags('Assistant')
 @Controller('assistant')
 export class AssistantController {
   constructor(private readonly service: AssistantService) {}
-
-  @Get('manifests/:assistantId')
-  @ApiOperation({ summary: 'دریافت تنظیمات عمومی دستیار' })
-  manifest(@Param('assistantId') assistantId: string) { return this.service.getManifest(assistantId); }
-
+  @Get('status') status() {
+    return this.service.status();
+  }
+  @Get('manifests/:assistantId') manifest(@Param('assistantId') assistantId: string) {
+    return this.service.getManifest(assistantId);
+  }
   @Post('chat')
-  @ApiOperation({ summary: 'ارسال پیام به دستیار زمینه‌آگاه' })
-  chat(@Body() dto: AssistantChatDto) { return this.service.chat(dto); }
-
+  @UseGuards(ThrottlerGuard, AssistantAuthGuard)
+  @Throttle({
+    short: { limit: 2, ttl: 1000 },
+    medium: { limit: 5, ttl: 10000 },
+    long: { limit: 20, ttl: 60000 },
+  })
+  @ApiOperation({ summary: 'پاسخ مدل واقعی با منابع زنده و کنترل دسترسی' })
+  chat(@Body() dto: AssistantChatDto, @CurrentUser() user?: JwtPayload) {
+    return this.service.chat(dto, user);
+  }
   @Post('actions/:actionId/confirm')
-  @ApiOperation({ summary: 'تأیید صریح یک اقدام آماده‌شده' })
-  confirm(@Param('actionId') actionId: string) { return this.service.confirmAction(actionId); }
+  @UseGuards(AssistantAuthGuard)
+  confirm(@Param('actionId') actionId: string) {
+    return this.service.confirmAction(actionId);
+  }
 }

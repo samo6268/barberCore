@@ -38,6 +38,7 @@ import { ResponseInterceptor } from './common/interceptors/response.interceptor'
     LoggerModule.forRoot({
       pinoHttp: {
         customProps: () => ({ context: 'HTTP' }),
+        redact: ['req.headers.authorization', 'req.headers.cookie', 'req.body', 'res.headers["set-cookie"]'],
         transport:
           process.env.NODE_ENV !== 'production'
             ? { target: 'pino-pretty', options: { colorize: true } }
