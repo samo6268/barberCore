@@ -80,3 +80,22 @@ adaptive-ai-assistant {
 ## Current reference scope
 
 The first release provides the installable shell, Mimo reactions, host theme inheritance, page and user context, route-specific suggestions, HTTP transport, provider abstraction and a read-only NestJS gateway. Model-backed answers, RAG, privileged tool execution and the control panel remain separate delivery phases.
+
+## Mimo interaction states
+
+Both adapters now share local-only, animation-frame-throttled pointer tracking. The eyes follow the physical pointer direction, regardless of text direction. Pointer positions are never added to page context or sent to the gateway. Tracking resets on pointer exit/window blur and is disabled for touch input and reduced-motion preferences.
+
+- Hover: a small inquisitive head tilt.
+- Opening: a greeting wave.
+- Focusing or typing in the composer: attentive downward gaze and raised brows.
+- Request pending: tilted head, hand at chin, upward gaze and animated thought dots.
+- Response received: smile and a short positive reaction, then return to attentive/idle.
+- Network failure: concerned expression and a retry message, then return to attentive/idle.
+
+Fast replies are displayed immediately. Only the character pose has a 650 ms minimum thinking interval so the animation is readable; this is a visual state, not a claim about model reasoning. Concurrent submissions are blocked while a request is pending. Web Component open/close no longer re-creates the conversation DOM or erases history.
+
+Run the local gaze regression checks from the repository root:
+
+```bash
+node --test packages/assistant-core/test/character-motion.test.cjs
+```

@@ -1,3 +1,4 @@
+export { attachCharacterGaze } from './character-motion';
 export type AssistantDirection = 'rtl' | 'ltr';
 export type AssistantReaction = 'idle' | 'greeting' | 'listening' | 'thinking' | 'success' | 'error';
 export type ToolRisk = 'read' | 'suggest' | 'draft' | 'confirm' | 'restricted';

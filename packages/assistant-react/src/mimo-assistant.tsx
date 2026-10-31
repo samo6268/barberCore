@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { attachCharacterGaze } from '@adaptive-assistant/core';
 import { useAssistant } from './provider';
 import type { MimoAssistantProps } from './types';
 
@@ -32,16 +33,31 @@ function SendIcon() {
 }
 
 export function MimoAssistant({ className = '', position = 'start' }: MimoAssistantProps) {
-  const { open, setOpen, messages, suggestions, reaction, send, manifest, style } = useAssistant();
+  const { open, setOpen, messages, suggestions, reaction, busy, setListening, send, manifest, style } = useAssistant();
   const [input, setInput] = useState('');
+  const rootRef = useRef<HTMLElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const logRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    logRef.current?.scrollTo({ top: logRef.current.scrollHeight, behavior: 'smooth' });
+    if (rootRef.current) return attachCharacterGaze(rootRef.current, '.aa-mimo');
+  }, []);
+
+  useEffect(() => {
+    const onEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && open) setOpen(false);
+    };
+    document.addEventListener('keydown', onEscape);
+    return () => document.removeEventListener('keydown', onEscape);
+  }, [open, setOpen]);
+
+  useEffect(() => {
+    logRef.current?.scrollTo({ top: logRef.current.scrollHeight, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
   }, [messages, open]);
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
+    if (busy || !input.trim()) return;
     const value = input;
     setInput('');
     void send(value);
@@ -49,6 +65,7 @@ export function MimoAssistant({ className = '', position = 'start' }: MimoAssist
 
   return (
     <aside
+      ref={rootRef}
       className={`aa-root aa-root--${position} aa-reaction--${reaction} ${open ? 'aa-root--open' : ''} ${className}`}
       style={style}
       dir={manifest.direction}
@@ -60,7 +77,7 @@ export function MimoAssistant({ className = '', position = 'start' }: MimoAssist
             <div className="aa-header__character"><MimoCharacter compact /></div>
             <div className="aa-header__copy">
               <strong>{manifest.characterName}</strong>
-              <span><i className="aa-status" /> دستیار هوشمند شما</span>
+              <span role="status"><i className="aa-status" /> {busy ? 'در حال آماده‌کردن پاسخ…' : reaction === 'listening' ? 'حواسم به شماست' : reaction === 'success' ? 'پاسخ آماده است' : reaction === 'error' ? 'دوباره تلاش کنیم؟' : 'دستیار هوشمند شما'}</span>
             </div>
             <button className="aa-icon-button" type="button" onClick={() => setOpen(false)} aria-label="بستن دستیار">×</button>
           </header>
@@ -73,7 +90,7 @@ export function MimoAssistant({ className = '', position = 'start' }: MimoAssist
             {!messages.length && (
               <div className="aa-suggestions">
                 {suggestions.map((suggestion) => (
-                  <button key={suggestion.id} type="button" onClick={() => void send(suggestion.prompt)}>
+                  <button key={suggestion.id} disabled={busy} type="button" onClick={() => void send(suggestion.prompt)}>
                     <span>{suggestion.icon || '✦'}</span>{suggestion.label}
                   </button>
                 ))}
@@ -91,17 +108,21 @@ export function MimoAssistant({ className = '', position = 'start' }: MimoAssist
                 )}
               </div>
             ))}
-            {reaction === 'thinking' && <div className="aa-typing"><i /><i /><i /></div>}
+            {busy && <div className="aa-typing"><i /><i /><i /></div>}
           </div>
 
           <form className="aa-composer" onSubmit={submit}>
             <input
+              ref={inputRef}
+              maxLength={4000}
+              onFocus={() => setListening(true)}
+              onBlur={() => setListening(false)}
               value={input}
-              onChange={(event) => setInput(event.target.value)}
+              onChange={(event) => { setInput(event.target.value); setListening(true); }}
               placeholder={manifest.inputPlaceholder}
               aria-label={manifest.inputPlaceholder}
             />
-            <button type="submit" disabled={!input.trim() || reaction === 'thinking'} aria-label="ارسال پیام"><SendIcon /></button>
+            <button type="submit" disabled={!input.trim() || busy} aria-label="ارسال پیام"><SendIcon /></button>
           </form>
           {manifest.disclosure && <small className="aa-disclosure">{manifest.disclosure}</small>}
         </section>

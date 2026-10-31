@@ -26,6 +26,8 @@ interface AssistantState {
   messages: AssistantMessage[];
   suggestions: AssistantSuggestion[];
   reaction: AssistantReaction;
+  busy: boolean;
+  setListening: (active: boolean) => void;
   send: (message: string) => Promise<void>;
   manifest: AssistantProviderProps['manifest'];
   context: AssistantProviderProps['context'];
@@ -47,6 +49,11 @@ export function AssistantProvider({
 }: AssistantProviderProps) {
   const [open, setOpenState] = useState(initialOpen);
   const [reaction, setReaction] = useState<AssistantReaction>('idle');
+  const [busy, setBusy] = useState(false);
+  const pending = useRef(false);
+  const focused = useRef(false);
+  const mounted = useRef(true);
+  const completionTimer = useRef<ReturnType<typeof setTimeout>>();
   const [messages, setMessages] = useState<AssistantMessage[]>([]);
   const [conversationId, setConversationId] = useState<string>();
   const [resolvedTheme, setResolvedTheme] = useState(theme === 'inherit' ? {} : theme);
@@ -64,15 +71,30 @@ export function AssistantProvider({
     return () => observer.disconnect();
   }, [theme]);
 
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+      clearTimeout(reactionTimer.current);
+      clearTimeout(completionTimer.current);
+    };
+  }, []);
+
   const reactFor = useCallback((next: AssistantReaction, duration = 1800) => {
     if (reactionTimer.current) clearTimeout(reactionTimer.current);
     setReaction(next);
-    if (next !== 'thinking') reactionTimer.current = setTimeout(() => setReaction('idle'), duration);
+    if (next !== 'thinking') reactionTimer.current = setTimeout(() => setReaction(focused.current ? 'listening' : 'idle'), duration);
   }, []);
 
   const setOpen = useCallback((next: boolean) => {
     setOpenState(next);
-    if (next) reactFor('greeting');
+    if (next && !pending.current) reactFor('greeting');
+    if (!next) focused.current = false;
+  }, [reactFor]);
+
+  const setListening = useCallback((active: boolean) => {
+    focused.current = active;
+    if (!pending.current) reactFor(active ? 'listening' : 'idle');
   }, [reactFor]);
 
   const suggestions = useMemo(
@@ -82,7 +104,17 @@ export function AssistantProvider({
 
   const send = useCallback(async (content: string) => {
     const clean = content.trim();
-    if (!clean) return;
+    if (!clean || pending.current) return;
+    pending.current = true;
+    setBusy(true);
+    clearTimeout(completionTimer.current);
+    const started = Date.now();
+    const settle = (next: AssistantReaction) => {
+      if (!mounted.current) return;
+      completionTimer.current = setTimeout(() => {
+        if (mounted.current && !pending.current) reactFor(next, next === 'error' ? 2500 : 1800);
+      }, Math.max(0, 650 - (Date.now() - started)));
+    };
     setMessages((current) => [
       ...current,
       { id: id(), role: 'user', content: clean, createdAt: new Date().toISOString() },
@@ -96,10 +128,12 @@ export function AssistantProvider({
         identity,
         context,
       });
+      if (!mounted.current) return;
       setConversationId(response.conversationId);
       setMessages((current) => [...current, response.message]);
-      reactFor('success');
+      settle('success');
     } catch {
+      if (!mounted.current) return;
       setMessages((current) => [
         ...current,
         {
@@ -109,7 +143,10 @@ export function AssistantProvider({
           createdAt: new Date().toISOString(),
         },
       ]);
-      reactFor('error', 2500);
+      settle('error');
+    } finally {
+      pending.current = false;
+      if (mounted.current) setBusy(false);
     }
   }, [context, conversationId, identity, manifest.assistantId, reactFor, transport]);
 
@@ -126,8 +163,8 @@ export function AssistantProvider({
   } as CSSProperties), [resolvedTheme]);
 
   const value = useMemo(() => ({
-    open, setOpen, messages, suggestions, reaction, send, manifest, context, style,
-  }), [open, setOpen, messages, suggestions, reaction, send, manifest, context, style]);
+    open, setOpen, messages, suggestions, reaction, busy, setListening, send, manifest, context, style,
+  }), [open, setOpen, messages, suggestions, reaction, busy, setListening, send, manifest, context, style]);
 
   return <AssistantContext.Provider value={value}>{children}</AssistantContext.Provider>;
 }

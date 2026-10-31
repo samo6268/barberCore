@@ -1,5 +1,6 @@
 import {
   HttpAssistantTransport,
+  attachCharacterGaze,
   detectHostTheme,
   resolveSuggestions,
   type AssistantIdentity,
@@ -28,6 +29,23 @@ const baseStyles = `
   @keyframes panel{from{opacity:0;transform:translateY(14px) scale(.96)}to{opacity:1;transform:none}}@keyframes breathe{50%{transform:translateY(-2px) scale(1.015)}}@keyframes blink{0%,46%,50%,100%{transform:scaleY(1)}48%{transform:scaleY(.08)}}@keyframes wave{50%{transform:translateY(-11px) rotate(-35deg)}}@keyframes dot{to{transform:translateY(-5px);opacity:.3}}@keyframes celebrate{35%{transform:translateY(-7px) rotate(-5deg)}70%{transform:translateY(-2px) rotate(5deg)}}
   @media(max-width:640px){:host{inset-inline:10px;inset-block-end:max(10px,env(safe-area-inset-bottom))}.panel{position:fixed;inset:auto 0 0;width:100%;height:min(84dvh,720px);border-radius:24px 24px 0 0}}
   @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+  .eye:before { transform:translate(var(--mimo-gaze-x,0px),var(--mimo-gaze-y,0px));transition:transform .14s ease-out }
+  .body,.hand { transition:rotate .35s ease,transform .3s ease }
+  .launcher:hover .body { rotate:-5deg }
+  .reaction-listening .body { rotate:-5deg }
+  .reaction-listening .eye:before { transform:translate(0,2px) }
+  .reaction-thinking .body { animation:ponder 2.3s ease-in-out infinite }
+  .reaction-thinking .h2 { transform:translate(-10px,-11px) rotate(-35deg) }
+  .reaction-thinking .eye:before { animation:thought-gaze 2.3s ease-in-out infinite }
+  .reaction-thinking .mouth { width:6px;height:4px;border:1.5px solid #5e3029;border-radius:50% }
+  .reaction-success .mouth { width:14px;height:8px;background:#5e3029 }
+  .reaction-error .body { rotate:6deg }
+  .reaction-error .mouth { border:0;border-top:2px solid #5e3029;border-radius:50% 50% 0 0 }
+  button:disabled { opacity:.5;cursor:wait }
+  @keyframes ponder { 0%,100% { rotate:-7deg;translate:0 0 } 50% { rotate:-3deg;translate:0 -2px } }
+  @keyframes thought-gaze { 0%,100% { transform:translate(-2px,-2px) } 50% { transform:translate(2px,-2px) } }
+  @media(prefers-reduced-motion:reduce){.eye:before{transform:none!important}}
 `;
 
 const mimo = (mini = false) => `<div class="mimo ${mini ? 'mini' : ''}" aria-hidden="true"><div class="antenna"></div><div class="body"><div class="eye e1"></div><div class="eye e2"></div><div class="mouth"></div></div><div class="hand h1"></div><div class="hand h2"></div><div class="thinking"><i></i><i></i><i></i></div></div>`;
@@ -39,6 +57,12 @@ export class AdaptiveAssistantElement extends HTMLElement {
   private reaction: AssistantReaction = 'idle';
   private conversationId?: string;
   private root: ShadowRoot;
+  private cleanupGaze?: () => void;
+  private reactionTimer?: ReturnType<typeof setTimeout>;
+  private completionTimer?: ReturnType<typeof setTimeout>;
+  private busy = false;
+  private focused = false;
+  private messages: Array<{ role: 'user' | 'assistant'; content: string }> = [];
 
   constructor() {
     super();
@@ -52,6 +76,14 @@ export class AdaptiveAssistantElement extends HTMLElement {
       this.configure({ endpoint, manifest: defaultManifest(assistantId) });
     }
     this.render();
+    this.cleanupGaze?.();
+    this.cleanupGaze = attachCharacterGaze(this.root, '.mimo');
+  }
+
+  disconnectedCallback() {
+    this.cleanupGaze?.();
+    clearTimeout(this.reactionTimer);
+    clearTimeout(this.completionTimer);
   }
 
   configure(config: AdaptiveAssistantConfig) {
@@ -61,8 +93,34 @@ export class AdaptiveAssistantElement extends HTMLElement {
   }
 
   setContext(context: AssistantPageContext) { if (this.config) this.config.context = context; }
-  open() { this.openState = true; this.reaction = 'greeting'; this.render(); this.emit('open'); }
-  close() { this.openState = false; this.reaction = 'idle'; this.render(); this.emit('close'); }
+  open() {
+    this.openState = true;
+    if (!this.root.querySelector('.shell')) this.render();
+    this.updateShell();
+    if (!this.busy) this.setReaction('greeting');
+    this.emit('open');
+  }
+  close() { this.openState = false; this.focused = false; this.updateShell(); this.emit('close'); }
+
+  private updateShell() {
+    this.root.querySelector('.shell')?.setAttribute('class', `shell ${this.openState ? 'open' : ''} reaction-${this.reaction}`);
+    this.root.querySelector('.launcher')?.setAttribute('aria-expanded', String(this.openState));
+    const status = this.root.querySelector('.status');
+    if (status) status.textContent = this.busy ? 'در حال آماده‌کردن پاسخ…' : this.reaction === 'listening' ? 'حواسم به شماست' : this.reaction === 'success' ? 'پاسخ آماده است' : this.reaction === 'error' ? 'دوباره تلاش کنیم؟' : 'دستیار هوشمند شما';
+    this.root.querySelectorAll<HTMLButtonElement>('.composer button, [data-prompt]').forEach((button) => { button.disabled = this.busy; });
+  }
+
+  private setReaction(next: AssistantReaction) {
+    clearTimeout(this.reactionTimer);
+    this.reaction = next;
+    this.updateShell();
+    if (next !== 'thinking' && next !== 'idle' && next !== 'listening') {
+      this.reactionTimer = setTimeout(() => {
+        this.reaction = this.focused ? 'listening' : 'idle';
+        this.updateShell();
+      }, next === 'error' ? 2500 : 1800);
+    }
+  }
 
   private emit(name: string, detail?: unknown) {
     this.dispatchEvent(new CustomEvent(`assistant:${name}`, { detail, bubbles: true, composed: true }));
@@ -84,33 +142,64 @@ export class AdaptiveAssistantElement extends HTMLElement {
     const manifest = this.config.manifest;
     const context = this.config.context ?? { route: location.pathname };
     const suggestions = resolveSuggestions(manifest, context, this.config.identity?.role).slice(0, 4);
-    this.root.innerHTML = `<style>${baseStyles}</style><div class="shell ${this.openState ? 'open' : ''} reaction-${this.reaction}"><section class="panel" role="dialog" aria-label="${manifest.name}"><header class="header">${mimo(true)}<div class="title"><strong>${manifest.characterName}</strong><span>دستیار هوشمند شما</span></div><button class="close" aria-label="بستن">×</button></header><div class="log"><div class="welcome"><strong>${manifest.greeting}</strong>${manifest.description ? `<br>${manifest.description}` : ''}</div><div class="suggestions">${suggestions.map((item) => `<button data-prompt="${encodeURIComponent(item.prompt)}">${item.icon || '✦'} &nbsp; ${item.label}</button>`).join('')}</div></div><form class="composer"><input aria-label="${manifest.inputPlaceholder}" placeholder="${manifest.inputPlaceholder}"><button aria-label="ارسال">←</button></form></section><button class="launcher" aria-label="باز کردن ${manifest.characterName}" aria-expanded="${this.openState}">${mimo()}</button></div>`;
+    clearTimeout(this.reactionTimer);
+    this.root.innerHTML = `<style>${baseStyles}</style><div class="shell ${this.openState ? 'open' : ''} reaction-${this.reaction}"><section class="panel" role="dialog" aria-label="${escapeHtml(manifest.name)}"><header class="header">${mimo(true)}<div class="title"><strong>${escapeHtml(manifest.characterName)}</strong><span class="status" role="status">دستیار هوشمند شما</span></div><button class="close" aria-label="بستن">×</button></header><div class="log"><div class="welcome"><strong>${escapeHtml(manifest.greeting)}</strong>${manifest.description ? `<br>${escapeHtml(manifest.description)}` : ''}</div><div class="suggestions">${suggestions.map((item) => `<button data-prompt="${encodeURIComponent(item.prompt)}">${escapeHtml(item.icon || '✦')} &nbsp; ${escapeHtml(item.label)}</button>`).join('')}</div></div><form class="composer"><input maxlength="4000" aria-label="${escapeHtml(manifest.inputPlaceholder)}" placeholder="${escapeHtml(manifest.inputPlaceholder)}"><button aria-label="ارسال">←</button></form></section><button class="launcher" aria-label="باز کردن ${escapeHtml(manifest.characterName)}" aria-expanded="${this.openState}">${mimo()}</button></div>`;
+    const log = this.root.querySelector('.log');
+    this.messages.forEach((message) => log?.insertAdjacentHTML('beforeend', `<div class="message ${message.role}">${escapeHtml(message.content)}</div>`));
+    this.updateShell();
+    const input = this.root.querySelector('input');
+    const listen = (active: boolean) => {
+      this.focused = active;
+      if (!this.busy) this.setReaction(active ? 'listening' : 'idle');
+    };
+    input?.addEventListener('focus', () => listen(true));
+    input?.addEventListener('input', () => listen(true));
+    input?.addEventListener('blur', () => listen(false));
+    this.root.querySelector('.shell')?.addEventListener('keydown', (event) => {
+      if ((event as KeyboardEvent).key === 'Escape') this.close();
+    });
     this.root.querySelector('.launcher')?.addEventListener('click', () => this.open());
     this.root.querySelector('.close')?.addEventListener('click', () => this.close());
     this.root.querySelectorAll<HTMLButtonElement>('[data-prompt]').forEach((button) => button.addEventListener('click', () => void this.send(decodeURIComponent(button.dataset.prompt || ''))));
     this.root.querySelector('form')?.addEventListener('submit', (event) => {
       event.preventDefault();
       const input = this.root.querySelector('input');
-      if (input?.value.trim()) { const value = input.value; input.value = ''; void this.send(value); }
+      if (!this.busy && input?.value.trim()) { const value = input.value; input.value = ''; void this.send(value); }
     });
   }
 
   private async send(message: string) {
-    if (!this.config || !this.transport) return;
-    const log = this.root.querySelector('.log');
-    log?.insertAdjacentHTML('beforeend', `<div class="message user">${escapeHtml(message)}</div>`);
-    this.reaction = 'thinking'; this.root.querySelector('.shell')?.classList.add('reaction-thinking');
+    if (!this.config || !this.transport || this.busy || !message.trim()) return;
+    this.busy = true;
+    clearTimeout(this.completionTimer);
+    const started = Date.now();
+    const addMessage = (role: 'user' | 'assistant', content: string) => {
+      this.messages.push({ role, content });
+      const log = this.root.querySelector('.log');
+      log?.insertAdjacentHTML('beforeend', `<div class="message ${role}">${escapeHtml(content)}</div>`);
+      log?.scrollTo({ top: log.scrollHeight, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    };
+    addMessage('user', message);
+    this.setReaction('thinking');
+    let result: AssistantReaction = 'success';
     try {
       const response = await this.transport.chat({ assistantId: this.config.manifest.assistantId, conversationId: this.conversationId, message, identity: this.config.identity, context: this.config.context ?? { route: location.pathname } });
       this.conversationId = response.conversationId;
-      log?.insertAdjacentHTML('beforeend', `<div class="message assistant">${escapeHtml(response.message.content)}</div>`);
-      this.reaction = 'success'; this.emit('message', response);
+      addMessage('assistant', response.message.content);
+      this.emit('message', response);
     } catch {
-      log?.insertAdjacentHTML('beforeend', `<div class="message assistant">ارتباط با سرویس برقرار نشد. لطفاً دوباره تلاش کنید.</div>`);
-      this.reaction = 'error';
+      addMessage('assistant', 'ارتباط با سرویس برقرار نشد. لطفاً دوباره تلاش کنید.');
+      result = 'error';
+    } finally {
+      this.busy = false;
+      if (this.isConnected) {
+        this.updateShell();
+        // Keep the thinking pose readable, without delaying the answer itself.
+        this.completionTimer = setTimeout(() => {
+          if (this.isConnected && !this.busy) this.setReaction(result);
+        }, Math.max(0, 650 - (Date.now() - started)));
+      }
     }
-    this.root.querySelector('.shell')?.setAttribute('class', `shell open reaction-${this.reaction}`);
-    log?.scrollTo({ top: log.scrollHeight, behavior: 'smooth' });
   }
 }
 

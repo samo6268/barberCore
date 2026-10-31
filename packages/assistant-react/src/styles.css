@@ -116,3 +116,26 @@
 @media (prefers-reduced-motion: reduce) {
   .aa-root *, .aa-root *::before, .aa-root *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
 }
+
+/* Reactive character: gaze is calculated locally, outside the chat payload. */
+.aa-mimo__body { rotate: var(--mimo-head-tilt, 0deg); transition: rotate .35s ease; }
+.aa-mimo__eye span { transform: translate(var(--mimo-gaze-x, 0px), var(--mimo-gaze-y, 0px)); transition: transform .14s ease-out; }
+.aa-launcher:hover .aa-mimo { --mimo-head-tilt: -5deg; }
+.aa-launcher:hover .aa-mimo__brow--left { transform: translateY(-2px) rotate(-9deg); }
+.aa-reaction--listening .aa-mimo__body { rotate: -5deg; }
+.aa-reaction--listening .aa-mimo__eye span { transform: translate(0, 2px); }
+.aa-reaction--listening .aa-mimo__brow { translate: 0 -2px; }
+.aa-reaction--thinking .aa-mimo__body { animation: aa-ponder 2.3s ease-in-out infinite; }
+.aa-reaction--thinking .aa-mimo__hand--right { transform: translate(-10px, -11px) rotate(-35deg); }
+.aa-reaction--thinking .aa-mimo__eye span { animation: aa-thought-gaze 2.3s ease-in-out infinite; }
+.aa-reaction--thinking .aa-mimo__mouth { width: 6px; height: 4px; border-radius: 50%; border: 1.5px solid #5e3029; }
+.aa-reaction--success .aa-mimo__eye { border-radius: 50% 50% 45% 45%; height: 15px; }
+.aa-reaction--success .aa-mimo__mouth { width: 14px; height: 8px; background: #5e3029; }
+.aa-reaction--error .aa-mimo__body { rotate: 6deg; }
+.aa-mimo__hand { transition: transform .3s ease; }
+.aa-suggestions button:disabled { opacity: .5; cursor: wait; }
+@keyframes aa-ponder { 0%, 100% { rotate: -7deg; translate: 0 0; } 50% { rotate: -3deg; translate: 0 -2px; } }
+@keyframes aa-thought-gaze { 0%, 100% { transform: translate(-2px, -2px); } 50% { transform: translate(2px, -2px); } }
+@media (prefers-reduced-motion: reduce) {
+  .aa-mimo__eye span { transform: none !important; }
+}
