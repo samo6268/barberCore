@@ -1,7 +1,19 @@
-# Add this override after your existing compose file; do not replace server-specific fixes.
+# Merge after the server's existing compose file. Existing ports/volumes/env stay intact.
 services:
   api:
+    image: parnegarin-api:mimo
+    build:
+      context: ../..
+      dockerfile: infra/docker/mimo-api.Dockerfile
     environment:
       ASSISTANT_DAILY_TURN_LIMIT: ${ASSISTANT_DAILY_TURN_LIMIT:-60}
       ASSISTANT_PRICE_UNIT: ${ASSISTANT_PRICE_UNIT:-IRR}
       ASSISTANT_BUSINESSES_JSON: ${ASSISTANT_BUSINESSES_JSON:-}
+  web:
+    image: parnegarin-web:mimo
+    build:
+      context: ../..
+      dockerfile: infra/docker/mimo-web.Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-/api/v1}
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-${APP_URL:-http://localhost:3000}}
