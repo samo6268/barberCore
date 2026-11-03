@@ -101,7 +101,7 @@ export class InternalKnowledgeProvider implements AssistantProvider {
     const businessId = request.businessId || 'parnegarin';
     const business = this.businesses.get(businessId);
     const original =
-      request.history.filter((message) => message.role === 'user').at(-1)?.content || '';
+      request.history.filter((message) => message.role === 'user').slice(-1)[0]?.content || '';
     const message = normalizePersian(original);
     const state: LocalAssistantState = { ...request.state };
     const sources: AssistantSource[] = [];

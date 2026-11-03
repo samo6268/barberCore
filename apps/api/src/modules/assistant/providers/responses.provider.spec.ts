@@ -73,7 +73,7 @@ describe('Responses model adapter', () => {
     const input = request();
     await provider().respond(input);
     expect(input.executeTool).not.toHaveBeenCalled();
-    expect(post.mock.calls[1][1].input.at(-1).output).toContain('error');
+    expect(post.mock.calls[1][1].input.slice(-1)[0].output).toContain('error');
   });
   it('bounds repeated model tool calls', async () => {
     post.mockResolvedValue({

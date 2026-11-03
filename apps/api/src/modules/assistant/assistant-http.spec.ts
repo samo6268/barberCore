@@ -72,7 +72,7 @@ describe('Assistant HTTP validation and optional authentication', () => {
       payload: { ...body, identity: { id: 'victim', role: 'SUPER_ADMIN' } },
     });
     expect(res.statusCode).toBe(201);
-    expect(service.chat.mock.calls.at(-1)?.[1]).toBeUndefined();
+    expect(service.chat.mock.calls.slice(-1)[0]?.[1]).toBeUndefined();
   });
   it('rejects a malformed token instead of downgrading to a guest', async () => {
     const before = service.chat.mock.calls.length;
@@ -126,6 +126,6 @@ describe('Assistant HTTP validation and optional authentication', () => {
       payload: body,
     });
     expect(res.statusCode).toBe(201);
-    expect(service.chat.mock.calls.at(-1)?.[1]?.sub).toBe('verified-user');
+    expect(service.chat.mock.calls.slice(-1)[0]?.[1]?.sub).toBe('verified-user');
   });
 });

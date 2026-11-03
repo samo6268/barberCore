@@ -68,7 +68,7 @@ describe('Responses HTTP wire contract (local provider stub, no paid requests)',
     expect(executeTool).toHaveBeenCalledWith('read_data', { query: 'تهران' });
     expect(bodies).toHaveLength(2);
     expect(bodies[0].store).toBe(false);
-    expect(bodies[1].input.at(-1)).toMatchObject({
+    expect(bodies[1].input.slice(-1)[0]).toMatchObject({
       type: 'function_call_output',
       call_id: 'call-real-http',
     });
