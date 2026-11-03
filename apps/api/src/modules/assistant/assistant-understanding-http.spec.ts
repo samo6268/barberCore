@@ -14,7 +14,7 @@ describe('Native Ollama HTTP contract without external inference', () => {
         received = { url: req.url, body: JSON.parse(body) };
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify({ message: { role: 'assistant', content: JSON.stringify({
-          action: 'search', articleIds: [], workflowId: '', city: 'تهران', service: 'کوتاهی', choice: 0, date: '', gender: '',
+          action: 'search',
         }), tool_calls: [{ function: { name: 'delete_booking', arguments: {} } }] }, done: true }));
       });
     });

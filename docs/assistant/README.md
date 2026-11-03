@@ -1,5 +1,7 @@
 # Adaptive Assistant — Mimo
 
+Latest inference correction: [GROUNDED_INFERENCE_FIX.md](./GROUNDED_INFERENCE_FIX.md). Model output now selects only intent and registered guidance IDs; domain query values are grounded in user text/state. The rules default is unchanged.
+
 Adaptive Assistant is a framework-neutral, multi-tenant assistant plugin. Parnegarin is its first reference implementation.
 
 Current upgrade: see [CONTEXTUAL_ASSISTANT_REVIEW.md](./CONTEXTUAL_ASSISTANT_REVIEW.md) for workflow guidance, explicit page context and optional self-hosted Ollama understanding. The default remains rules mode; no OpenAI service is selected.

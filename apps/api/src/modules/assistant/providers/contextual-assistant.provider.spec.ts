@@ -87,4 +87,30 @@ describe('Grounded semantic routing', () => {
     await f.provider.respond(f.r);
     expect(f.r.executeTool).toHaveBeenCalledWith('search_salons', expect.objectContaining({ gender: null }));
   });
+  it('answers the real haircut discovery query through live search without waiting for or trusting the model', async () => {
+    const f = fixture('search', { city: 'تهران', service: 'پوست', date: 'today', choice: 1, gender: 'ALL' });
+    f.r.history = [{ role: 'user', content: 'تهران هستم، موهام رو کجا کوتاه کنم؟' }];
+    (f.r.executeTool as jest.Mock).mockResolvedValue({ data: { total: 0, salons: [] } });
+    await f.provider.respond(f.r);
+    expect(f.understanding.plan).not.toHaveBeenCalled();
+    expect(f.r.executeTool).toHaveBeenCalledTimes(1);
+    expect(f.r.executeTool).toHaveBeenCalledWith('search_salons', expect.objectContaining({ city: 'تهران', service: 'کوتاهی', gender: null }));
+  });
+  it('does not guess a replacement for a negated service in direct discovery', async () => {
+    const f = fixture('search');
+    f.r.history = [{ role: 'user', content: 'تهران کوتاهی نمیخوام کجا برم؟' }];
+    const result = await f.provider.respond(f.r);
+    expect(result.content).toContain('صریح');
+    expect(f.r.executeTool).not.toHaveBeenCalled();
+    expect(f.understanding.plan).not.toHaveBeenCalled();
+  });
+  it('answers colloquial cancellation guidance from the actual policy without inference or cancellation tools', async () => {
+    const f = fixture('search');
+    f.r.history = [{ role: 'user', content: 'اگه نتونم برم، چجوری نوبتم رو کنسل کنم؟' }];
+    const result = await f.provider.respond(f.r);
+    expect(result.citations?.[0].url).toBe('/profile/bookings');
+    expect(result.content).toContain('سیاست منتشرشده');
+    expect(f.r.executeTool).not.toHaveBeenCalled();
+    expect(f.understanding.plan).not.toHaveBeenCalled();
+  });
 });

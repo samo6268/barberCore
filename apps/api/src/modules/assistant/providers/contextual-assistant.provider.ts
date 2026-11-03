@@ -3,6 +3,7 @@ import { AssistantBusinessService } from '../assistant-business.service';
 import { AssistantWorkflowService } from '../assistant-workflow.service';
 import { AssistantUnderstandingService, type UnderstandingPlan } from '../assistant-understanding.service';
 import { hasPhrase, normalizePersian } from '../persian-text';
+import { groundAssistantSlots, isExplicitSalonDiscovery } from '../assistant-grounding';
 import type { ModelRequest } from '../assistant.types';
 import { InternalKnowledgeProvider } from './internal-knowledge.provider';
 import type { AssistantProvider, ProviderResult } from './assistant-provider';
@@ -26,9 +27,25 @@ export class ContextualAssistantProvider implements AssistantProvider {
     if (guide) return guide;
     const business = this.businesses.get(request.businessId || 'parnegarin');
     const message = request.history.filter(m => m.role === 'user').slice(-1)[0]?.content || '';
+    if (business.parnegarinTools && /(?:لغو|کنسل|تغییر).*(?:نوبت|رزرو)|(?:نوبت|رزرو).*(?:لغو|کنسل)/.test(normalizePersian(message))) {
+      const article = business.knowledge.find(article => article.id === 'cancellation');
+      if (article) return { content: `${article.title}\n${article.text}`,
+        citations: [{ title: article.title, url: article.path }], state: request.state };
+    }
     if (business.parnegarinTools && /مقایسه|کدوم.*(?:بهتر|ارزون|ارزان)|فرق.*(?:سالن|گزینه)/.test(normalizePersian(message)))
       return this.compare(request);
     if (/^(سلام|درود|ممنون|مرسی|خداحافظ)$/.test(normalizePersian(message))) return this.internal.respond(request);
+    if (business.parnegarinTools && isExplicitSalonDiscovery(request)) {
+      const { ambiguous, ...slots } = groundAssistantSlots(request);
+      if (ambiguous) return { content: 'برای جست‌وجوی دقیق، یک شهر و یک خدمت مشخص کنید. اگر انتخاب قبلی را نمی‌خواهید، جایگزین موردنظرتان را صریح بگویید.', state: request.state };
+      if (slots.city && slots.service) {
+        const canonical = this.command({ action: 'search', articleIds: [], workflowId: '', ...slots }, message)!;
+        const history = [...request.history];
+        for (let i = history.length - 1; i >= 0; i--) if (history[i].role === 'user') { history[i] = { role: 'user', content: canonical }; break; }
+        return this.internal.respond({ ...request, history,
+          state: slots.gender === 'ALL' ? { ...request.state, gender: undefined } : request.state });
+      }
+    }
     const plan = await this.understanding.plan(request, business.knowledge.map(({ id, title }) => ({ id, title })), this.workflows.catalog(business.assistantId));
     if (!plan) return this.internal.respond(request);
     if (plan.action === 'compare' && business.parnegarinTools) return this.compare(request);
