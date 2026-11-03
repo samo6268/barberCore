@@ -15,9 +15,28 @@ export interface AssistantBusiness {
   description: string;
   knowledge: KnowledgeArticle[];
   parnegarinTools: boolean;
+  workflows?: BusinessWorkflow[];
+}
+export interface BusinessWorkflow {
+  id: string;
+  title: string;
+  path: string;
+  paths: string[];
+  note?: string;
+  steps: Array<{ id: string; title: string; instruction: string }>;
 }
 
 const articles: KnowledgeArticle[] = [
+  {
+    id: 'no-availability', title: 'چرا وقت آزاد پیدا نمی‌کنم؟', path: '/salons',
+    keywords: ['وقت نیست', 'وقت خالی نیست', 'زمان آزاد ندارم', 'هیچ ساعتی', 'وقت نمایش داده نمی شود'],
+    text: 'اول پیام صفحه را بررسی کنید: خطای دریافت اطلاعات با نبود وقت آزاد متفاوت است. سپس خدمت، روز و متخصص را دوباره بررسی کنید. اگر مدیر سالن هستید، فعال‌بودن خدمت، خدمات قابل ارائه متخصص، ساعات کاری، استراحت، مرخصی و تداخل نوبت‌ها را در پنل بررسی کنید. برای اطمینان از وضعیت واقعی، زمان‌های آزاد را دوباره دریافت کنید؛ میمو علت قطعی را بدون داده معتبر اعلام نمی‌کند.',
+  },
+  {
+    id: 'calendar', title: 'انتخاب تاریخ و ساعت رزرو', path: '/salons',
+    keywords: ['تقویم', 'تاریخ شمسی', 'تاریخ فارسی', 'انتخاب ساعت', 'روز رزرو'],
+    text: 'روز را از تقویم فارسی همان صفحه انتخاب کنید و بعد ساعت آزاد را بزنید. برای استعلام در گفتگو می‌توانید «امروز»، «فردا» یا تاریخ میلادی YYYY-MM-DD بگویید. تاریخ نمایش‌داده‌شده فارسی با مقدار تاریخ ارسالی به سرویس یک قالب ندارد؛ عدد ماه شمسی را به‌جای ماه میلادی وارد نکنید. تغییر خدمت، متخصص یا روز نیازمند بررسی دوباره ساعت آزاد است.',
+  },
   {
     id: 'intro',
     title: 'پرنگارین چیست؟',
@@ -137,6 +156,22 @@ export class AssistantBusinessService {
       knowledge: articles,
       parnegarinTools: true,
     });
+    this.businesses.set('parnegarin-admin', {
+      assistantId: 'parnegarin-admin', name: 'پنل مدیریت پرنگارین',
+      description: 'راهنمای پنل مدیریت؛ ابزارهای خصوصی ادمین متصل نیستند', parnegarinTools: false,
+      knowledge: [{ id: 'admin-data', title: 'داده‌ها و عملیات پنل مدیریت', path: '/dashboard',
+        keywords: ['آمار', 'گزارش', 'مالی', 'کاربر', 'مدیریت', 'ورود', 'دسترسی', 'چاپ', 'ادمین'],
+        text: 'این نسخه پنل ادمین شامل صفحات نمایشی است؛ ورود نمایشی و اعداد نمونه، مجوز واقعی یا آمار عملیاتی نیستند. میمو فقط درباره مسیرهای همین پنل راهنمایی می‌کند و به اطلاعات خصوصی، تأیید محتوا یا تغییر کاربران متصل نیست. برای گزارش قطعی باید سرویس واقعی و احراز هویت ادمین متصل و اعتبارسنجی شوند.' }],
+      workflows: [{ id: 'admin-navigation', title: 'راهنمای پنل مدیریت', path: '/dashboard',
+        paths: ['/dashboard', '/users', '/users/*', '/customers', '/salons', '/financial', '/courses', '/media', '/settings', '/templates', '/content/*', '/moderation/*', '/login', '/'],
+        note: 'داده‌ها و ورود این نسخه پنل نمایشی‌اند؛ میمو آن‌ها را آمار یا مجوز واقعی در نظر نمی‌گیرد.',
+        steps: [
+          { id: 'section', title: 'انتخاب بخش', instruction: 'از منوی پنل، کاربران، سالن‌ها، مالی، محتوا یا بررسی درخواست‌ها را متناسب با کار خود انتخاب کنید.' },
+          { id: 'review', title: 'بررسی جزئیات', instruction: 'فیلترها و جزئیات موردنظر را در همان بخش بررسی کنید. اعداد و ردیف‌های نمونه را مبنای تصمیم مالی یا عملیاتی قرار ندهید.' },
+          { id: 'action', title: 'بررسی اتصال واقعی', instruction: 'تا اتصال به سرویس واقعی و احراز هویت معتبر انجام نشده، تغییر نمایشی را ذخیره قطعی یا عملیات موفق حساب نکنید. دستیار نیز عملیاتی روی داده‌های مدیریتی اجرا نمی‌کند.' },
+        ],
+      }],
+    });
     const extra = config.get<string>('ASSISTANT_BUSINESSES_JSON');
     if (extra) {
       const businesses: unknown = JSON.parse(extra);
@@ -147,7 +182,7 @@ export class AssistantBusinessService {
           !item ||
           typeof item.assistantId !== 'string' ||
           !/^[a-z0-9-]{1,64}$/.test(item.assistantId) ||
-          item.assistantId === 'parnegarin' ||
+          this.businesses.has(item.assistantId) ||
           typeof item.name !== 'string' ||
           !Array.isArray(item.knowledge) ||
           item.knowledge.length > 100 ||
@@ -166,9 +201,24 @@ export class AssistantBusinessService {
         ) {
           throw new Error('Invalid assistant business configuration');
         }
+        if (item.workflows !== undefined && !this.validWorkflows(item.workflows))
+          throw new Error('Invalid assistant workflow configuration');
         this.businesses.set(item.assistantId, { ...item, parnegarinTools: false });
       }
     }
+  }
+  private validWorkflows(value: unknown): value is BusinessWorkflow[] {
+    const identifier = (s: unknown) => typeof s === 'string' && /^[a-z][a-z0-9_-]{0,59}$/.test(s);
+    const path = (s: unknown) => typeof s === 'string' && s.length <= 300 && /^\/(?![\/\\])[^\\\u0000-\u0020]*$/.test(s);
+    if (!Array.isArray(value) || value.length > 30) return false;
+    return new Set(value.map(flow => flow?.id)).size === value.length && value.every(flow =>
+      flow && identifier(flow.id) && typeof flow.title === 'string' && flow.title.length <= 120 && path(flow.path)
+      && Array.isArray(flow.paths) && flow.paths.length > 0 && flow.paths.length <= 40 && flow.paths.every(path)
+      && (flow.note === undefined || (typeof flow.note === 'string' && flow.note.length <= 1500))
+      && Array.isArray(flow.steps) && flow.steps.length > 0 && flow.steps.length <= 12
+      && new Set(flow.steps.map((s: { id?: string }) => s?.id)).size === flow.steps.length
+      && flow.steps.every((s: { id?: string; title?: string; instruction?: string }) => s && identifier(s.id)
+        && typeof s.title === 'string' && s.title.length <= 120 && typeof s.instruction === 'string' && s.instruction.length <= 1500));
   }
   get(id: string): AssistantBusiness {
     const business = this.businesses.get(id);

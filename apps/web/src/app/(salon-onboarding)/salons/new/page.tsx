@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic';
 import { CheckCircle, ChevronLeft, ChevronRight } from '@barbercore/ui/icons';
 import { ProvinceCitySelect } from '@/components/shared/province-city-select';
 import { getIranCityCoordinates } from '@/lib/iran-locations';
+import { useMimoWorkflow } from '@/components/assistant/use-mimo-workflow';
 
 const MapAreaPicker = dynamic(
   () => import('@/components/marketplace/map-area-picker').then((module) => module.MapAreaPicker),
@@ -111,6 +112,19 @@ export default function NewSalonPage() {
 
   // Step 4
   const [plan, setPlan] = useState('pro');
+  useMimoWorkflow({
+    id: 'salon-onboarding', stepId: ['info', 'owner', 'hours', 'plan'][step],
+    issues: step === 0 ? [
+      ...(!salonName ? ['missing_name'] : []),
+      ...(!province ? ['missing_province'] : []),
+      ...(province && !city ? ['missing_city'] : []),
+      ...(!locationSelected ? ['missing_location'] : []),
+    ] : step === 1 ? [
+      ...(!ownerName ? ['missing_owner'] : []),
+      ...(!phone ? ['missing_phone'] : []),
+      ...(!email ? ['missing_email'] : []),
+    ] : step === 2 && !workDays.length ? ['missing_hours'] : [],
+  });
 
   function validate(): boolean {
     const errs: string[] = [];

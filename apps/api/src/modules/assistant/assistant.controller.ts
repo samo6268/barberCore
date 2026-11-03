@@ -23,7 +23,7 @@ export class AssistantController {
     medium: { limit: 5, ttl: 10000 },
     long: { limit: 20, ttl: 60000 },
   })
-  @ApiOperation({ summary: 'پاسخ مدل واقعی با منابع زنده و کنترل دسترسی' })
+  @ApiOperation({ summary: 'راهنمای زمینه‌مند و پاسخ مستند با ابزارهای مجاز و مدل محلی اختیاری' })
   chat(@Body() dto: AssistantChatDto, @CurrentUser() user?: JwtPayload) {
     return this.service.chat(dto, user);
   }

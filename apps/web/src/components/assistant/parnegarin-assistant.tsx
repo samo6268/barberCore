@@ -1,8 +1,8 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { type AssistantManifest } from '@adaptive-assistant/core';
+import { getAssistantWorkflow, subscribeAssistantWorkflow, type AssistantWorkflowContext, type AssistantManifest } from '@adaptive-assistant/core';
 import { AssistantProvider, MimoAssistant } from '@adaptive-assistant/react';
 import { useAuthStore } from '@/store/auth.store';
 import { createParnegarinAssistantTransport } from './assistant-transport';
@@ -13,15 +13,19 @@ const manifest: AssistantManifest = {
   name: 'همراه پرنگارین',
   characterName: 'میمو',
   description:
-    'از راهنمای داخلی سامانه و اطلاعات مجاز سالن‌ها کمک می‌گیرم؛ سؤال را کوتاه و مشخص بپرسید.',
+    'برای انتخاب خدمات، اطلاعات نوبت‌ها و راهنمای قدم‌به‌قدم همین صفحه کنار شما هستم.',
   locale: 'fa-IR',
   direction: 'rtl',
   greeting: 'سلام، من میمو هستم 👋',
   inputPlaceholder: 'از میمو بپرسید…',
   disclosure:
-    'راهنمای داخلی بدون سرویس مدل خارجی؛ پاسخ از دانش سامانه و داده‌های مجاز است. رزرو و پرداخت انجام نمی‌دهم.',
+    'پاسخ از راهنمای سامانه و داده‌های مجاز است؛ ثبت، پرداخت و تغییرات را در صفحه مربوط تأیید کنید.',
   vocabulary: { provider: 'سالن یا مرکز خدمات', operator: 'متخصص', order: 'نوبت' },
   suggestions: [
+    {
+      id: 'page-help-first', label: 'الان چه کار کنم؟',
+      prompt: 'در این صفحه الان چه کار کنم؟', icon: '?',
+    },
     {
       id: 'home-find',
       label: 'پیداکردن خدمت مناسب',
@@ -52,8 +56,8 @@ const manifest: AssistantManifest = {
     },
     {
       id: 'booking-review',
-      label: 'مرور انتخاب‌های رزرو',
-      prompt: 'انتخاب‌های این رزرو را برایم خلاصه کن',
+      label: 'مرحله فعلی رزرو',
+      prompt: 'الان در این مرحله رزرو چه کار کنم؟',
       icon: '✓',
       routes: ['/salons/'],
     },
@@ -74,8 +78,8 @@ const manifest: AssistantManifest = {
     },
     {
       id: 'owner-empty-slots',
-      label: 'بازه‌های خالی قابل فروش',
-      prompt: 'بازه‌های خالی برنامه را بررسی کن',
+      label: 'آماده‌سازی رزرو آنلاین',
+      prompt: 'برای آماده‌کردن رزرو آنلاین قدم‌به‌قدم راهنمایی کن',
       icon: '◫',
       routes: ['/dashboard'],
       roles: ['SALON_OWNER'],
@@ -96,12 +100,6 @@ const manifest: AssistantManifest = {
       routes: ['/staff'],
       roles: ['STAFF'],
     },
-    {
-      id: 'page-help',
-      label: 'راهنمای این صفحه',
-      prompt: 'در این صفحه چه کارهایی می‌توانم انجام بدهم؟',
-      icon: '?',
-    },
   ],
 };
 
@@ -109,14 +107,22 @@ export function ParnegarinAssistant() {
   const pathname = usePathname() || '/';
   const user = useAuthStore((state) => state.user);
   const transport = useMemo(createParnegarinAssistantTransport, []);
+  const [workflow, setWorkflow] = useState<AssistantWorkflowContext>();
+  useEffect(() => {
+    const sync = () => setWorkflow(getAssistantWorkflow(pathname));
+    const unsubscribe = subscribeAssistantWorkflow(sync);
+    sync();
+    return unsubscribe;
+  }, [pathname]);
   const context = useMemo(
     () => ({
       route: pathname,
       section: sectionFor(pathname),
       entityType: pathname.includes('/salons/') ? 'salon' : undefined,
       entityId: pathname.match(/\/salons\/([^/]+)/)?.[1],
+      workflow,
     }),
-    [pathname],
+    [pathname, workflow],
   );
   const identity = useMemo(
     () =>

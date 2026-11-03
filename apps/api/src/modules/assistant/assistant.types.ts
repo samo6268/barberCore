@@ -29,7 +29,7 @@ export interface ModelToolResult {
 export interface ModelRequest {
   businessId?: string;
   actor?: AssistantActor;
-  page?: { route: string; entityId?: string };
+  page?: { route: string; entityId?: string; workflow?: WorkflowContext };
   state?: LocalAssistantState;
   instructions: string;
   history: ModelMessage[];
@@ -38,6 +38,7 @@ export interface ModelRequest {
 }
 
 export interface LocalAssistantState {
+  guide?: { id: string; step: number; route: string };
   intent?: 'search' | 'details' | 'availability' | 'owner' | 'staff';
   city?: string;
   service?: string;
@@ -48,4 +49,21 @@ export interface LocalAssistantState {
   serviceIds?: string[];
   date?: string;
   pending?: 'city' | 'salon' | 'service' | 'date';
+}
+
+/** UI hints only. Never used to authorize a request or to assert a database write. */
+export interface WorkflowContext {
+  id: string;
+  stepId?: string;
+  completed?: string[];
+  issues?: string[];
+}
+export interface AssistantGuide {
+  id: string;
+  title: string;
+  currentStep: number;
+  totalSteps: number;
+  steps: Array<{ id: string; title: string; current: boolean }>;
+  href?: string;
+  source: 'page-state' | 'guide';
 }

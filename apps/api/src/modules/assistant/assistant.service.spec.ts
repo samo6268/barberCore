@@ -17,6 +17,7 @@ function fixture() {
   const businesses = new AssistantBusinessService(new ConfigService());
   const tools = { definitions: jest.fn(() => []), execute: jest.fn() };
   const sessions = {
+    healthy: jest.fn().mockResolvedValue(true),
     principal: jest.fn(() => ({ scope: 'test-scope', sessionToken: 'signed-guest' })),
     start: jest.fn().mockResolvedValue({
       id: 'conversation',
@@ -52,6 +53,11 @@ const dto = {
   identity: { id: 'forged', role: 'SUPER_ADMIN', tenantId: 'another-salon' },
 };
 describe('Assistant gateway', () => {
+  it('does not report ready when the conversation store is unavailable', async () => {
+    const f = fixture();
+    f.sessions.healthy.mockResolvedValueOnce(false);
+    expect((await f.service.status()).ready).toBe(false);
+  });
   it('ignores forged browser identity and includes the server conversation history', async () => {
     const f = fixture();
     await f.service.chat(dto);

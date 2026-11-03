@@ -27,7 +27,7 @@ export class AssistantSessionService implements OnModuleDestroy {
       maxRetriesPerRequest: 1,
       connectTimeout: 3000,
       commandTimeout: 5000,
-      retryStrategy: (attempt) => (attempt < 2 ? 200 : null),
+      retryStrategy: (attempt) => Math.min(10000, 300 * attempt),
     });
     this.redis.on('error', () => {});
     this.secret = config.getOrThrow<string>('JWT_ACCESS_SECRET');
@@ -38,6 +38,16 @@ export class AssistantSessionService implements OnModuleDestroy {
   }
   onModuleDestroy() {
     this.redis.disconnect();
+  }
+  async healthy(): Promise<boolean> {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      return await Promise.race([
+        this.redis.ping().then(value => value === 'PONG'),
+        new Promise<boolean>(resolve => { timer = setTimeout(() => resolve(false), 2000); }),
+      ]);
+    } catch { return false; }
+    finally { if (timer) clearTimeout(timer); }
   }
   private sign(payload: string) {
     return createHmac('sha256', this.secret)

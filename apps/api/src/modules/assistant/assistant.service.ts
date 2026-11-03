@@ -27,14 +27,17 @@ export class AssistantService {
     private readonly sessions: AssistantSessionService,
     private readonly prisma: PrismaService,
   ) {}
-  status() {
+  async status() {
+    const conversationStoreReady = await this.sessions.healthy();
     return {
-      ready: this.provider.isReady(),
+      ready: this.provider.isReady() && conversationStoreReady,
+      conversationStoreReady,
       provider: this.provider.name,
       mode: 'read-only',
       privateDataRequiresLogin: true,
       externalModel: false,
       requiresModelKey: false,
+      ...this.provider.capabilities?.(),
     };
   }
   getManifest(assistantId: string) {
@@ -49,7 +52,7 @@ export class AssistantService {
       greeting: 'سلام، من میمو هستم؛ چطور می‌توانم کمکتان کنم؟',
       inputPlaceholder: 'از میمو بپرسید…',
       disclosure:
-        'پاسخ از دانش داخلی و داده‌های مجاز همین سامانه است؛ سرویس مدل خارجی استفاده نمی‌شود.',
+        'پاسخ از راهنمای سامانه و اطلاعات مجاز است؛ عملیات نهایی را در صفحه مربوط تأیید می‌کنید.',
       suggestions: [],
     };
   }
@@ -84,7 +87,10 @@ export class AssistantService {
         instructions: '',
         businessId: business.assistantId,
         actor,
-        page: { route: dto.context.route.split('?')[0], entityId: dto.context.entityId },
+        page: {
+          route: dto.context.route.split(/[?#]/)[0], entityId: dto.context.entityId,
+          workflow: dto.context.workflow,
+        },
         state: session.state,
         history,
         tools: this.tools.definitions(business.assistantId, actor),
@@ -119,7 +125,9 @@ export class AssistantService {
           content: result.content,
           createdAt: new Date().toISOString(),
           citations: result.citations ?? [],
+          guide: result.guide,
         },
+        suggestions: result.suggestions,
       };
     } finally {
       await this.sessions

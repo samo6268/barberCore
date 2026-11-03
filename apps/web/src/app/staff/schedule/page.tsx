@@ -14,6 +14,7 @@ import { formatTime, toJalali } from '@/lib/utils';
 import { useStaffPortal } from '@/components/staff/staff-shell';
 import { PersianDateTimePicker } from '@/components/shared/persian-date-picker';
 import { EmptyState, StaffPageHeader, StaffPageLoading } from '@/components/staff/staff-ui';
+import { useMimoWorkflow } from '@/components/assistant/use-mimo-workflow';
 
 const DAYS = [
   { key: 'SATURDAY', label: 'شنبه' },
@@ -43,6 +44,18 @@ export default function StaffSchedulePage() {
   const [days, setDays] = useState<WorkingDay[]>([]);
   const [showTimeOff, setShowTimeOff] = useState(false);
   const [timeOff, setTimeOff] = useState({ startsAt: '', endsAt: '', reason: '' });
+  const invalidHours = days.some(day => day.isOpen && (
+    day.closeTime <= day.openTime || (!!day.breakStart !== !!day.breakEnd) ||
+    (day.breakStart && day.breakEnd && (day.breakStart < day.openTime || day.breakEnd > day.closeTime || day.breakEnd <= day.breakStart))
+  ));
+  useMimoWorkflow({
+    id: 'staff-schedule', stepId: showTimeOff ? 'timeoff' : 'hours',
+    issues: [
+      ...(invalidHours ? ['invalid_hours'] : []),
+      ...(showTimeOff && (!timeOff.startsAt || !timeOff.endsAt || timeOff.endsAt <= timeOff.startsAt) ? ['invalid_timeoff'] : []),
+      ...(updateSchedule.isError || createTimeOff.isError || deleteTimeOff.isError ? ['save_failed'] : []),
+    ],
+  });
 
   useEffect(() => {
     if (!data) return;

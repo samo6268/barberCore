@@ -12,6 +12,9 @@ import { AssistantSessionService } from './assistant-session.service';
 import { AssistantAuthGuard } from './assistant-auth.guard';
 import { ASSISTANT_PROVIDER } from './providers/assistant-provider';
 import { InternalKnowledgeProvider } from './providers/internal-knowledge.provider';
+import { ContextualAssistantProvider } from './providers/contextual-assistant.provider';
+import { AssistantWorkflowService } from './assistant-workflow.service';
+import { AssistantUnderstandingService } from './assistant-understanding.service';
 @Module({
   imports: [AuthModule, MarketplaceModule, BookingModule, SalonsModule, StaffModule],
   controllers: [AssistantController],
@@ -22,7 +25,10 @@ import { InternalKnowledgeProvider } from './providers/internal-knowledge.provid
     AssistantSessionService,
     AssistantAuthGuard,
     InternalKnowledgeProvider,
-    { provide: ASSISTANT_PROVIDER, useExisting: InternalKnowledgeProvider },
+    AssistantWorkflowService,
+    AssistantUnderstandingService,
+    ContextualAssistantProvider,
+    { provide: ASSISTANT_PROVIDER, useExisting: ContextualAssistantProvider },
   ],
   exports: [AssistantService],
 })

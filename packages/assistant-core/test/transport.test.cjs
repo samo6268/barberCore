@@ -13,6 +13,35 @@ new Function('require', 'exports', 'module', code)(
   scope,
 );
 const { HttpAssistantTransport, AssistantTransportError, safeAssistantUrl } = scope.exports;
+const { publishAssistantWorkflow, getAssistantWorkflow, subscribeAssistantWorkflow, sanitizeWorkflowContext } = scope.exports;
+
+test('workflow hints contain only identifiers and never raw form values', () => {
+  const clean = sanitizeWorkflowContext({
+    id: 'booking', stepId: 'date', completed: ['service'], issues: ['missing_date'],
+    phone: '09121234567', otp: '123456', metadata: { password: 'secret' },
+  });
+  assert.deepEqual(clean, { id: 'booking', stepId: 'date', completed: ['service'], issues: ['missing_date'] });
+  assert.throws(() => sanitizeWorkflowContext({ id: '<script>' }));
+});
+
+test('page context is route-scoped and an older publisher cannot erase a newer snapshot', () => {
+  const original = global.window;
+  global.window = new EventTarget();
+  let events = 0;
+  const unsubscribe = subscribeAssistantWorkflow(() => events++);
+  try {
+    const first = publishAssistantWorkflow('/salons/a/book', { id: 'booking', stepId: 'service' });
+    assert.equal(getAssistantWorkflow('/salons/a/book').stepId, 'service');
+    const second = publishAssistantWorkflow('/salons/a/book', { id: 'booking', stepId: 'date' });
+    first();
+    assert.equal(getAssistantWorkflow('/salons/a/book').stepId, 'date');
+    assert.equal(getAssistantWorkflow('/salons/b/book'), undefined);
+    second();
+    assert.equal(getAssistantWorkflow('/salons/a/book'), undefined);
+    assert.equal(events, 3);
+    assert.throws(() => publishAssistantWorkflow('//other.example', { id: 'booking' }));
+  } finally { unsubscribe(); global.window = original; }
+});
 
 test('citations allow only same-origin paths, never script or external URLs', () => {
   for (const url of [

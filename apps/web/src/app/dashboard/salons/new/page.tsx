@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 import { ArrowLeft, CheckCircle2, Scissors, Sparkles, UserRound } from '@barbercore/ui/icons';
 import { ProvinceCitySelect } from '@/components/shared/province-city-select';
 import { getIranCityCoordinates } from '@/lib/iran-locations';
+import { useMimoWorkflow } from '@/components/assistant/use-mimo-workflow';
 
 const MapAreaPicker = dynamic(
   () => import('@/components/marketplace/map-area-picker').then((module) => module.MapAreaPicker),
@@ -35,6 +36,20 @@ export default function NewSalonPage() {
   });
   const [locationCenter, setLocationCenter] = useState<[number, number]>([35.7219, 51.3347]);
   const [locationSelected, setLocationSelected] = useState(false);
+  useMimoWorkflow({
+    id: 'salon-create', stepId: ['info', 'location', 'review'][step],
+    completed: [
+      ...(form.name.trim() ? ['info'] : []),
+      ...(form.province && form.city && locationSelected ? ['location'] : []),
+    ],
+    issues: [
+      ...(!form.name.trim() ? ['missing_name'] : []),
+      ...(step >= 1 && !form.province ? ['missing_province'] : []),
+      ...(step >= 1 && form.province && !form.city ? ['missing_city'] : []),
+      ...(step >= 1 && !locationSelected ? ['missing_location'] : []),
+      ...(createSalon.isError ? ['save_failed'] : []),
+    ],
+  });
 
   const set = (k: string, v: string) => setForm((p) => ({ ...p, [k]: v }));
 

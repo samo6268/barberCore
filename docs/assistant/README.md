@@ -2,6 +2,8 @@
 
 Adaptive Assistant is a framework-neutral, multi-tenant assistant plugin. Parnegarin is its first reference implementation.
 
+Current upgrade: see [CONTEXTUAL_ASSISTANT_REVIEW.md](./CONTEXTUAL_ASSISTANT_REVIEW.md) for workflow guidance, explicit page context and optional self-hosted Ollama understanding. The default remains rules mode; no OpenAI service is selected.
+
 ## Packages
 
 | Package | Purpose |
@@ -103,3 +105,6 @@ Run the local gaze regression checks from the repository root:
 ```bash
 node --test packages/assistant-core/test/character-motion.test.cjs
 ```
+## ارتقای راهنمای زمینه‌مند و مدل محلی
+
+بازنگری جدید، راهنمای فرایندی، Context SDK فرم‌ها، کارت مراحل، بررسی Redis و اتصال اختیاری API بومی Ollama را اضافه می‌کند. راهنمای بررسی، حدود قابلیت‌ها و نصب در [CONTEXTUAL_ASSISTANT_REVIEW.md](CONTEXTUAL_ASSISTANT_REVIEW.md) است. مدل به‌صورت خودکار نصب/فعال نمی‌شود و OpenAI در مسیر فعال وابستگی ندارد.

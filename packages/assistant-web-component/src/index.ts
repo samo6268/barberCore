@@ -3,6 +3,7 @@ import {
   attachCharacterGaze,
   AssistantTransportError,
   safeAssistantUrl,
+  getAssistantWorkflow,
   type AssistantMessage,
   detectHostTheme,
   resolveSuggestions,
@@ -69,7 +70,7 @@ export class AdaptiveAssistantElement extends HTMLElement {
   private completionTimer?: ReturnType<typeof setTimeout>;
   private busy = false;
   private focused = false;
-  private messages: Array<Pick<AssistantMessage, 'role' | 'content' | 'citations'>> = [];
+  private messages: Array<Pick<AssistantMessage, 'role' | 'content' | 'citations' | 'guide'>> = [];
   private generation = 0;
 
   constructor() {
@@ -148,11 +149,19 @@ export class AdaptiveAssistantElement extends HTMLElement {
     return `<div class="sources">${citations
       .map((source) => {
         const url = safeAssistantUrl(source.url);
-        return url
+        return url && url !== (this.config?.context?.route ?? location.pathname)
           ? `<a href="${escapeHtml(url)}">${escapeHtml(source.title)}</a>`
           : `<span>${escapeHtml(source.title)}</span>`;
       })
       .join('')}</div>`;
+  }
+
+  private guideHtml(guide?: AssistantMessage['guide']) {
+    if (!guide) return '';
+    const href = safeAssistantUrl(guide.href);
+    return `<div class="sources"><strong>${escapeHtml(guide.title)}</strong><ol>${guide.steps.map(step =>
+      `<li${step.current ? ' aria-current="step"' : ''}>${escapeHtml(step.title)}</li>`).join('')}</ol>${href ?
+      `<a href="${escapeHtml(href)}">بازکردن صفحه مربوط</a>` : ''}</div>`;
   }
 
   private updateShell() {
@@ -229,7 +238,7 @@ export class AdaptiveAssistantElement extends HTMLElement {
     this.messages.forEach((message) =>
       log?.insertAdjacentHTML(
         'beforeend',
-        `<div class="message ${message.role}">${escapeHtml(message.content)}${this.sourceHtml(message.citations)}</div>`,
+        `<div class="message ${message.role}">${escapeHtml(message.content)}${this.guideHtml(message.guide)}${this.sourceHtml(message.citations)}</div>`,
       ),
     );
     this.updateShell();
@@ -276,13 +285,14 @@ export class AdaptiveAssistantElement extends HTMLElement {
       role: 'user' | 'assistant',
       content: string,
       citations?: AssistantMessage['citations'],
+      guide?: AssistantMessage['guide'],
     ) => {
       if (generation !== this.generation) return;
-      this.messages.push({ role, content, citations });
+      this.messages.push({ role, content, citations, guide });
       const log = this.root.querySelector('.log');
       log?.insertAdjacentHTML(
         'beforeend',
-        `<div class="message ${role}">${escapeHtml(content)}${this.sourceHtml(citations)}</div>`,
+        `<div class="message ${role}">${escapeHtml(content)}${this.guideHtml(guide)}${this.sourceHtml(citations)}</div>`,
       );
       log?.scrollTo({
         top: log.scrollHeight,
@@ -293,16 +303,17 @@ export class AdaptiveAssistantElement extends HTMLElement {
     this.setReaction('thinking');
     let result: AssistantReaction = 'success';
     try {
+      const context = this.config.context ?? { route: location.pathname };
       const response = await this.transport.chat({
         assistantId: this.config.manifest.assistantId,
         conversationId: this.conversationId,
         message,
         identity: this.config.identity,
-        context: this.config.context ?? { route: location.pathname },
+        context: { ...context, workflow: getAssistantWorkflow(context.route) ?? context.workflow },
       });
       if (generation !== this.generation) return;
       this.conversationId = response.conversationId;
-      addMessage('assistant', response.message.content, response.message.citations);
+      addMessage('assistant', response.message.content, response.message.citations, response.message.guide);
       this.emit('message', response);
     } catch (error) {
       addMessage(

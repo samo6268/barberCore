@@ -58,6 +58,7 @@ export function AssistantProvider({
   const completionTimer = useRef<ReturnType<typeof setTimeout>>();
   const [messages, setMessages] = useState<AssistantMessage[]>([]);
   const [conversationId, setConversationId] = useState<string>();
+  const [replySuggestions, setReplySuggestions] = useState<{ route: string; items: AssistantSuggestion[] }>();
   const [resolvedTheme, setResolvedTheme] = useState(theme === 'inherit' ? {} : theme);
   const reactionTimer = useRef<ReturnType<typeof setTimeout>>();
 
@@ -113,8 +114,10 @@ export function AssistantProvider({
   );
 
   const suggestions = useMemo(
-    () => resolveSuggestions(manifest, context, identity?.role).slice(0, 4),
-    [manifest, context, identity?.role],
+    () => replySuggestions?.route === context.route && replySuggestions.items.length
+      ? replySuggestions.items.slice(0, 4)
+      : resolveSuggestions(manifest, context, identity?.role).slice(0, 4),
+    [manifest, context, identity?.role, replySuggestions],
   );
 
   const send = useCallback(
@@ -149,6 +152,7 @@ export function AssistantProvider({
         });
         if (!mounted.current) return;
         setConversationId(response.conversationId);
+        setReplySuggestions({ route: context.route, items: response.suggestions || [] });
         setMessages((current) => [...current, response.message]);
         settle('success');
       } catch (error) {
@@ -180,6 +184,7 @@ export function AssistantProvider({
     transport.resetConversation?.();
     setMessages([]);
     setConversationId(undefined);
+    setReplySuggestions(undefined);
     reactFor('greeting');
   }, [transport, reactFor]);
 

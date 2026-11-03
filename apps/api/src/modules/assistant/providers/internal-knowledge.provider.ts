@@ -201,7 +201,7 @@ export class InternalKnowledgeProvider implements AssistantProvider {
         ? 'FEMALE'
         : /آقایان|اقایان|مردانه/.test(message)
           ? 'MALE'
-          : undefined;
+          : /عمومی|مختلط/.test(message) ? 'UNISEX' : undefined;
       const index = selectedIndex(message);
       const publicSlug = request.page?.route.match(/^\/salons\/([^/]+)/)?.[1];
       const choosingService =
@@ -222,7 +222,7 @@ export class InternalKnowledgeProvider implements AssistantProvider {
         state.pending === 'date' ||
         state.pending === 'service';
       const wantsDetails =
-        /قیمت|خدمات|جزئیات|متخصص|مقایسه|نظر|امتیاز|آدرس/.test(message) ||
+        /قیمت|چنده|چند میشه|هزینه|خدمات|جزئیات|متخصص|مقایسه|نظر|امتیاز|آدرس/.test(message) ||
         (index !== undefined && state.intent === 'search');
       const wantsOwner = /درآمد|گزارش|عملکرد|وضعیت امروز|خلاصه.*امروز|فروش|سالن های من/.test(
         message,

@@ -24,6 +24,62 @@ export interface AssistantPageContext {
   entityId?: string;
   section?: string;
   metadata?: Record<string, string | number | boolean | null | undefined>;
+  workflow?: AssistantWorkflowContext;
+}
+
+/** Publish identifiers and completion flags, never input values, passwords or OTPs. */
+export interface AssistantWorkflowContext {
+  id: string;
+  stepId?: string;
+  completed?: string[];
+  issues?: string[];
+}
+
+const workflowSnapshots = new Map<string, { token: object; context: AssistantWorkflowContext }>();
+const WORKFLOW_EVENT = 'adaptive-assistant:workflow';
+export function sanitizeWorkflowContext(value: AssistantWorkflowContext): AssistantWorkflowContext {
+  const valid = (s: unknown): s is string => typeof s === 'string' && /^[a-z][a-z0-9_-]{0,59}$/.test(s);
+  if (!valid(value.id)) throw new Error('Invalid workflow identifier');
+  return {
+    id: value.id,
+    stepId: valid(value.stepId) ? value.stepId : undefined,
+    completed: Array.isArray(value.completed) ? value.completed.filter(valid).slice(0, 12) : [],
+    issues: Array.isArray(value.issues) ? value.issues.filter(valid).slice(0, 8) : [],
+  };
+}
+export function getAssistantWorkflow(route: string): AssistantWorkflowContext | undefined {
+  return workflowSnapshots.get(route.split(/[?#]/)[0])?.context;
+}
+/** Host integration point, works with React and Web Components. No DOM scraping or input values. */
+export function publishAssistantWorkflow(route: string, value: AssistantWorkflowContext): () => void {
+  if (typeof window === 'undefined') return () => {};
+  const path = route.split(/[?#]/)[0];
+  if (!safeAssistantUrl(path)) throw new Error('Invalid workflow route');
+  const context = sanitizeWorkflowContext(value);
+  const token = {};
+  workflowSnapshots.set(path, { token, context });
+  window.dispatchEvent(new Event(WORKFLOW_EVENT));
+  return () => {
+    if (workflowSnapshots.get(path)?.token === token) {
+      workflowSnapshots.delete(path);
+      window.dispatchEvent(new Event(WORKFLOW_EVENT));
+    }
+  };
+}
+export function subscribeAssistantWorkflow(listener: () => void): () => void {
+  if (typeof window === 'undefined') return () => {};
+  window.addEventListener(WORKFLOW_EVENT, listener);
+  return () => window.removeEventListener(WORKFLOW_EVENT, listener);
+}
+
+export interface AssistantGuide {
+  id: string;
+  title: string;
+  currentStep: number;
+  totalSteps: number;
+  steps: Array<{ id: string; title: string; current: boolean }>;
+  href?: string;
+  source: 'page-state' | 'guide';
 }
 
 export interface AssistantTheme {
@@ -85,6 +141,7 @@ export interface AssistantMessage {
   createdAt: string;
   action?: AssistantActionPreview;
   citations?: Array<{ title: string; url?: string }>;
+  guide?: AssistantGuide;
 }
 
 export interface AssistantChatRequest {

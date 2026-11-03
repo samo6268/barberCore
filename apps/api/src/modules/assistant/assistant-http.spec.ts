@@ -58,6 +58,13 @@ describe('Assistant HTTP validation and optional authentication', () => {
   afterAll(async () => {
     await app.close();
   });
+  it('accepts only bounded workflow identifiers, not form values or secrets', async () => {
+    const res = await app.inject({
+      method: 'POST', url: '/assistant/chat', remoteAddress: '127.0.0.6',
+      payload: { ...body, context: { route: '/salons/x/book', workflow: { id: 'booking', stepId: 'date', phone: '09121234567' } } },
+    });
+    expect(res.statusCode).toBe(400);
+  });
   it('allows an anonymous question without treating body identity as authentication', async () => {
     const res = await app.inject({
       method: 'POST',
@@ -91,7 +98,7 @@ describe('Assistant HTTP validation and optional authentication', () => {
     });
     expect(res.statusCode).toBe(400);
   });
-  it('limits anonymous paid turns before invoking the service', async () => {
+  it('limits anonymous turns before invoking the service', async () => {
     const before = service.chat.mock.calls.length;
     const responses = [];
     for (let i = 0; i < 3; i++)

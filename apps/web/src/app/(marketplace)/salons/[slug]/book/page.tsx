@@ -9,6 +9,7 @@ import { formatPrice, toJalali } from '@/lib/utils';
 import { PersianDatePicker } from '@/components/shared/persian-date-picker';
 import { MobileBookingBar } from '@/components/marketplace/marketplace-ui';
 import { trackEvent } from '@/lib/analytics';
+import { useMimoWorkflow } from '@/components/assistant/use-mimo-workflow';
 
 type TimeSlot = {
   time: string;
@@ -108,6 +109,27 @@ export default function BookPage() {
     (member: any) => member.id === resolvedStaffId,
   );
   const canContinueStaffSelection = !salon?.staffProfiles?.length || eligibleStaff.length > 0;
+  useMimoWorkflow({
+    id: 'booking',
+    stepId: !selectedServices.length ? 'service' : !canContinueStaffSelection ? 'specialist'
+      : !selectedDate ? 'date' : !selectedTime || !selectedSlot?.available ? 'time' : 'review',
+    completed: [
+      ...(selectedServices.length ? ['service'] : []),
+      ...(selectedServices.length && canContinueStaffSelection ? ['specialist'] : []),
+      ...(selectedDate ? ['date'] : []),
+      ...(selectedTime && selectedSlot?.available ? ['time'] : []),
+    ],
+    issues: [
+      ...(!selectedServices.length ? ['missing_service'] : []),
+      ...(selectedServices.length && !canContinueStaffSelection ? ['staff_unavailable'] : []),
+      ...(selectedServices.length && !selectedDate ? ['missing_date'] : []),
+      ...(isAvailabilityError ? ['availability_failed'] : []),
+      ...(selectedDate && selectedServices.length && !isAvailabilityLoading && !isAvailabilityError && !(slots as TimeSlot[]).some(slot => slot.available) ? ['no_slots'] : []),
+      ...(selectedTime && !selectedSlot?.available && !isAvailabilityLoading ? ['slot_unavailable'] : []),
+      ...(createBooking.isError ? ['save_failed'] : []),
+      ...(selectedTime && !hasAccessToken ? ['needs_login'] : []),
+    ],
+  });
 
   const dates = useMemo(
     () =>

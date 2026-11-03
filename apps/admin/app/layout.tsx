@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import '@adaptive-assistant/react/styles.css';
+import { MimoAdminGuide } from '../components/mimo-admin-guide';
 
 export const metadata: Metadata = {
   title: { default: 'BarberCore Admin', template: '%s | Admin' },
@@ -31,6 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body data-typography="admin" className="antialiased">
         {children}
+        <MimoAdminGuide />
       </body>
     </html>
   );

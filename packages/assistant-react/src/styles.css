@@ -813,3 +813,11 @@
   border-color: var(--assistant-primary);
   text-decoration: underline;
 }
+.aa-guide { margin-top:12px; padding:12px; border:1px solid var(--assistant-border); border-radius:14px; background:var(--assistant-background); white-space:normal; }
+.aa-guide strong,.aa-guide small { display:block; }
+.aa-guide small { margin-top:4px; color:var(--assistant-muted); font-size:11px; }
+.aa-guide ol { display:grid; gap:6px; padding-inline-start:20px; margin:10px 0; }
+.aa-guide li { color:var(--assistant-muted); }
+.aa-guide li[aria-current="step"] { color:var(--assistant-text); font-weight:600; }
+.aa-guide a { display:inline-block; padding:6px 10px; border:1px solid var(--assistant-border); border-radius:9px; color:var(--assistant-text); text-decoration:none; }
+.aa-followups { margin:12px 0; }

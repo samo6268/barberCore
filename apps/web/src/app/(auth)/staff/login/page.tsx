@@ -1,4 +1,5 @@
 'use client';
+import { useMimoWorkflow } from '@/components/assistant/use-mimo-workflow';
 
 import { useState } from 'react';
 import Link from 'next/link';
@@ -17,6 +18,14 @@ export default function StaffLoginPage() {
   const [code, setCode] = useState('');
   const sendOtp = useSendOtp();
   const verifyOtp = useVerifyOtp();
+  useMimoWorkflow({
+    id: 'login', stepId: step,
+    issues: [
+      ...(step === 'phone' && phone && !/^09\d{9}$/.test(phone.replace(/\s/g, '')) ? ['invalid_phone'] : []),
+      ...(sendOtp.isError ? ['otp_send_failed'] : []),
+      ...(verifyOtp.isError ? ['otp_verify_failed'] : []),
+    ],
+  });
 
   const handleSend = async () => {
     const normalized = phone.replace(/\s/g, '');

@@ -8,6 +8,7 @@ import { useSendOtp, useVerifyOtp } from '@/lib/api-hooks';
 import Link from 'next/link';
 import { AuthLayout } from '@/components/auth/auth-layout';
 import { HERO_IMAGES } from '@/lib/images';
+import { useMimoWorkflow } from '@/components/assistant/use-mimo-workflow';
 
 export default function CustomerLoginPage() {
   const router = useRouter();
@@ -18,6 +19,14 @@ export default function CustomerLoginPage() {
 
   const sendOtp = useSendOtp();
   const verifyOtp = useVerifyOtp();
+  useMimoWorkflow({
+    id: 'login', stepId: step,
+    issues: [
+      ...(step === 'phone' && phone && !/^09\d{9}$/.test(phone) ? ['invalid_phone'] : []),
+      ...(sendOtp.isError ? ['otp_send_failed'] : []),
+      ...(verifyOtp.isError ? ['otp_verify_failed'] : []),
+    ],
+  });
 
   useEffect(() => {
     const requestedPath = new URLSearchParams(window.location.search).get('returnTo');

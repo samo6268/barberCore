@@ -61,6 +61,7 @@ export function MimoAssistant({ className = '', position = 'start' }: MimoAssist
     resetConversation,
     send,
     manifest,
+    context,
     style,
   } = useAssistant();
   const [input, setInput] = useState('');
@@ -167,10 +168,26 @@ export function MimoAssistant({ className = '', position = 'start' }: MimoAssist
             {messages.map((message) => (
               <div key={message.id} className={`aa-message aa-message--${message.role}`}>
                 {message.content}
+                {message.guide && (
+                  <section className="aa-guide" aria-label={message.guide.title}>
+                    <strong>{message.guide.title}</strong>
+                    <small>{message.guide.source === 'page-state' ? 'طبق وضعیت صفحه هنگام پاسخ' : 'راهنمای مراحل'}</small>
+                    <ol>
+                      {message.guide.steps.map(step => (
+                        <li key={step.id} aria-current={step.current ? 'step' : undefined}>
+                          {step.title}
+                        </li>
+                      ))}
+                    </ol>
+                    {safeAssistantUrl(message.guide.href) && (
+                      <a href={safeAssistantUrl(message.guide.href)}>بازکردن صفحه مربوط</a>
+                    )}
+                  </section>
+                )}
                 {!!message.citations?.length && (
                   <div className="aa-sources" aria-label="منابع پاسخ">
                     {message.citations.map((source, index) =>
-                      safeAssistantUrl(source.url) ? (
+                      safeAssistantUrl(source.url) && source.url !== context.route ? (
                         <a key={index} href={safeAssistantUrl(source.url)}>
                           {source.title}
                         </a>
@@ -194,6 +211,15 @@ export function MimoAssistant({ className = '', position = 'start' }: MimoAssist
                 <i />
                 <i />
                 <i />
+              </div>
+            )}
+            {!!messages.length && !busy && suggestions.length > 0 && (
+              <div className="aa-suggestions aa-followups" aria-label="ادامه راهنمایی">
+                {suggestions.map(suggestion => (
+                  <button type="button" key={suggestion.id} onClick={() => void send(suggestion.prompt)}>
+                    {suggestion.label}
+                  </button>
+                ))}
               </div>
             )}
           </div>

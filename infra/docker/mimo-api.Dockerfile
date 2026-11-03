@@ -30,5 +30,5 @@ WORKDIR /app/apps/api
 USER node
 EXPOSE 4000
 HEALTHCHECK --interval=15s --timeout=5s --start-period=40s --retries=5 \
-    CMD node -e "fetch('http://127.0.0.1:'+(process.env.API_PORT||4000)+'/api/v1/assistant/status').then(r=>{if(!r.ok)process.exit(1);return r.json()}).then(v=>{if(v.data?.provider!=='internal-knowledge')process.exit(1)}).catch(()=>process.exit(1))"
+    CMD node -e "fetch('http://127.0.0.1:'+(process.env.API_PORT||4000)+'/api/v1/assistant/status').then(r=>{if(!r.ok)process.exit(1);return r.json()}).then(v=>{if(v.data?.ready!==true)process.exit(1)}).catch(()=>process.exit(1))"
 CMD ["node", "dist/src/main.js"]
